@@ -1,2 +1,2 @@
-#define VERS_BUILD 5
+#define VERS_BUILD 6
 #define VERS_HOST  "vixen"
