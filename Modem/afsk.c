@@ -62,23 +62,18 @@ STATIC_ASSERT(!(CONFIG_AFSK_DAC_SAMPLERATE % BITRATE));
 
 #define DAC_SAMPLESPERBIT (CONFIG_AFSK_DAC_SAMPLERATE / BITRATE)
 
-static bool hdlcParse(Hdlc *hdlc, bool bit, FIFOBuffer *fifo)
-{
+static bool hdlcParse(Hdlc *hdlc, bool bit, FIFOBuffer *fifo) {
 	bool ret = true;
 
 	hdlc->demodulatedBits <<= 1;
 	hdlc->demodulatedBits |= bit ? 1 : 0;
 
-	/* HDLC Flag */
-	if (hdlc->demodulatedBits == HDLC_FLAG)
-	{
-		if (!fifo_isfull(fifo))
-		{
+	// Check if we have received a HDLC flag (01111110)
+	if (hdlc->demodulatedBits == HDLC_FLAG) {
+		if (!fifo_isfull(fifo)) {
 			fifo_push(fifo, HDLC_FLAG);
 			hdlc->receiving = true;
-		}
-		else
-		{
+		} else {
 			ret = false;
 			hdlc->receiving = false;
 		}
@@ -88,55 +83,58 @@ static bool hdlcParse(Hdlc *hdlc, bool bit, FIFOBuffer *fifo)
 		return ret;
 	}
 
-	/* Reset */
-	if ((hdlc->demodulatedBits & HDLC_RESET) == HDLC_RESET)
-	{
+	// Check if we have received a RESET flag (01111111)
+	if ((hdlc->demodulatedBits & HDLC_RESET) == HDLC_RESET) {
 		hdlc->receiving = false;
 		return ret;
 	}
 
+	// If we are just receiving noise, don't bother with anything
 	if (!hdlc->receiving)
 		return ret;
 
-	/* Stuffed bit */
+	// First check if what we are seeing is a stuffed bit
 	if ((hdlc->demodulatedBits & 0x3f) == 0x3e)
 		return ret;
 
+	// If we have an actual 1 bit, push this to the current byte
 	if (hdlc->demodulatedBits & 0x01)
 		hdlc->currentByte |= 0x80;
 
-	if (++hdlc->bitIndex >= 8)
-	{
-		if ((hdlc->currentByte == HDLC_FLAG
-			|| hdlc->currentByte == HDLC_RESET
-			|| hdlc->currentByte == AX25_ESC))
-		{
-			if (!fifo_isfull(fifo))
+	// Increment the bitIndex and check if we have a complete byte
+	if (++hdlc->bitIndex >= 8) {
+		// If we have a HDLC control character,
+		// put a AX.25 escape in the received data
+		if ((hdlc->currentByte == HDLC_FLAG ||
+			 hdlc->currentByte == HDLC_RESET ||
+			 hdlc->currentByte == AX25_ESC)) {
+			if (!fifo_isfull(fifo)) {
 				fifo_push(fifo, AX25_ESC);
-			else
-			{
+			} else {
 				hdlc->receiving = false;
 				ret = false;
 			}
 		}
 
-		if (!fifo_isfull(fifo))
+		// Push the actual byte to the received data FIFO
+		if (!fifo_isfull(fifo)) {
 			fifo_push(fifo, hdlc->currentByte);
-		else
-		{
+		} else {
 			hdlc->receiving = false;
 			ret = false;
 		}
 
 		hdlc->currentByte = 0;
 		hdlc->bitIndex = 0;
-	}
-	else
+
+	} else {
+		// We don't have a full byte yet, bitshift the byte
+		// to make room for the next bit
 		hdlc->currentByte >>= 1;
+	}
 
 	return ret;
 }
-
 
 void afsk_adc_isr(Afsk *afsk, int8_t currentSample) {
 	// To determine the received frequency, and thereby
