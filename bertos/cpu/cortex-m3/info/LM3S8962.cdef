@@ -1,0 +1,65 @@
+#
+#-*- coding: utf-8 -*-
+#
+# \file
+# <!--
+# This file is part of BeRTOS.
+#
+# Bertos is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+#
+# As a special exception, you may use this file as part of a free software
+# library without restriction.  Specifically, if other files instantiate
+# templates or use macros or inline functions from this file, or you compile
+# this file and link it with other files to produce an executable, this
+# file does not by itself cause the resulting executable to be covered by
+# the GNU General Public License.  This exception does not however
+# invalidate any other reasons why the executable file might be covered by
+# the GNU General Public License.
+#
+# Copyright 2010 Develer S.r.l. (http://www.develer.com/)
+#
+# -->
+#
+# General CPU info denfinition for Cortex-M3-based LM3S8962 board.
+#
+# This file contain all info for the BeRTOS wizard.
+#
+# \author Andrea Righi <arighi@develer.com>
+#
+#
+
+# Import the common settings for the path.
+include("cm3.common")
+
+# CPU type used for flashing/debugging
+MK_PROGRAMMER_CPU = "lm3s"
+MK_FLASH_SCRIPT = PRG_SCRIPTS_DIR + "arm/flash-lm3s.sh"
+
+# CPU default clock frequency
+CPU_DEFAULT_FREQ = "50000000UL"
+
+# Special CPU related tags.
+CPU_TAGS += ["lm3s"]
+
+# Additional hw drivers.
+MK_CPU_CSRC += DRV_DIR + "gpio_lm3s.c " + DRV_DIR + "clock_lm3s.c "
+
+# Short description of the cpu.
+CPU_DESC += [ "256 Kbytes on-chip flash memory",
+		"64 Kbytes on-chip SRAM memory" ]
+
+# GCC flags for this cpu.
+MK_CPU_CPPFLAGS += " -D__ARM_LM3S8962__"
+MK_CPU_LDFLAGS += " -Wl,-dT " + SCRIPT_DIR + "lm3s8962_rom.ld"

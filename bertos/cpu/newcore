@@ -1,0 +1,17 @@
+#!/bin/bash
+
+DIRS="drv hw io scripts"
+if [ $# != 1 ]; then
+	echo "Create a new core tree with subdirs:"
+	echo $DIRS
+	echo "usage $0 <core>"
+	exit 1
+fi
+CORE=$1
+mkdir $CORE
+cd $CORE
+for dir in $DIRS
+do
+	mkdir $dir
+done
+cd ..

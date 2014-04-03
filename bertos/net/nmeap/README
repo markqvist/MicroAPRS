@@ -1,0 +1,24 @@
+NMEAP is licensed under the BSD Open Source License. See the file COPYING for terms of the license
+
+VERSION 0.2 - bug fixes and tutorial
+	a. fixed a bug in test3.c
+	b. added a tutorial in doc/tutorial.html
+
+Installation:
+
+Unpack the tarball or zip file into the desired working directory.
+
+Building:
+
+Under Linux, execute 'make' from the top level directory.
+
+Under Win32, execute 'nmake -f win32.mak' from the top level directory
+
+Using:
+
+This library is statically linked to the application. Just include it in 
+your linker command line. See the file 'nmeap.h' and the examples in the
+'tst' directory for usage instructions.
+
+
+

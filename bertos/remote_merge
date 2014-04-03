@@ -1,0 +1,48 @@
+#!/bin/bash
+#set -x
+
+if [ $# -lt 2 ] ; then
+	printf "\nMerge remote url commits into local BeRTOS svn repository.\n"
+	printf "Usage: $0 <REMOTE_URL> <REMOTE_START_REV> [<REMOTE_END_REV>]\n"
+	printf "If remote end revision is not supplied HEAD will be used.\n"
+	exit 1
+fi
+
+
+MERGE_URL="$1"
+START_REV="$2"
+if [ z"$3" = z ] ; then
+	END_REV=HEAD
+else
+	END_REV="$3"
+fi
+
+#Check for local uncommitted modifications
+STATUS=`svn status -q`
+if [[ z"$STATUS" != z && "${STATUS:0:1}" != $'\n' ]] ; then
+	printf "Project has local modifications, it must be clean\n"
+	exit 1
+fi
+
+#Get list of revisions to merge.
+REV_LIST=`svn log $MERGE_URL -r$START_REV:$END_REV --quiet 2>&1| perl -ne 'if(m/^r([0-9]+)/) {print $1, "\n";}'`
+
+printf "Merged from external project:\n" > header
+for rev in $REV_LIST
+do
+	#Get commit log message only
+	#svn pg --revprop -r$rev svn:log $MERGE_URL > tmp_msg
+	
+	#Get revision commit log with date and author
+	svn log -r$rev $MERGE_URL > tmp_msg
+	#Replace leading and trailing banners "---------------------..."
+	sed -i 's/^-\+/\*\*\*\*\*\*\*\*\*\*/' tmp_msg
+	#Indent all message
+	sed -i 's/\(^.*\)/\t\1/' tmp_msg
+	cat header tmp_msg > commit_msg
+	#Try to merge ...
+	svn merge $MERGE_URL -c$rev || exit 1
+	#and commit!
+	svn ci -Fcommit_msg
+done
+rm -rf header tmp_msg commit_msg

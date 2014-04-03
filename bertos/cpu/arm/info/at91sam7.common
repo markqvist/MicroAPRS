@@ -1,0 +1,87 @@
+#
+#-*- coding: utf-8 -*-
+#
+# \file
+# <!--
+# This file is part of BeRTOS.
+#
+# Bertos is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+#
+# As a special exception, you may use this file as part of a free software
+# library without restriction.  Specifically, if other files instantiate
+# templates or use macros or inline functions from this file, or you compile
+# this file and link it with other files to produce an executable, this
+# file does not by itself cause the resulting executable to be covered by
+# the GNU General Public License.  This exception does not however
+# invalidate any other reasons why the executable file might be covered by
+# the GNU General Public License.
+#
+# Copyright 2008 Develer S.r.l. (http://www.develer.com/)
+#
+# -->
+#
+# General CPU info denfinition for AT91SAM7 family.
+#
+# This file contain all info for the BeRTOS wizard.
+#
+# \author Daniele Basile <asterix@develer.com>
+#
+#
+
+# Import the common settings for the path.
+include("../../path.common")
+
+# Short description of the cpu.
+CPU_DESC = ["ATMEL AT91 ARM",
+	  "ARMTDMI ARM Thumb Processor",
+	  "32-bit RISC Architecture"]
+
+# Type of the toolchain we should use to compile the source for this CPU.
+TOOLCHAIN = "arm"
+
+# If we use the GCC compiler we should pass some flags.
+CORE_CPU = "arm7tdmi"
+
+# CPU type used for flashing/debugging
+MK_PROGRAMMER_CPU = "at91sam7"
+
+# Name of the flag used by the build system to pass to the compiler the CPU type.
+MK_CPU = CORE_CPU
+
+# CPU default clock frequency
+CPU_DEFAULT_FREQ = "48054857UL"
+
+# Special CPU related tags.
+CPU_TAGS = ["at91", CORE_CPU, TOOLCHAIN]
+
+# Where are locate the bertos directories
+SCRIPT_DIR = CPU_DIR + "arm/scripts/"
+HW_DIR = CPU_DIR + "arm/hw/"
+
+MK_FLASH_SCRIPT = PRG_SCRIPTS_DIR + "arm/flash.sh"
+MK_STOPFLASH_SCRIPT = PRG_SCRIPTS_DIR + "arm/stopopenocd.sh"
+MK_DEBUG_SCRIPT = PRG_SCRIPTS_DIR + "arm/debug.sh"
+MK_STOPDEBUG_SCRIPT = PRG_SCRIPTS_DIR + "arm/stopopenocd.sh"
+
+GDB_INIT_SCRIPT = PRG_SCRIPTS_DIR + "arm/openocd/gdbinit-sam7"
+
+# Common GCC flags.
+MK_CPU_CPPAFLAGS = "-g -gdwarf-2"
+MK_CPU_CPPFLAGS = "-O0 -g3 -gdwarf-2 -fverbose-asm -I" + CPU_DIR + "arm/"
+MK_CPU_LDFLAGS = "-nostartfiles -Wl,--no-warn-mismatch"
+
+# CRT files.
+MK_CPU_CPPASRC = HW_DIR + "crt_arm7tdmi.S " + HW_DIR + "vectors_at91.S"
+MK_CPU_CSRC = HW_DIR + "init_at91.c"

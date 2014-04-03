@@ -1,0 +1,69 @@
+#
+#-*- coding: utf-8 -*-
+#
+# \file
+# <!--
+# This file is part of BeRTOS.
+#
+# Bertos is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+#
+# As a special exception, you may use this file as part of a free software
+# library without restriction.  Specifically, if other files instantiate
+# templates or use macros or inline functions from this file, or you compile
+# this file and link it with other files to produce an executable, this
+# file does not by itself cause the resulting executable to be covered by
+# the GNU General Public License.  This exception does not however
+# invalidate any other reasons why the executable file might be covered by
+# the GNU General Public License.
+#
+# Copyright 2010 Develer S.r.l. (http://www.develer.com/)
+#
+# -->
+#
+# General CPU info denfinition MSP430 family.
+#
+# This file contains all the info for the BeRTOS wizard.
+#
+# \author Mohamed Tarek <mtarek16@gmail.com>
+#
+#
+
+# Import the common settings for the path.
+include("../../path.common")
+
+# Short description of the cpu.
+CPU_DESC = [ "Texas Instruments MSP430 Microcontroller ",
+             "16-bit RISC Architecture"]
+
+# Type of the toolchain we should use to compile the source for this CPU.
+TOOLCHAIN = "msp430"
+
+# Special CPU related tags.
+CPU_TAGS = ["Von Neumann", TOOLCHAIN]
+
+# CPU default clock frequency
+CPU_DEFAULT_FREQ = "1000000UL"
+
+# Where are locate the bertos directories
+SCRIPT_DIR = CPU_DIR + "msp430/scripts/"
+
+MK_FLASH_SCRIPT = PRG_SCRIPTS_DIR + "msp430/flash.sh"
+MK_STOPFLASH_SCRIPT = PRG_SCRIPTS_DIR + "msp430/stopflash.sh"
+MK_DEBUG_SCRIPT = PRG_SCRIPTS_DIR + "nodebug.sh"
+MK_STOPDEBUG_SCRIPT = PRG_SCRIPTS_DIR + "none.sh"
+
+# Common GCC flags.
+MK_CPU_CPPFLAGS = "-Os -I" + CPU_DIR + "msp430/"
+

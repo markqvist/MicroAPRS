@@ -1,0 +1,151 @@
+<html>
+<body>
+<h1>NMEAP TUTORIAL AND REFERENCE</h1>
+<hr />
+<pre>
+copyright (c) 2005 David M. Howard
+This work is licensed under the Creative Commons Attribution License.
+To view a copy of this license, visit
+http://creativecommons.org/licenses/by/2.0/ or send a letter to
+Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305,USA
+You are free:
+    * to copy, distribute, display, and perform the work
+    * to make derivative works
+    * to make commercial use of the work
+Under the following conditions:
+Attribution. You must give the original author credit.
+    * For any reuse or distribution, you must make clear to others the
+      license terms of this work.
+    * Any of these conditions can be waived if you get permission from
+      the author.
+</pre>	 
+<hr />
+<h2>Table Of Contents</h2>
+<ol>
+<li><a href="#c1">Installing the Source Code</a></li>
+<li><a href="#c2">Building the Library</a></li>
+<li><a href="#c3">Description and Examples</a></li>
+<li><a href="#c4">API Documentation</a></li>
+</ol>
+<a name="c1">&nbsp;</a>
+</a><h2>1. Installing the source code</h2>
+Get the source code from <a href="http://sourceforge.net/projects/nmeap/">NMEAP at sourceforge.net</a>
+<pre>
+
+Linux:
+	expand the tarball to a directory of your choice.
+	>tar --gzip -xf [tarball name]
+	>cd [nmeap...]
+	
+Windows:
+	use Winzip to unzip the zipfile to a directory of your choice
+	
+</pre>
+
+<a name="c2">&nbsp;</a>
+<h2>2. Building the library </h2>
+<pre>
+
+Linux:
+	>cd [working directory]
+	>make
+	This builds a static library named libnmeap.a in the 'lib' directory. there is no option for a dynamic library. 
+	This thing is so small that it isn't worth the trouble. It also builds the test/examples programs in
+	'tst'.
+	
+Windows:
+	>cd [working directory]
+	>nmake -f win32.mak
+	Again, this builds a static library names libnmeap.lib in the 'lib' direcotry, plus the test programs in 'tst'
+</pre>
+<a name="c3">&nbsp;</a>
+<h2>3. Description and Examples</h2>
+<p>The NMEA-0183 standard specifies how the output is formatted for GPS data output, usually on a serial port. The data 
+consists of 'sentences' delimited by CR/LF end of line markers. A lot has been written about the format, so this document
+won't cover the specifics. A good place to start is the <a href="http://vancouver-webpages.com/peter/nmeafaq.txt">NMEA FAQ</a> 
+maintained by Peter Bennett.</p> 
+<p>NMEAP is an extensible C language parser library that takes NMEA sentences as input and spits out the decoded data as output. You link
+NMEAP in to your application, set it up, initialize it and feed it bytes. It signals you when it has found a complete valid sentence and 
+provides the parsed out data to you. Parsing NMEA-0183 is pretty easy but it has a few tricky bits. The value of NMEAP is not that it is
+rocket science to write an NMEA parser, but that it provides a relatively efficient implementation that works, along with an
+extension framework to add more sentence parsers without hacking the base source code.</p>
+<p>An NMEA 'sentence' has the following format:</p>
+<pre>
+	$name,data1,data2,...,dataN*XX[CR/LF]
+	OR
+	$name,data1,data2,...,dataN[CR/LF]
+	
+where
+	header       := a 5 digit sentence identifier. all ASCII upper case. e.g. GPGGA
+	data1..dataN := some number of data elements, all ASCII numbers or letters, in all kinds of weird formats.
+                    fields can be empty, in which case 2 commas will be side by side.
+                    normally data fields are identified by their position in the sentence. 
+	*XX          := a '*' plus two ASCII hex digits of checksum. this field is optional.
+	[CR/LF]      := end of line is terminated by a carriage return/linefeed pair.
+	
+example from the <a href="http://vancouver-webpages.com/peter/nmeafaq.txt">NMEA FAQ</a>:
+ 	$GPGGA,123519,4807.038,N,01131.324,E,1,08,0.9,545.4,M,46.9,M,,*42
+</pre>	
+<p>The NMEAP parser works as follows:
+<ol>
+	<li>the application sets up the parser and specifies which sentences are to be parsed
+		and what is to be done with the output data from the parser.</li>
+	<li>the application reads raw bytes from its IO device and passes the bytes to the parser,
+		either byte by byte or as a buffer/length pair.</li>
+	<li>nmeap:
+	<ul>
+		<li>runs the input bytes through a lexical scanner that recognizes complete and valid sentences</li>
+		<li>when a sentence is recognized, a second lexical scanner divides the sentence into discrete tokens.</li>
+		<li>the name field is matched internally to a sentence parser for that name</li>
+		<li> the sentence parser picks out the data strings and decodes them into an nmeap or user 
+		defined data structure	with normal data types such as integer, float, double etc. </li>
+		<li>notifies the client application that a sentence was found and decoded, either thru a callout 
+		to an event handler (ala Expat) or via a return code and a shared data structure, or both.</li>
+	</ul>
+	</li>
+</ol>
+<h4>Sentence Parsers</h4>
+<p>Most of the work in NMEAP is done by the sentence parsers. Each type of NMEA sentence string has an associated parser. NMEAP provides
+standard ones, and the user can add more in a systematic way.
+The sentence parser is responsible for knowing the token position of the data elements and whatever format they 
+are in. There are functions in nmeap to decode standard data element formats. If something is nonstandard, 
+the sentence parser decodes it. Each sentence parser has a 'struct' type associated with it
+that the decoded data gets poked into an instance of that data structure, which is provided by the client application when nmeap is set
+up.</p>
+<h4>Memory Allocation</h4>
+<p>All memory allocation is done by the application. Several data items are required. The application can declare them statically or use
+malloc or whatever. NMEAP doesn't do any memory allocation on its own. This is an important requirement for portability and especially in
+embedded systems where memory allocation needs to be tightly defined and controlled.
+</p>
+<h4>Threads</h4>
+<p>NMEAP as implemented is not meant to be called from multiple threads. It expects to execute within the context of a single thread. The sentence callouts execute
+in the context of the thread of the nmeap client thread. Given how nmeap works, it doesn't really make sense to make nmeap thread-safe
+because the usage pattern is intrinsically single thread. If one wanted to, one could add some mutex locking within the nmeap function
+calls to make it thread safe. In a multithreaded environment, a more likely approach to thread-safety is to put synchronization in the client side of the application,
+within the sentence parser callouts or inline handling of sentence data.
+</p>
+<h4>IO</h4>
+<p>NMEAP is IO agnostic. That is a pompous way of saying that NMEAP doesn't do the IO, the client application does it. There are way too
+many IO schemes to handle to keep it portable, especially in the embedded world. That said, the example programs contain a Linux and a Win32 specific
+program that includes serial IO for those two platforms.
+</p>
+
+<h4>Examples</h4>
+Look at the code for the following example programs to see the usage patterns. The are all located in the
+'tst' directory. There are big, obvious comments delineating the steps to setting up and using NMEAP.
+The IO is simulated in the samples. Follow the comments in the code
+to see the sequence of operations to setup and run the parser. When you are ready just plug in your own IO.
+<ol>
+	<li>tst/test1.c Setup for standard GGA and RMC sentences with byte by byte IO (easiest to code up)</li>
+	<li>tst/test2.c Setup for standard GGA and RMC sentences with block IO (more efficient from a system call standpoint)</li>
+	<li>tst/test3.c Adding a custom parser</li>
+	<li>tst/wingps.c A console program that reads a serial port and writes the decoded data to standard out for WIN32 applications</li>
+</ol>
+<a name="c4">&nbsp;</a>
+<h3>API Documentation</h3>
+The documentation for the actual API is in <a href="www.doxygen.org">Doxygen<a> HTML format and is contained in the 'doc' directory of
+the source distribution. Or, all the external data structures, constants and functions are defined in 'inc/nmeap.h'. 
+
+<p>END</p>
+</body>
+</html>

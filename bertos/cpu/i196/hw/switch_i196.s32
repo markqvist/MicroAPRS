@@ -1,0 +1,91 @@
+;* Copyright 2004 Develer S.r.l. (http://www.develer.com/)
+;* Copyright 1999,2000,2001 Bernie Innocenti <bernie@codewiz.org>
+;* This file is part of DevLib - See devlib/README for information.
+;*
+;*
+;* \author Bernie Innocenti <bernie@codewiz.org>
+;*
+
+;* $Log$
+;* Revision 1.2  2004/06/06 16:14:12  bernie
+;* Add DevLib license information.
+;*
+;* Revision 1.1  2004/05/23 17:27:00  bernie
+;* Import kern/ subdirectory.
+;*
+;*
+
+!!!!!! THIS FILE HAS NOT BEEN REVISED FOR THE NEW SCHEDULER API !!!!!!
+
+
+
+	NAME	AsmSwitch
+	RSEG	CODE
+
+	EXTERN	?LR
+	EXTERN	?GR
+	PUBLIC	AsmSwitchContext
+	PUBLIC	AsmReplaceContext
+
+
+;* Perform low-level process context switching
+;*
+;*	void AsmSwitchContext(cpustack_t *new_sp, cpustack_t **save_sp)
+;*                                        GR+0                 SP+2
+;*
+;* Replace current context with new process
+;*
+;*	void AsmReplaceContext(cpustack_t *new_sp, cpustack_t **dummy)
+;*                                         GR+0                 SP+2
+;*
+
+AsmSwitchContext:
+
+; pop 2nd parameter from the stack
+	ld	?GR+2,2[SP]
+
+; save all registers
+	push	?LR+0
+	push	?LR+2
+	push	?LR+4
+	push	?LR+6
+	push	?LR+8
+	push	?LR+10
+	push	?LR+12
+	push	?LR+14
+	push	?LR+16
+	push	?LR+18
+	push	?LR+20
+	push	?LR+22
+	push	?LR+24
+	push	?LR+26
+	push	?LR+28
+	push	?LR+30
+	st	SP,[?GR+2]		; save old stack pointer
+	; fall-thru
+
+AsmReplaceContext:
+	ld	SP,?GR+0		; load new stack pointer
+
+; restore all registers
+	pop	?LR+30
+	pop	?LR+28
+	pop	?LR+26
+	pop	?LR+24
+	pop	?LR+22
+	pop	?LR+20
+	pop	?LR+18
+	pop	?LR+16
+	pop	?LR+14
+	pop	?LR+12
+	pop	?LR+10
+	pop	?LR+8
+	pop	?LR+6
+	pop	?LR+4
+	pop	?LR+2
+	pop	?LR+0
+
+; restore execution in new context
+	ret
+
+	END

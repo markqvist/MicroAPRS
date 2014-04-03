@@ -1,0 +1,9 @@
+
+# CPU type used for flashing
+MK_PROGRAMMER_CPU = CORE_CPU
+
+# Name of the flag used by the build system to pass to the compiler the CPU type.
+MK_MCU = CORE_CPU
+
+# Add CPU core to tags
+CPU_TAGS += [ CORE_CPU ]
