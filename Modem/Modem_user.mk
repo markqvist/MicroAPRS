@@ -11,7 +11,9 @@ Modem_PROGRAMMER_PORT = none
 Modem_USER_CSRC = \
 	$(Modem_SRC_PATH)/main.c \
 	$(Modem_HW_PATH)/hardware.c \
-        $(Modem_HW_PATH)/afsk.c \
+    $(Modem_HW_PATH)/afsk.c \
+    bertos/net/ax25.c \
+    bertos/algo/crc_ccitt.c \
 	#
 
 # Files included by the user.

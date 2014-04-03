@@ -84,10 +84,6 @@ void afsk_adc_isr(Afsk *af, int8_t sample);
 uint8_t afsk_dac_isr(Afsk *af);
 void afsk_init(Afsk *af, int adc_ch, int dac_ch);
 
-
-#define AFSK_BUTTERWORTH  0
-#define AFSK_CHEBYSHEV    1
-
 int afsk_testSetup(void);
 int afsk_testRun(void);
 int afsk_testTearDown(void);

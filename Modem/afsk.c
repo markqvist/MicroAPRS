@@ -5,17 +5,13 @@
 #include <drv/timer.h>
 #include <cfg/module.h>
 
-#define HDLC_FLAG  0x7E
-#define HDLC_RESET 0x7F
-#define AX25_ESC   0x1B
-
 #include <cfg/log.h>
 
 #include <cpu/power.h>
 #include <cpu/pgm.h>
 #include <struct/fifobuf.h>
 
-#include <string.h> /* memset */
+#include <string.h>
 
 // Sine table for DAC DDS
 #define SIN_LEN 512 // Length of a full wave. Table is 1/4 wave.
@@ -57,10 +53,19 @@ INLINE uint8_t sinSample(uint16_t i) {
 #define SPACE_FREQ 2200
 #define SPACE_INC  (uint16_t)(DIV_ROUND(SIN_LEN * (uint32_t)SPACE_FREQ, CONFIG_AFSK_DAC_SAMPLERATE))
 
+// HDLC flag bytes
+#define HDLC_FLAG  0x7E
+#define HDLC_RESET 0x7F
+#define AX25_ESC   0x1B
+
 // Check that sample rate is divisible by bitrate
 STATIC_ASSERT(!(CONFIG_AFSK_DAC_SAMPLERATE % BITRATE));
 
 #define DAC_SAMPLESPERBIT (CONFIG_AFSK_DAC_SAMPLERATE / BITRATE)
+
+//////////////////////////////////////////////////////
+// Link Layer Control and Demodulation              //
+//////////////////////////////////////////////////////
 
 static bool hdlcParse(Hdlc *hdlc, bool bit, FIFOBuffer *fifo) {
 	bool ret = true;
@@ -124,6 +129,7 @@ static bool hdlcParse(Hdlc *hdlc, bool bit, FIFOBuffer *fifo) {
 			ret = false;
 		}
 
+		// Wipe received byte and reset bit index to 0
 		hdlc->currentByte = 0;
 		hdlc->bitIndex = 0;
 
@@ -199,6 +205,10 @@ void afsk_adc_isr(Afsk *afsk, int8_t currentSample) {
 	}
 }
 
+//////////////////////////////////////////////////////
+// Signal modulation and DAC                        //
+//////////////////////////////////////////////////////
+
 static void afsk_txStart(Afsk *af)
 {
 	if (!af->sending)
@@ -214,17 +224,12 @@ static void afsk_txStart(Afsk *af)
 }
 
 #define BIT_STUFF_LEN 5
-
 #define SWITCH_TONE(inc)  (((inc) == MARK_INC) ? SPACE_INC : MARK_INC)
 
 /**
  * DAC ISR callback.
  * This function has to be called by the DAC ISR when a sample of the configured
  * channel has been converted out.
- *
- * \param af Afsk context to operate on.
- *
- * \return The next DAC output sample.
  */
 uint8_t afsk_dac_isr(Afsk *af)
 {
@@ -343,6 +348,9 @@ uint8_t afsk_dac_isr(Afsk *af)
 	return sinSample(af->phaseAcc);
 }
 
+//////////////////////////////////////////////////////
+// File operation overwrites for read/write         //
+//////////////////////////////////////////////////////
 
 static size_t afsk_read(KFile *fd, void *_buf, size_t size)
 {
@@ -413,6 +421,10 @@ static void afsk_clearerr(KFile *fd)
 	Afsk *af = AFSK_CAST(fd);
 	ATOMIC(af->status = 0);
 }
+
+//////////////////////////////////////////////////////
+// Modem Initialization                             //
+//////////////////////////////////////////////////////
 
 void afsk_init(Afsk *afsk, int _adcPin, int _dacPin) {
 	// Allocate memory for struct
