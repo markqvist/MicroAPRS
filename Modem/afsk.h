@@ -26,6 +26,47 @@ typedef struct Hdlc
 
 typedef struct Afsk
 {
+		// I/O hardware pins
+	int adcPin;				// Pin for incoming signal
+	int dacPin;				// Pin for outgoing signal
+
+	// General values
+	Hdlc hdlc; 					// We need a link control structure
+	uint16_t preambleLength;	// Length of sync preamble
+	uint16_t tailLength;		// Length of transmission tail
+
+	// Modulation values
+	uint8_t sample_index;		// Current sample index for outgoing bit 
+	uint8_t currentOutputByte;	// Current byte to be modulated
+	uint8_t txBit;				// Mask of current modulated bit
+
+	uint8_t bitstuffCount;		// Counter for bit-stuffing
+
+	uint16_t phaseAcc;			// Phase accumulator
+	uint16_t phaseInc;			// Phase increment per sample
+
+	FIFOBuffer txFifo;			// FIFO for transmit data
+	uint8_t txBuffer[TX_BUFLEN];// Actial data storage for said FIFO
+
+	volatile bool sending;		// Set when modem is sending
+
+	// Demodulation values
+	FIFOBuffer delayFifo;		// Delayed FIFO for frequency discrimination
+	int8_t delayBuffer[5];			// Actual data storage for said FIFO
+
+	FIFOBuffer rxFifo;			// FIFO for received data
+	uint8_t rxBuffer[RX_BUFLEN];// Actual data storage for said FIFO
+
+	int16_t iirX[2];			// IIR Filter X cells
+	int16_t iirY[2];			// IIR Filter Y cells
+
+	uint8_t sampledBits;		// Bits sampled by the demodulator (at ADC speed)
+	int8_t currentPhase;		// Current phase of the demodulator
+	uint8_t actualBits;			// Actual found bits at correct bitrate
+
+	volatile int status;		// Status of the modem, 0 means OK
+
+/*
 	KFile fd;
 	int adc_ch;
 	int dac_ch;
@@ -52,6 +93,7 @@ typedef struct Afsk
 	Hdlc hdlc;
 	uint16_t preamble_len;
 	uint16_t trailer_len;
+	*/
 } Afsk;
 
 #define KFT_AFSK MAKE_ID('F', 'S', 'K', 'M')
