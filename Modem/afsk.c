@@ -1,11 +1,8 @@
 #include "afsk.h"
-//#include <net/ax25.h>
-
 #include "config.h"
 #include "hardware.h"
 
 #include <drv/timer.h>
-
 #include <cfg/module.h>
 
 #define HDLC_FLAG  0x7E

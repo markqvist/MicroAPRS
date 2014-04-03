@@ -8,10 +8,6 @@
 #include <avr/interrupt.h>
 
 
-/*
- * Here we are using only one modem. If you need to receive
- * from multiple modems, you need to define an array of contexts.
- */
 static Afsk *ctx;
 
 void hw_afsk_adcInit(int ch, Afsk *_ctx)

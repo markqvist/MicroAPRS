@@ -8,7 +8,7 @@
  * $WIZ$ type = "enum"
  * $WIZ$ value_list = "log_level"
  */
-#define AFSK_LOG_LEVEL      LOG_LVL_WARN
+//#define AFSK_LOG_LEVEL      LOG_LVL_WARN
 
 /**
  * Module logging format.
