@@ -9,8 +9,6 @@
 #define HDLC_RESET 0x7F
 #define AX25_ESC   0x1B
 
-#define LOG_LEVEL   AFSK_LOG_LEVEL
-#define LOG_FORMAT  AFSK_LOG_FORMAT
 #include <cfg/log.h>
 
 #include <cpu/power.h>
@@ -28,7 +26,6 @@
 // Modulator constants
 #define MARK_FREQ  1200
 #define MARK_INC   (uint16_t)(DIV_ROUND(SIN_LEN * (uint32_t)MARK_FREQ, CONFIG_AFSK_DAC_SAMPLERATE))
-
 #define SPACE_FREQ 2200
 #define SPACE_INC  (uint16_t)(DIV_ROUND(SIN_LEN * (uint32_t)SPACE_FREQ, CONFIG_AFSK_DAC_SAMPLERATE))
 
@@ -519,7 +516,7 @@ void afsk_init(Afsk *af, int adc_ch, int dac_ch)
 	AFSK_ADC_INIT(adc_ch, af);
 	AFSK_DAC_INIT(dac_ch, af);
 	AFSK_STROBE_INIT();
-	LOG_INFO("MARK_INC %d, SPACE_INC %d\n", MARK_INC, SPACE_INC);
+	//LOG_INFO("MARK_INC %d, SPACE_INC %d\n", MARK_INC, SPACE_INC);
 
 	DB(af->fd._type = KFT_AFSK);
 	af->fd.write = afsk_write;

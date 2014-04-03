@@ -1,14 +1,12 @@
 
-#ifndef NET_AFSK_H
-#define NET_AFSK_H
+#ifndef FSK_MODEM_H
+#define FSK_MODEM_H
 
-#include "cfg/cfg_afsk.h"
-#include "hw/hw_afsk.h"
+#include "config.h"
+#include "hardware.h"
 
 #include <cfg/compiler.h>
-
 #include <io/kfile.h>
-
 #include <struct/fifobuf.h>
 
 
