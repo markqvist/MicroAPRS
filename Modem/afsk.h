@@ -22,7 +22,7 @@ typedef struct Hdlc
 	bool receiving;				// Whether or not where actually receiving data (or just noise ;P)
 } Hdlc;
 
-#define AFSK_RXFIFO_OVERRUN BV(0)
+#define RX_OVERRUN BV(0)
 
 typedef struct Afsk
 {
@@ -49,16 +49,16 @@ typedef struct Afsk
 	uint16_t phaseInc;						// Phase increment per sample
 
 	FIFOBuffer txFifo;						// FIFO for transmit data
-	uint8_t tx_buf[CONFIG_AFSK_TX_BUFLEN];	// Actial data storage for said FIFO
+	uint8_t txBuf[CONFIG_AFSK_TX_BUFLEN];	// Actial data storage for said FIFO
 
 	volatile bool sending;					// Set when modem is sending
 
 	// Demodulation values
 	FIFOBuffer delayFifo;					// Delayed FIFO for frequency discrimination
-	int8_t delay_buf[SAMPLESPERBIT / 2 + 1];// Actual data storage for said FIFO
+	int8_t delayBuf[SAMPLESPERBIT / 2 + 1];// Actual data storage for said FIFO
 
 	FIFOBuffer rxFifo;						// FIFO for received data
-	uint8_t rx_buf[CONFIG_AFSK_RX_BUFLEN];	// Actual data storage for said FIFO
+	uint8_t rxBuf[CONFIG_AFSK_RX_BUFLEN];	// Actual data storage for said FIFO
 
 	int16_t iirX[2];						// IIR Filter X cells
 	int16_t iirY[2];						// IIR Filter Y cells

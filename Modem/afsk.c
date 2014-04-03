@@ -237,7 +237,7 @@ void afsk_adc_isr(Afsk *af, int8_t curr_sample)
 		 * a 1 is received, otherwise it's a 0.
 		 */
 		if (!hdlcParse(&af->hdlc, !EDGE_FOUND(af->actualBits), &af->rxFifo))
-			af->status |= AFSK_RXFIFO_OVERRUN;
+			af->status |= RX_OVERRUN;
 	}
 
 
@@ -459,34 +459,34 @@ static void afsk_clearerr(KFile *fd)
 	ATOMIC(af->status = 0);
 }
 
-void afsk_init(Afsk *af, int adcPin, int dacPin)
-{
-	#if CONFIG_AFSK_RXTIMEOUT != -1
-	MOD_CHECK(timer);
-	#endif
-	memset(af, 0, sizeof(*af));
-	af->adcPin = adcPin;
-	af->dacPin = dacPin;
+void afsk_init(Afsk *afsk, int _adcPin, int _dacPin) {
+	// Allocate memory for struct
+	memset(afsk, 0, sizeof(*afsk));
 
-	fifo_init(&af->delayFifo, (uint8_t *)af->delay_buf, sizeof(af->delay_buf));
-	fifo_init(&af->rxFifo, af->rx_buf, sizeof(af->rx_buf));
+	// Configure pins
+	afsk->adcPin = _adcPin;
+	afsk->dacPin = _dacPin;
+	afsk->phaseInc = MARK_INC;
 
-	/* Fill sample FIFO with 0 */
-	for (int i = 0; i < SAMPLESPERBIT / 2; i++)
-		fifo_push(&af->delayFifo, 0);
+	// Init FIFO buffers
+	fifo_init(&afsk->delayFifo, (uint8_t *)afsk->delayBuf, sizeof(afsk->delayBuf));
+	fifo_init(&afsk->rxFifo, afsk->rxBuf, sizeof(afsk->rxBuf));
+	fifo_init(&afsk->txFifo, afsk->txBuf, sizeof(afsk->txBuf));
 
-	fifo_init(&af->txFifo, af->tx_buf, sizeof(af->tx_buf));
+	// Fill delay FIFO with zeroes
+	for (int i = 0; i<SAMPLESPERBIT / 2; i++) {
+		fifo_push(&afsk->delayFifo, 0);
+	}
 
-	AFSK_ADC_INIT(adcPin, af);
-	AFSK_DAC_INIT(dacPin, af);
+	// Init DAC & ADC
+	AFSK_ADC_INIT(_adcPin, afsk);
+	AFSK_DAC_INIT(_dacPin, afsk);
 	AFSK_STROBE_INIT();
-	//LOG_INFO("MARK_INC %d, SPACE_INC %d\n", MARK_INC, SPACE_INC);
 
-	DB(af->fd._type = KFT_AFSK);
-	af->fd.write = afsk_write;
-	af->fd.read = afsk_read;
-	af->fd.flush = afsk_flush;
-	af->fd.error = afsk_error;
-	af->fd.clearerr = afsk_clearerr;
-	af->phaseInc = MARK_INC;
+	DB(afsk->fd._type = KFT_AFSK);
+	afsk->fd.write = afsk_write;
+	afsk->fd.read = afsk_read;
+	afsk->fd.flush = afsk_flush;
+	afsk->fd.error = afsk_error;
+	afsk->fd.clearerr = afsk_clearerr;	
 }
