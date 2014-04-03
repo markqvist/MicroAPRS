@@ -46,10 +46,10 @@ INLINE uint8_t sinSample(uint16_t i) {
 #define EDGE_FOUND(bits) BITS_DIFFER((bits), (bits) >> 1)
 
 // Phase sync constants
-#define PHASE_BIT    8
+#define PHASE_BITS    8
 #define PHASE_INC    1
-#define PHASE_MAX    (SAMPLESPERBIT * PHASE_BIT)
-#define PHASE_THRES  (PHASE_MAX / 2)
+#define PHASE_MAX    (SAMPLESPERBIT * PHASE_BITS)
+#define PHASE_THRESHOLD  (PHASE_MAX / 2)
 
 // Modulation constants
 #define MARK_FREQ  1200
@@ -138,110 +138,67 @@ static bool hdlcParse(Hdlc *hdlc, bool bit, FIFOBuffer *fifo)
 }
 
 
+void afsk_adc_isr(Afsk *afsk, int8_t currentSample) {
+	// To determine the received frequency, and thereby
+	// the bit of the sample, we multiply the sample by
+	// a sample delayed by (samples per bit / 2).
+	// We then lowpass-filter the sample with a first
+	// order 600Hz filter
 
-void afsk_adc_isr(Afsk *af, int8_t curr_sample)
-{
-	AFSK_STROBE_ON();
+	afsk->iirX[0] = afsk->iirX[1];
+	afsk->iirX[1] = ((int8_t)fifo_pop(&afsk->delayFifo) * currentSample) >> 2;
 
-	/*
-	 * Frequency discriminator and LP IIR filter.
-	 * This filter is designed to work
-	 * at the given sample rate and bit rate.
-	 */
-	STATIC_ASSERT(SAMPLERATE == 9600);
-	STATIC_ASSERT(BITRATE == 1200);
+	afsk->iirY[0] = afsk->iirY[1];
+	afsk->iirY[1] = afsk->iirX[0] + afsk->iirX[1] + (afsk->iirY[0] >> 1);
 
-	/*
-	 * Frequency discrimination is achieved by simply multiplying
-	 * the sample with a delayed sample of (samples per bit) / 2.
-	 * Then the signal is lowpass filtered with a first order,
-	 * 600 Hz filter. The filter implementation is selectable
-	 * through the CONFIG_AFSK_FILTER config variable.
-	 */
+	// Put the sampled bit in a delay-line
+	afsk->sampledBits <<= 1; // Bitshift everything 1 left
+	afsk->sampledBits |= (afsk->iirY[1] > 0) ? 1 : 0;
 
-	af->iirX[0] = af->iirX[1];
+	// Put the current raw sample in the delay FIFO
+	fifo_push(&afsk->delayFifo, currentSample);
 
-	#if (CONFIG_AFSK_FILTER == AFSK_BUTTERWORTH)
-		af->iirX[1] = ((int8_t)fifo_pop(&af->delayFifo) * curr_sample) >> 2;
-		//af->iirX[1] = ((int8_t)fifo_pop(&af->delayFifo) * curr_sample) / 6.027339492;
-	#elif (CONFIG_AFSK_FILTER == AFSK_CHEBYSHEV)
-		af->iirX[1] = ((int8_t)fifo_pop(&af->delayFifo) * curr_sample) >> 2;
-		//af->iirX[1] = ((int8_t)fifo_pop(&af->delayFifo) * curr_sample) / 3.558147322;
-	#else
-		#error Filter type not found!
-	#endif
-
-	af->iirY[0] = af->iirY[1];
-
-	#if CONFIG_AFSK_FILTER == AFSK_BUTTERWORTH
-		/*
-		 * This strange sum + shift is an optimization for af->iirY[0] * 0.668.
-		 * iir * 0.668 ~= (iir * 21) / 32 =
-		 * = (iir * 16) / 32 + (iir * 4) / 32 + iir / 32 =
-		 * = iir / 2 + iir / 8 + iir / 32 =
-		 * = iir >> 1 + iir >> 3 + iir >> 5
-		 */
-		af->iirY[1] = af->iirX[0] + af->iirX[1] + (af->iirY[0] >> 1) + (af->iirY[0] >> 3) + (af->iirY[0] >> 5);
-		//af->iirY[1] = af->iirX[0] + af->iirX[1] + af->iirY[0] * 0.6681786379;
-	#elif CONFIG_AFSK_FILTER == AFSK_CHEBYSHEV
-		/*
-		 * This should be (af->iirY[0] * 0.438) but
-		 * (af->iirY[0] >> 1) is a faster approximation :-)
-		 */
-		af->iirY[1] = af->iirX[0] + af->iirX[1] + (af->iirY[0] >> 1);
-		//af->iirY[1] = af->iirX[0] + af->iirX[1] + af->iirY[0] * 0.4379097269;
-	#endif
-
-	/* Save this sampled bit in a delay line */
-	af->sampledBits <<= 1;
-	af->sampledBits |= (af->iirY[1] > 0) ? 1 : 0;
-
-	/* Store current ADC sample in the af->delayFifo */
-	fifo_push(&af->delayFifo, curr_sample);
-
-	/* If there is an edge, adjust phase sampling */
-	if (EDGE_FOUND(af->sampledBits))
-	{
-		if (af->currentPhase < PHASE_THRES)
-			af->currentPhase += PHASE_INC;
-		else
-			af->currentPhase -= PHASE_INC;
+	// If there is a signal transition, recalibrate
+	// sampling phase
+	
+	if (EDGE_FOUND(afsk->sampledBits)) {
+		if (afsk->currentPhase < PHASE_THRESHOLD) {
+			afsk->currentPhase += PHASE_INC;
+		} else {
+			afsk->currentPhase -= PHASE_INC;
+		}
 	}
-	af->currentPhase += PHASE_BIT;
+	afsk->currentPhase += PHASE_BITS;
 
-	/* sample the bit */
-	if (af->currentPhase >= PHASE_MAX)
-	{
-		af->currentPhase %= PHASE_MAX;
+	// Look at the raw samples to determine the transmitted bit
+	if (afsk->currentPhase >= PHASE_MAX) {
+		afsk->currentPhase %= PHASE_MAX;
 
-		/* Shift 1 position in the shift register of the found bits */
-		af->actualBits <<= 1;
+		// Bitshift to make room for next bit
+		afsk->actualBits <<= 1;
 
-		/*
-		 * Determine bit value by reading the last 3 sampled bits.
-		 * If the number of ones is two or greater, the bit value is a 1,
-		 * otherwise is a 0.
-		 * This algorithm presumes that there are 8 samples per bit.
-		 */
-		STATIC_ASSERT(SAMPLESPERBIT == 8);
-		uint8_t bits = af->sampledBits & 0x07;
-		if (bits == 0x07 // 111, 3 bits set to 1
-		 || bits == 0x06 // 110, 2 bits
-		 || bits == 0x05 // 101, 2 bits
-		 || bits == 0x03 // 011, 2 bits
-		)
-			af->actualBits |= 1;
+		// Determine the actual bit value by reading the last
+		// 3 sampled bits. If there is two ore more 1's, the
+		// actual bit is a 1, otherwise a 0.
+		uint8_t bits = afsk->sampledBits & 0x07;
+		if (bits == 0x07 || // 111
+			bits == 0x06 || // 110
+			bits == 0x05 || // 101
+			bits == 0x03	// 011
+			) {
+			afsk->actualBits |= 1;
+		}
 
-		/*
-		 * NRZI coding: if 2 consecutive bits have the same value
-		 * a 1 is received, otherwise it's a 0.
-		 */
-		if (!hdlcParse(&af->hdlc, !EDGE_FOUND(af->actualBits), &af->rxFifo))
-			af->status |= RX_OVERRUN;
+		// Now we can pass the actual bit to the HDLC parser.
+		// We are using NRZI coding, so if 2 consecutive bits
+		// have the same value, we have a 1, otherwise a 0.
+		// We use the EDGE_FOUND function to determine this.
+		// We also check the return of the Link Control parser
+		// to check if an error occured.
+		if (!hdlcParse(&afsk->hdlc, !EDGE_FOUND(afsk->actualBits), &afsk->rxFifo)) {
+			afsk->status |= RX_OVERRUN;
+		}
 	}
-
-
-	AFSK_STROBE_OFF();
 }
 
 static void afsk_txStart(Afsk *af)
