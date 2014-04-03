@@ -17,28 +17,8 @@
 
 #include <string.h> /* memset */
 
-#define PHASE_BIT    8
-#define PHASE_INC    1
-
-#define PHASE_MAX    (SAMPLESPERBIT * PHASE_BIT)
-#define PHASE_THRES  (PHASE_MAX / 2)
-
-// Modulator constants
-#define MARK_FREQ  1200
-#define MARK_INC   (uint16_t)(DIV_ROUND(SIN_LEN * (uint32_t)MARK_FREQ, CONFIG_AFSK_DAC_SAMPLERATE))
-#define SPACE_FREQ 2200
-#define SPACE_INC  (uint16_t)(DIV_ROUND(SIN_LEN * (uint32_t)SPACE_FREQ, CONFIG_AFSK_DAC_SAMPLERATE))
-
-//Ensure sample rate is a multiple of bit rate
-STATIC_ASSERT(!(CONFIG_AFSK_DAC_SAMPLERATE % BITRATE));
-
-#define DAC_SAMPLESPERBIT (CONFIG_AFSK_DAC_SAMPLERATE / BITRATE)
-
-/**
- * Sine table for the first quarter of wave.
- * The rest of the wave is computed from this first quarter.
- * This table is used to generate the modulated data.
- */
+// Sine table for DAC DDS
+#define SIN_LEN 512 // Length of a full wave. Table is 1/4 wave.
 static const uint8_t PROGMEM sin_table[] =
 {
 	128, 129, 131, 132, 134, 135, 137, 138, 140, 142, 143, 145, 146, 148, 149, 151,
@@ -49,43 +29,40 @@ static const uint8_t PROGMEM sin_table[] =
 	234, 234, 235, 236, 237, 238, 238, 239, 240, 241, 241, 242, 243, 243, 244, 245,
 	245, 246, 246, 247, 248, 248, 249, 249, 250, 250, 250, 251, 251, 252, 252, 252,
 	253, 253, 253, 253, 254, 254, 254, 254, 254, 255, 255, 255, 255, 255, 255, 255,
-};
-
-#define SIN_LEN 512 ///< Full wave length
-
-STATIC_ASSERT(sizeof(sin_table) == SIN_LEN / 4);
+}; STATIC_ASSERT(sizeof(sin_table) == SIN_LEN / 4);
 
 
-/**
- * Given the index, this function computes the correct sine sample
- * based only on the first quarter of wave.
- */
-INLINE uint8_t sin_sample(uint16_t idx)
-{
-	ASSERT(idx < SIN_LEN);
-	uint16_t new_idx = idx % (SIN_LEN / 2);
-	new_idx = (new_idx >= (SIN_LEN / 4)) ? (SIN_LEN / 2 - new_idx - 1) : new_idx;
-
-	uint8_t data = pgm_read8(&sin_table[new_idx]);
-
-	return (idx >= (SIN_LEN / 2)) ? (255 - data) : data;
+// Calculate Sine value from quarter sine table
+INLINE uint8_t sinSample(uint16_t i) {
+	ASSERT(i < SIN_LEN);
+	uint16_t newI = i % (SIN_LEN/2);
+	newI = (newI >= (SIN_LEN/4)) ? (SIN_LEN/2 - newI -1) : newI;
+	uint8_t sine = pgm_read8(&sin_table[newI]);
+	return (i >= (SIN_LEN/2)) ? (255 - sine) : sine;
 }
 
+// Look for signal transition. Used for phase sync.
+#define BITS_DIFFER(bits1, bits2) (((bits1)^(bits2)) & 0x01)
+#define EDGE_FOUND(bits) BITS_DIFFER((bits), (bits) >> 1)
 
-#define BIT_DIFFER(bitline1, bitline2) (((bitline1) ^ (bitline2)) & 0x01)
-#define EDGE_FOUND(bitline)            BIT_DIFFER((bitline), (bitline) >> 1)
+// Phase sync constants
+#define PHASE_BIT    8
+#define PHASE_INC    1
+#define PHASE_MAX    (SAMPLESPERBIT * PHASE_BIT)
+#define PHASE_THRES  (PHASE_MAX / 2)
 
-/**
- * High-Level Data Link Control parsing function.
- * Parse bitstream in order to find characters.
- *
- * \param hdlc HDLC context.
- * \param bit  current bit to be parsed.
- * \param fifo FIFO buffer used to push characters.
- *
- * \return true if all is ok, false if the fifo is full.
- */
-static bool hdlc_parse(Hdlc *hdlc, bool bit, FIFOBuffer *fifo)
+// Modulation constants
+#define MARK_FREQ  1200
+#define MARK_INC   (uint16_t)(DIV_ROUND(SIN_LEN * (uint32_t)MARK_FREQ, CONFIG_AFSK_DAC_SAMPLERATE))
+#define SPACE_FREQ 2200
+#define SPACE_INC  (uint16_t)(DIV_ROUND(SIN_LEN * (uint32_t)SPACE_FREQ, CONFIG_AFSK_DAC_SAMPLERATE))
+
+// Check that sample rate is divisible by bitrate
+STATIC_ASSERT(!(CONFIG_AFSK_DAC_SAMPLERATE % BITRATE));
+
+#define DAC_SAMPLESPERBIT (CONFIG_AFSK_DAC_SAMPLERATE / BITRATE)
+
+static bool hdlcParse(Hdlc *hdlc, bool bit, FIFOBuffer *fifo)
 {
 	bool ret = true;
 
@@ -265,7 +242,7 @@ void afsk_adc_isr(Afsk *af, int8_t curr_sample)
 		 * NRZI coding: if 2 consecutive bits have the same value
 		 * a 1 is received, otherwise it's a 0.
 		 */
-		if (!hdlc_parse(&af->hdlc, !EDGE_FOUND(af->found_bits), &af->rx_fifo))
+		if (!hdlcParse(&af->hdlc, !EDGE_FOUND(af->found_bits), &af->rx_fifo))
 			af->status |= AFSK_RXFIFO_OVERRUN;
 	}
 
@@ -414,7 +391,7 @@ uint8_t afsk_dac_isr(Afsk *af)
 
 	af->sample_count--;
 	AFSK_STROBE_OFF();
-	return sin_sample(af->phase_acc);
+	return sinSample(af->phase_acc);
 }
 
 
