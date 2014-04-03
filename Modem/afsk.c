@@ -138,13 +138,7 @@ static bool hdlcParse(Hdlc *hdlc, bool bit, FIFOBuffer *fifo)
 }
 
 
-/**
- * ADC ISR callback.
- * This function has to be called by the ADC ISR when a sample of the configured
- * channel is available.
- * \param af Afsk context to operate on.
- * \param curr_sample current sample from the ADC.
- */
+
 void afsk_adc_isr(Afsk *af, int8_t curr_sample)
 {
 	AFSK_STROBE_ON();
@@ -165,63 +159,63 @@ void afsk_adc_isr(Afsk *af, int8_t curr_sample)
 	 * through the CONFIG_AFSK_FILTER config variable.
 	 */
 
-	af->iir_x[0] = af->iir_x[1];
+	af->iirX[0] = af->iirX[1];
 
 	#if (CONFIG_AFSK_FILTER == AFSK_BUTTERWORTH)
-		af->iir_x[1] = ((int8_t)fifo_pop(&af->delay_fifo) * curr_sample) >> 2;
-		//af->iir_x[1] = ((int8_t)fifo_pop(&af->delay_fifo) * curr_sample) / 6.027339492;
+		af->iirX[1] = ((int8_t)fifo_pop(&af->delayFifo) * curr_sample) >> 2;
+		//af->iirX[1] = ((int8_t)fifo_pop(&af->delayFifo) * curr_sample) / 6.027339492;
 	#elif (CONFIG_AFSK_FILTER == AFSK_CHEBYSHEV)
-		af->iir_x[1] = ((int8_t)fifo_pop(&af->delay_fifo) * curr_sample) >> 2;
-		//af->iir_x[1] = ((int8_t)fifo_pop(&af->delay_fifo) * curr_sample) / 3.558147322;
+		af->iirX[1] = ((int8_t)fifo_pop(&af->delayFifo) * curr_sample) >> 2;
+		//af->iirX[1] = ((int8_t)fifo_pop(&af->delayFifo) * curr_sample) / 3.558147322;
 	#else
 		#error Filter type not found!
 	#endif
 
-	af->iir_y[0] = af->iir_y[1];
+	af->iirY[0] = af->iirY[1];
 
 	#if CONFIG_AFSK_FILTER == AFSK_BUTTERWORTH
 		/*
-		 * This strange sum + shift is an optimization for af->iir_y[0] * 0.668.
+		 * This strange sum + shift is an optimization for af->iirY[0] * 0.668.
 		 * iir * 0.668 ~= (iir * 21) / 32 =
 		 * = (iir * 16) / 32 + (iir * 4) / 32 + iir / 32 =
 		 * = iir / 2 + iir / 8 + iir / 32 =
 		 * = iir >> 1 + iir >> 3 + iir >> 5
 		 */
-		af->iir_y[1] = af->iir_x[0] + af->iir_x[1] + (af->iir_y[0] >> 1) + (af->iir_y[0] >> 3) + (af->iir_y[0] >> 5);
-		//af->iir_y[1] = af->iir_x[0] + af->iir_x[1] + af->iir_y[0] * 0.6681786379;
+		af->iirY[1] = af->iirX[0] + af->iirX[1] + (af->iirY[0] >> 1) + (af->iirY[0] >> 3) + (af->iirY[0] >> 5);
+		//af->iirY[1] = af->iirX[0] + af->iirX[1] + af->iirY[0] * 0.6681786379;
 	#elif CONFIG_AFSK_FILTER == AFSK_CHEBYSHEV
 		/*
-		 * This should be (af->iir_y[0] * 0.438) but
-		 * (af->iir_y[0] >> 1) is a faster approximation :-)
+		 * This should be (af->iirY[0] * 0.438) but
+		 * (af->iirY[0] >> 1) is a faster approximation :-)
 		 */
-		af->iir_y[1] = af->iir_x[0] + af->iir_x[1] + (af->iir_y[0] >> 1);
-		//af->iir_y[1] = af->iir_x[0] + af->iir_x[1] + af->iir_y[0] * 0.4379097269;
+		af->iirY[1] = af->iirX[0] + af->iirX[1] + (af->iirY[0] >> 1);
+		//af->iirY[1] = af->iirX[0] + af->iirX[1] + af->iirY[0] * 0.4379097269;
 	#endif
 
 	/* Save this sampled bit in a delay line */
-	af->sampled_bits <<= 1;
-	af->sampled_bits |= (af->iir_y[1] > 0) ? 1 : 0;
+	af->sampledBits <<= 1;
+	af->sampledBits |= (af->iirY[1] > 0) ? 1 : 0;
 
-	/* Store current ADC sample in the af->delay_fifo */
-	fifo_push(&af->delay_fifo, curr_sample);
+	/* Store current ADC sample in the af->delayFifo */
+	fifo_push(&af->delayFifo, curr_sample);
 
 	/* If there is an edge, adjust phase sampling */
-	if (EDGE_FOUND(af->sampled_bits))
+	if (EDGE_FOUND(af->sampledBits))
 	{
-		if (af->curr_phase < PHASE_THRES)
-			af->curr_phase += PHASE_INC;
+		if (af->currentPhase < PHASE_THRES)
+			af->currentPhase += PHASE_INC;
 		else
-			af->curr_phase -= PHASE_INC;
+			af->currentPhase -= PHASE_INC;
 	}
-	af->curr_phase += PHASE_BIT;
+	af->currentPhase += PHASE_BIT;
 
 	/* sample the bit */
-	if (af->curr_phase >= PHASE_MAX)
+	if (af->currentPhase >= PHASE_MAX)
 	{
-		af->curr_phase %= PHASE_MAX;
+		af->currentPhase %= PHASE_MAX;
 
 		/* Shift 1 position in the shift register of the found bits */
-		af->found_bits <<= 1;
+		af->actualBits <<= 1;
 
 		/*
 		 * Determine bit value by reading the last 3 sampled bits.
@@ -230,19 +224,19 @@ void afsk_adc_isr(Afsk *af, int8_t curr_sample)
 		 * This algorithm presumes that there are 8 samples per bit.
 		 */
 		STATIC_ASSERT(SAMPLESPERBIT == 8);
-		uint8_t bits = af->sampled_bits & 0x07;
+		uint8_t bits = af->sampledBits & 0x07;
 		if (bits == 0x07 // 111, 3 bits set to 1
 		 || bits == 0x06 // 110, 2 bits
 		 || bits == 0x05 // 101, 2 bits
 		 || bits == 0x03 // 011, 2 bits
 		)
-			af->found_bits |= 1;
+			af->actualBits |= 1;
 
 		/*
 		 * NRZI coding: if 2 consecutive bits have the same value
 		 * a 1 is received, otherwise it's a 0.
 		 */
-		if (!hdlcParse(&af->hdlc, !EDGE_FOUND(af->found_bits), &af->rx_fifo))
+		if (!hdlcParse(&af->hdlc, !EDGE_FOUND(af->actualBits), &af->rxFifo))
 			af->status |= AFSK_RXFIFO_OVERRUN;
 	}
 
@@ -254,14 +248,14 @@ static void afsk_txStart(Afsk *af)
 {
 	if (!af->sending)
 	{
-		af->phase_inc = MARK_INC;
-		af->phase_acc = 0;
-		af->stuff_cnt = 0;
+		af->phaseInc = MARK_INC;
+		af->phaseAcc = 0;
+		af->bitstuffCount = 0;
 		af->sending = true;
-		af->preamble_len = DIV_ROUND(CONFIG_AFSK_PREAMBLE_LEN * BITRATE, 8000);
-		AFSK_DAC_IRQ_START(af->dac_ch);
+		af->preambleLength = DIV_ROUND(CONFIG_AFSK_PREAMBLE_LEN * BITRATE, 8000);
+		AFSK_DAC_IRQ_START(af->dacPin);
 	}
-	ATOMIC(af->trailer_len  = DIV_ROUND(CONFIG_AFSK_TRAILER_LEN  * BITRATE, 8000));
+	ATOMIC(af->tailLength  = DIV_ROUND(CONFIG_AFSK_TRAILER_LEN  * BITRATE, 8000));
 }
 
 #define BIT_STUFF_LEN 5
@@ -282,14 +276,14 @@ uint8_t afsk_dac_isr(Afsk *af)
 	AFSK_STROBE_ON();
 
 	/* Check if we are at a start of a sample cycle */
-	if (af->sample_count == 0)
+	if (af->sampleIndex == 0)
 	{
-		if (af->tx_bit == 0)
+		if (af->txBit == 0)
 		{
 			/* We have just finished transimitting a char, get a new one. */
-			if (fifo_isempty(&af->tx_fifo) && af->trailer_len == 0)
+			if (fifo_isempty(&af->txFifo) && af->tailLength == 0)
 			{
-				AFSK_DAC_IRQ_STOP(af->dac_ch);
+				AFSK_DAC_IRQ_STOP(af->dacPin);
 				af->sending = false;
 				AFSK_STROBE_OFF();
 				return 0;
@@ -300,58 +294,58 @@ uint8_t afsk_dac_isr(Afsk *af)
 				 * If we have just finished sending an unstuffed byte,
 				 * reset bitstuff counter.
 				 */
-				if (!af->bit_stuff)
-					af->stuff_cnt = 0;
+				if (!af->bitStuff)
+					af->bitstuffCount = 0;
 
-				af->bit_stuff = true;
+				af->bitStuff = true;
 
 				/*
 				 * Handle preamble and trailer
 				 */
-				if (af->preamble_len == 0)
+				if (af->preambleLength == 0)
 				{
-					if (fifo_isempty(&af->tx_fifo))
+					if (fifo_isempty(&af->txFifo))
 					{
-						af->trailer_len--;
-						af->curr_out = HDLC_FLAG;
+						af->tailLength--;
+						af->currentOutputByte = HDLC_FLAG;
 					}
 					else
-						af->curr_out = fifo_pop(&af->tx_fifo);
+						af->currentOutputByte = fifo_pop(&af->txFifo);
 				}
 				else
 				{
-					af->preamble_len--;
-					af->curr_out = HDLC_FLAG;
+					af->preambleLength--;
+					af->currentOutputByte = HDLC_FLAG;
 				}
 
 				/* Handle char escape */
-				if (af->curr_out == AX25_ESC)
+				if (af->currentOutputByte == AX25_ESC)
 				{
-					if (fifo_isempty(&af->tx_fifo))
+					if (fifo_isempty(&af->txFifo))
 					{
-						AFSK_DAC_IRQ_STOP(af->dac_ch);
+						AFSK_DAC_IRQ_STOP(af->dacPin);
 						af->sending = false;
 						AFSK_STROBE_OFF();
 						return 0;
 					}
 					else
-						af->curr_out = fifo_pop(&af->tx_fifo);
+						af->currentOutputByte = fifo_pop(&af->txFifo);
 				}
-				else if (af->curr_out == HDLC_FLAG || af->curr_out == HDLC_RESET)
+				else if (af->currentOutputByte == HDLC_FLAG || af->currentOutputByte == HDLC_RESET)
 					/* If these chars are not escaped disable bit stuffing */
-					af->bit_stuff = false;
+					af->bitStuff = false;
 			}
 			/* Start with LSB mask */
-			af->tx_bit = 0x01;
+			af->txBit = 0x01;
 		}
 
 		/* check for bit stuffing */
-		if (af->bit_stuff && af->stuff_cnt >= BIT_STUFF_LEN)
+		if (af->bitStuff && af->bitstuffCount >= BIT_STUFF_LEN)
 		{
 			/* If there are more than 5 ones in a row insert a 0 */
-			af->stuff_cnt = 0;
+			af->bitstuffCount = 0;
 			/* switch tone */
-			af->phase_inc = SWITCH_TONE(af->phase_inc);
+			af->phaseInc = SWITCH_TONE(af->phaseInc);
 		}
 		else
 		{
@@ -359,14 +353,14 @@ uint8_t afsk_dac_isr(Afsk *af)
 			 * NRZI: if we want to transmit a 1 the modulated frequency will stay
 			 * unchanged; with a 0, there will be a change in the tone.
 			 */
-			if (af->curr_out & af->tx_bit)
+			if (af->currentOutputByte & af->txBit)
 			{
 				/*
 				 * Transmit a 1:
 				 * - Stay on the previous tone
 				 * - Increase bit stuff counter
 				 */
-				af->stuff_cnt++;
+				af->bitstuffCount++;
 			}
 			else
 			{
@@ -375,23 +369,23 @@ uint8_t afsk_dac_isr(Afsk *af)
 				 * - Reset bit stuff counter
 				 * - Switch tone
 				 */
-				af->stuff_cnt = 0;
-				af->phase_inc = SWITCH_TONE(af->phase_inc);
+				af->bitstuffCount = 0;
+				af->phaseInc = SWITCH_TONE(af->phaseInc);
 			}
 
 			/* Go to the next bit */
-			af->tx_bit <<= 1;
+			af->txBit <<= 1;
 		}
-		af->sample_count = DAC_SAMPLESPERBIT;
+		af->sampleIndex = DAC_SAMPLESPERBIT;
 	}
 
 	/* Get new sample and put it out on the DAC */
-	af->phase_acc += af->phase_inc;
-	af->phase_acc %= SIN_LEN;
+	af->phaseAcc += af->phaseInc;
+	af->phaseAcc %= SIN_LEN;
 
-	af->sample_count--;
+	af->sampleIndex--;
 	AFSK_STROBE_OFF();
-	return sinSample(af->phase_acc);
+	return sinSample(af->phaseAcc);
 }
 
 
@@ -401,7 +395,7 @@ static size_t afsk_read(KFile *fd, void *_buf, size_t size)
 	uint8_t *buf = (uint8_t *)_buf;
 
 	#if CONFIG_AFSK_RXTIMEOUT == 0
-	while (size-- && !fifo_isempty_locked(&af->rx_fifo))
+	while (size-- && !fifo_isempty_locked(&af->rxFifo))
 	#else
 	while (size--)
 	#endif
@@ -410,7 +404,7 @@ static size_t afsk_read(KFile *fd, void *_buf, size_t size)
 		ticks_t start = timer_clock();
 		#endif
 
-		while (fifo_isempty_locked(&af->rx_fifo))
+		while (fifo_isempty_locked(&af->rxFifo))
 		{
 			cpu_relax();
 			#if CONFIG_AFSK_RXTIMEOUT != -1
@@ -419,7 +413,7 @@ static size_t afsk_read(KFile *fd, void *_buf, size_t size)
 			#endif
 		}
 
-		*buf++ = fifo_pop_locked(&af->rx_fifo);
+		*buf++ = fifo_pop_locked(&af->rxFifo);
 	}
 
 	return buf - (uint8_t *)_buf;
@@ -432,10 +426,10 @@ static size_t afsk_write(KFile *fd, const void *_buf, size_t size)
 
 	while (size--)
 	{
-		while (fifo_isfull_locked(&af->tx_fifo))
+		while (fifo_isfull_locked(&af->txFifo))
 			cpu_relax();
 
-		fifo_push_locked(&af->tx_fifo, *buf++);
+		fifo_push_locked(&af->txFifo, *buf++);
 		afsk_txStart(af);
 	}
 
@@ -465,33 +459,26 @@ static void afsk_clearerr(KFile *fd)
 	ATOMIC(af->status = 0);
 }
 
-
-/**
- * Initialize an AFSK1200 modem.
- * \param af Afsk context to operate on.
- * \param adc_ch  ADC channel used by the demodulator.
- * \param dac_ch  DAC channel used by the modulator.
- */
-void afsk_init(Afsk *af, int adc_ch, int dac_ch)
+void afsk_init(Afsk *af, int adcPin, int dacPin)
 {
 	#if CONFIG_AFSK_RXTIMEOUT != -1
 	MOD_CHECK(timer);
 	#endif
 	memset(af, 0, sizeof(*af));
-	af->adc_ch = adc_ch;
-	af->dac_ch = dac_ch;
+	af->adcPin = adcPin;
+	af->dacPin = dacPin;
 
-	fifo_init(&af->delay_fifo, (uint8_t *)af->delay_buf, sizeof(af->delay_buf));
-	fifo_init(&af->rx_fifo, af->rx_buf, sizeof(af->rx_buf));
+	fifo_init(&af->delayFifo, (uint8_t *)af->delay_buf, sizeof(af->delay_buf));
+	fifo_init(&af->rxFifo, af->rx_buf, sizeof(af->rx_buf));
 
 	/* Fill sample FIFO with 0 */
 	for (int i = 0; i < SAMPLESPERBIT / 2; i++)
-		fifo_push(&af->delay_fifo, 0);
+		fifo_push(&af->delayFifo, 0);
 
-	fifo_init(&af->tx_fifo, af->tx_buf, sizeof(af->tx_buf));
+	fifo_init(&af->txFifo, af->tx_buf, sizeof(af->tx_buf));
 
-	AFSK_ADC_INIT(adc_ch, af);
-	AFSK_DAC_INIT(dac_ch, af);
+	AFSK_ADC_INIT(adcPin, af);
+	AFSK_DAC_INIT(dacPin, af);
 	AFSK_STROBE_INIT();
 	//LOG_INFO("MARK_INC %d, SPACE_INC %d\n", MARK_INC, SPACE_INC);
 
@@ -501,5 +488,5 @@ void afsk_init(Afsk *af, int adc_ch, int dac_ch)
 	af->fd.flush = afsk_flush;
 	af->fd.error = afsk_error;
 	af->fd.clearerr = afsk_clearerr;
-	af->phase_inc = MARK_INC;
+	af->phaseInc = MARK_INC;
 }

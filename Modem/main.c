@@ -34,8 +34,8 @@ int main(void)
 
 	while (1)
 	{
-		if (!fifo_isempty(&afsk.rx_fifo)) {
-			char c = fifo_pop(&afsk.rx_fifo);
+		if (!fifo_isempty(&afsk.rxFifo)) {
+			char c = fifo_pop(&afsk.rxFifo);
 			kprintf("%c", c);
 		}
 	}
