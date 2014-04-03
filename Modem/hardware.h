@@ -10,13 +10,12 @@ struct Afsk;
 void hw_afsk_adcInit(int ch, struct Afsk *_ctx);
 void hw_afsk_dacInit(int ch, struct Afsk *_ctx);
 
-
+// ADC initialization
 #define AFSK_ADC_INIT(ch, ctx) hw_afsk_adcInit(ch, ctx)
 
+// LED on/off (pin 13)
 #define AFSK_STROBE_INIT() do { DDRB |= BV(5); } while (0)
-
 #define AFSK_STROBE_ON()   do { PORTB |= BV(5); } while (0)
-
 #define AFSK_STROBE_OFF()  do { PORTB &= ~BV(5); } while (0)
 
 // Initialization, start and stop for DAC

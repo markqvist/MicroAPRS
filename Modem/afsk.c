@@ -20,8 +20,8 @@
 #define PHASE_BIT    8
 #define PHASE_INC    1
 
-#define PHASE_MAX    (SAMPLEPERBIT * PHASE_BIT)
-#define PHASE_THRES  (PHASE_MAX / 2) // - PHASE_BIT / 2)
+#define PHASE_MAX    (SAMPLESPERBIT * PHASE_BIT)
+#define PHASE_THRES  (PHASE_MAX / 2)
 
 // Modulator constants
 #define MARK_FREQ  1200
@@ -32,7 +32,7 @@
 //Ensure sample rate is a multiple of bit rate
 STATIC_ASSERT(!(CONFIG_AFSK_DAC_SAMPLERATE % BITRATE));
 
-#define DAC_SAMPLEPERBIT (CONFIG_AFSK_DAC_SAMPLERATE / BITRATE)
+#define DAC_SAMPLESPERBIT (CONFIG_AFSK_DAC_SAMPLERATE / BITRATE)
 
 /**
  * Sine table for the first quarter of wave.
@@ -252,7 +252,7 @@ void afsk_adc_isr(Afsk *af, int8_t curr_sample)
 		 * otherwise is a 0.
 		 * This algorithm presumes that there are 8 samples per bit.
 		 */
-		STATIC_ASSERT(SAMPLEPERBIT == 8);
+		STATIC_ASSERT(SAMPLESPERBIT == 8);
 		uint8_t bits = af->sampled_bits & 0x07;
 		if (bits == 0x07 // 111, 3 bits set to 1
 		 || bits == 0x06 // 110, 2 bits
@@ -405,7 +405,7 @@ uint8_t afsk_dac_isr(Afsk *af)
 			/* Go to the next bit */
 			af->tx_bit <<= 1;
 		}
-		af->sample_count = DAC_SAMPLEPERBIT;
+		af->sample_count = DAC_SAMPLESPERBIT;
 	}
 
 	/* Get new sample and put it out on the DAC */
@@ -508,7 +508,7 @@ void afsk_init(Afsk *af, int adc_ch, int dac_ch)
 	fifo_init(&af->rx_fifo, af->rx_buf, sizeof(af->rx_buf));
 
 	/* Fill sample FIFO with 0 */
-	for (int i = 0; i < SAMPLEPERBIT / 2; i++)
+	for (int i = 0; i < SAMPLESPERBIT / 2; i++)
 		fifo_push(&af->delay_fifo, 0);
 
 	fifo_init(&af->tx_fifo, af->tx_buf, sizeof(af->tx_buf));

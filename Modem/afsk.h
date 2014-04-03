@@ -12,7 +12,7 @@
 
 #define SAMPLERATE 9600
 #define BITRATE    1200
-#define SAMPLEPERBIT (SAMPLERATE / BITRATE)
+#define SAMPLESPERBIT (SAMPLERATE / BITRATE)
 
 typedef struct Hdlc
 {
@@ -37,7 +37,7 @@ typedef struct Afsk
 	uint16_t phase_acc;
 	uint16_t phase_inc;
 	FIFOBuffer delay_fifo;
-	int8_t delay_buf[SAMPLEPERBIT / 2 + 1];
+	int8_t delay_buf[SAMPLESPERBIT / 2 + 1];
 	FIFOBuffer rx_fifo;
 	uint8_t rx_buf[CONFIG_AFSK_RX_BUFLEN];
 	FIFOBuffer tx_fifo;
@@ -54,7 +54,7 @@ typedef struct Afsk
 	uint16_t trailer_len;
 } Afsk;
 
-#define KFT_AFSK MAKE_ID('A', 'F', 'S', 'K')
+#define KFT_AFSK MAKE_ID('F', 'S', 'K', 'M')
 
 INLINE Afsk *AFSK_CAST(KFile *fd)
 {

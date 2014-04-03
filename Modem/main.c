@@ -30,7 +30,7 @@ static void init(void)
 int main(void)
 {
 	init();
-	ticks_t start = timer_clock();
+	//ticks_t start = timer_clock();
 
 	while (1)
 	{
