@@ -66,73 +66,73 @@ static bool hdlcParse(Hdlc *hdlc, bool bit, FIFOBuffer *fifo)
 {
 	bool ret = true;
 
-	hdlc->demod_bits <<= 1;
-	hdlc->demod_bits |= bit ? 1 : 0;
+	hdlc->demodulatedBits <<= 1;
+	hdlc->demodulatedBits |= bit ? 1 : 0;
 
 	/* HDLC Flag */
-	if (hdlc->demod_bits == HDLC_FLAG)
+	if (hdlc->demodulatedBits == HDLC_FLAG)
 	{
 		if (!fifo_isfull(fifo))
 		{
 			fifo_push(fifo, HDLC_FLAG);
-			hdlc->rxstart = true;
+			hdlc->receiving = true;
 		}
 		else
 		{
 			ret = false;
-			hdlc->rxstart = false;
+			hdlc->receiving = false;
 		}
 
-		hdlc->currchar = 0;
-		hdlc->bit_idx = 0;
+		hdlc->currentByte = 0;
+		hdlc->bitIndex = 0;
 		return ret;
 	}
 
 	/* Reset */
-	if ((hdlc->demod_bits & HDLC_RESET) == HDLC_RESET)
+	if ((hdlc->demodulatedBits & HDLC_RESET) == HDLC_RESET)
 	{
-		hdlc->rxstart = false;
+		hdlc->receiving = false;
 		return ret;
 	}
 
-	if (!hdlc->rxstart)
+	if (!hdlc->receiving)
 		return ret;
 
 	/* Stuffed bit */
-	if ((hdlc->demod_bits & 0x3f) == 0x3e)
+	if ((hdlc->demodulatedBits & 0x3f) == 0x3e)
 		return ret;
 
-	if (hdlc->demod_bits & 0x01)
-		hdlc->currchar |= 0x80;
+	if (hdlc->demodulatedBits & 0x01)
+		hdlc->currentByte |= 0x80;
 
-	if (++hdlc->bit_idx >= 8)
+	if (++hdlc->bitIndex >= 8)
 	{
-		if ((hdlc->currchar == HDLC_FLAG
-			|| hdlc->currchar == HDLC_RESET
-			|| hdlc->currchar == AX25_ESC))
+		if ((hdlc->currentByte == HDLC_FLAG
+			|| hdlc->currentByte == HDLC_RESET
+			|| hdlc->currentByte == AX25_ESC))
 		{
 			if (!fifo_isfull(fifo))
 				fifo_push(fifo, AX25_ESC);
 			else
 			{
-				hdlc->rxstart = false;
+				hdlc->receiving = false;
 				ret = false;
 			}
 		}
 
 		if (!fifo_isfull(fifo))
-			fifo_push(fifo, hdlc->currchar);
+			fifo_push(fifo, hdlc->currentByte);
 		else
 		{
-			hdlc->rxstart = false;
+			hdlc->receiving = false;
 			ret = false;
 		}
 
-		hdlc->currchar = 0;
-		hdlc->bit_idx = 0;
+		hdlc->currentByte = 0;
+		hdlc->bitIndex = 0;
 	}
 	else
-		hdlc->currchar >>= 1;
+		hdlc->currentByte >>= 1;
 
 	return ret;
 }

@@ -16,10 +16,10 @@
 
 typedef struct Hdlc
 {
-	uint8_t demod_bits; ///< Bitstream from the demodulator.
-	uint8_t bit_idx;    ///< Current received bit.
-	uint8_t currchar;   ///< Current received character.
-	bool rxstart;       ///< True if an HDLC_FLAG char has been found in the bitstream.
+	uint8_t demodulatedBits;  	// Incoming bitstream from demodulator
+	uint8_t bitIndex;			// The current received bit in the current received byte
+	uint8_t currentByte;		// The byte we're currently receiving
+	bool receiving;				// Whether or not where actually receiving data (or just noise ;P)
 } Hdlc;
 
 #define AFSK_RXFIFO_OVERRUN BV(0)
