@@ -5,12 +5,9 @@
 #include <drv/timer.h>
 #include <cfg/module.h>
 
-#include <cfg/log.h>
-
 #include <cpu/power.h>
 #include <cpu/pgm.h>
 #include <struct/fifobuf.h>
-
 #include <string.h>
 
 // Sine table for DAC DDS
@@ -28,7 +25,7 @@ static const uint8_t PROGMEM sin_table[] =
 }; STATIC_ASSERT(sizeof(sin_table) == SIN_LEN / 4);
 
 
-// Calculate Sine value from quarter sine table
+// Calculate any sine value from quarter wave sine table
 INLINE uint8_t sinSample(uint16_t i) {
 	ASSERT(i < SIN_LEN);
 	uint16_t newI = i % (SIN_LEN/2);
@@ -147,7 +144,7 @@ void afsk_adc_isr(Afsk *afsk, int8_t currentSample) {
 	// the bit of the sample, we multiply the sample by
 	// a sample delayed by (samples per bit / 2).
 	// We then lowpass-filter the sample with a first
-	// order 600Hz filter
+	// order 600Hz filter. This is a Chebyshev filter.
 
 	afsk->iirX[0] = afsk->iirX[1];
 	afsk->iirX[1] = ((int8_t)fifo_pop(&afsk->delayFifo) * currentSample) >> 2;

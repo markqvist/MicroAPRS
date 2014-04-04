@@ -10,9 +10,9 @@
 #include <struct/fifobuf.h>
 
 
-#define SAMPLERATE 9600
-#define BITRATE    1200
-#define SAMPLESPERBIT (SAMPLERATE / BITRATE)
+#define SAMPLERATE 9600			// The rate at which we are sampling and synthesizing
+#define BITRATE    1200			// The actual bitrate at baseband. This is the baudrate.
+#define SAMPLESPERBIT (SAMPLERATE / BITRATE)	// How many DAC/ADC samples constitute on bit (8).
 
 typedef struct Hdlc
 {
@@ -98,9 +98,5 @@ INLINE Afsk *AFSK_CAST(KFile *fd) {
 void afsk_adc_isr(Afsk *af, int8_t sample);
 uint8_t afsk_dac_isr(Afsk *af);
 void afsk_init(Afsk *af, int adc_ch, int dac_ch);
-
-//int afsk_testSetup(void);
-//int afsk_testRun(void);
-//int afsk_testTearDown(void);
 
 #endif
