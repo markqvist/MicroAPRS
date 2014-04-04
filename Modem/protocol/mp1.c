@@ -1,12 +1,13 @@
 #include "mp1.h"
 #include <string.h>
+#include <drv/ser.h>
 //#include <ctype.h>
 
 static void mp1Decode(MP1 *mp1) {
 	MP1Packet packet;				// A decoded packet struct
 	uint8_t *buffer	= mp1->buffer;	// Get the buffer from the protocol context
 
-	packet.dataLength = mp1->packetLength;
+	packet.dataLength = mp1->packetLength - 1;
 	packet.data = buffer;
 
 	if (mp1->callback) mp1->callback(&packet);
@@ -25,12 +26,24 @@ void mp1Poll(MP1 *mp1) {
 				// frame length, which means the flag signifies
 				// the end of the packet. Pass control to the
 				// decoder.
-				mp1Decode(mp1);
+				kprintf("Got checksum: %d.\n", mp1->buffer[mp1->packetLength-1]);
+				if ((mp1->checksum_in & 0xff) == 0x00) {
+					//kprintf("Correct checksum. Found %d.\n", mp1->buffer[mp1->packetLength-1]);
+					mp1Decode(mp1);
+				} else {
+					// Checksum was incorrect
+					mp1Decode(mp1);
+					//kprintf("Incorrect checksum. Found %d.\n", mp1->buffer[mp1->packetLength]);
+					//kprintf("should be %d", mp1->checksum_in);
+				}
 			}
 			// If the above is not the case, this must be the
 			// beginning of a frame
 			mp1->reading = true;
 			mp1->packetLength = 0;
+			mp1->checksum_in = MP1_CHECKSUM_INIT;
+			//kprintf("Checksum init with %d\n", mp1->checksum_in);
+
 			// We have indicated that we are reading,
 			// and reset the length counter. Now we'll
 			// continue to the next byte.
@@ -59,6 +72,8 @@ void mp1Poll(MP1 *mp1) {
 				// If the length of the current incoming frame is
 				// still less than our max length, put the incoming
 				// byte in the buffer.
+				if (!mp1->escape) mp1->checksum_in = mp1->checksum_in ^ byte;
+				//kprintf("Checksum is now %d\n", mp1->checksum_in);
 				mp1->buffer[mp1->packetLength++] = byte;
 			} else {
 				// If not, we have a problem: The buffer has overrun
@@ -95,13 +110,25 @@ void mp1Send(MP1 *mp1, const void *_buffer, size_t length) {
 	// Get the transmit data buffer
 	const uint8_t *buffer = (const uint8_t *)_buffer;
 
+	// Initialize checksum
+	mp1->checksum_out = MP1_CHECKSUM_INIT;
+	//kprintf("Checksum init with %d\n", mp1->checksum_out);
+
 	// Transmit the HDLC_FLAG to signify start of TX
 	kfile_putc(HDLC_FLAG, mp1->modem);
 
 	// Continously increment the pointer address
 	// of the buffer while passing it to the byte
 	// output function
-	while (length--) mp1Putbyte(mp1, *buffer++);
+	while (length--) {
+		mp1->checksum_out = mp1->checksum_out ^ *buffer;
+		//kprintf("Checksum is now %d\n", mp1->checksum_out);
+		mp1Putbyte(mp1, *buffer++);
+	}
+
+	// Write checksum to end of packet
+	kprintf("Checksum of this packet is %d\n", mp1->checksum_out);
+	mp1Putbyte(mp1, mp1->checksum_out);
 
 	// Transmit a HDLC_FLAG to signify end of TX
 	kfile_putc(HDLC_FLAG, mp1->modem);
