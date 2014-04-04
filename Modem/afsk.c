@@ -348,18 +348,17 @@ static size_t afsk_read(KFile *fd, void *_buf, size_t size) {
 	return buffer - (uint8_t *)_buf;
 }
 
-static size_t afsk_write(KFile *fd, const void *_buf, size_t size)
-{
-	Afsk *af = AFSK_CAST(fd);
+static size_t afsk_write(KFile *fd, const void *_buf, size_t size) {
+	Afsk *afsk = AFSK_CAST(fd);
 	const uint8_t *buf = (const uint8_t *)_buf;
 
-	while (size--)
-	{
-		while (fifo_isfull_locked(&af->txFifo))
+	while (size--) {
+		while (fifo_isfull_locked(&afsk->txFifo)) {
 			cpu_relax();
+		}
 
-		fifo_push_locked(&af->txFifo, *buf++);
-		afsk_txStart(af);
+		fifo_push_locked(&afsk->txFifo, *buf++);
+		afsk_txStart(afsk);
 	}
 
 	return buf - (const uint8_t *)_buf;

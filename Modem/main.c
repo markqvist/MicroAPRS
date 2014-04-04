@@ -60,7 +60,7 @@ int main(void)
 		}
 
 		// Use AX.25 to send test data
-		if (timer_clock() - start > ms_to_ticks(15000L))
+		if (timer_clock() - start > ms_to_ticks(4000L))
 		{
 			kputs("Test TX\n");
 			start = timer_clock();
