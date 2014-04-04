@@ -13,8 +13,6 @@ Modem_USER_CSRC = \
 	$(Modem_HW_PATH)/hardware.c \
     $(Modem_HW_PATH)/afsk.c \
     $(Modem_HW_PATH)/protocol/mp1.c \
-    bertos/net/ax25.c \
-    bertos/algo/crc_ccitt.c \
 	#
 
 # Files included by the user.

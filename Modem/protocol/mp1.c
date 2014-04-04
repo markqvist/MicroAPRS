@@ -79,6 +79,34 @@ void mp1Poll(MP1 *mp1) {
 	}
 }
 
+static void mp1Putbyte(MP1 *mp1, uint8_t byte) {
+	// If we are sending something that looks
+	// like an HDLC special byte, send an escape
+	// character first
+	if (byte == HDLC_FLAG ||
+		byte == HDLC_RESET ||
+		byte == AX25_ESC) {
+		kfile_putc(AX25_ESC, mp1->modem);
+	}
+	kfile_putc(byte, mp1->modem);
+}
+
+void mp1Send(MP1 *mp1, const void *_buffer, size_t length) {
+	// Get the transmit data buffer
+	const uint8_t *buffer = (const uint8_t *)_buffer;
+
+	// Transmit the HDLC_FLAG to signify start of TX
+	kfile_putc(HDLC_FLAG, mp1->modem);
+
+	// Continously increment the pointer address
+	// of the buffer while passing it to the byte
+	// output function
+	while (length--) mp1Putbyte(mp1, *buffer++);
+
+	// Transmit a HDLC_FLAG to signify end of TX
+	kfile_putc(HDLC_FLAG, mp1->modem);
+}
+
 void mp1Init(MP1 *mp1, KFile *modem, mp1_callback_t callback) {
 	// Allocate memory for our protocol "object"
 	memset(mp1, 0, sizeof(*mp1));
