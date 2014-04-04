@@ -364,28 +364,26 @@ static size_t afsk_write(KFile *fd, const void *_buf, size_t size) {
 	return buf - (const uint8_t *)_buf;
 }
 
-static int afsk_flush(KFile *fd)
-{
-	Afsk *af = AFSK_CAST(fd);
-	while (af->sending)
+static int afsk_flush(KFile *fd) {
+	Afsk *afsk = AFSK_CAST(fd);
+	while (afsk->sending) {
 		cpu_relax();
+	}
 	return 0;
 }
 
-static int afsk_error(KFile *fd)
-{
-	Afsk *af = AFSK_CAST(fd);
+static int afsk_error(KFile *fd) {
+	Afsk *afsk = AFSK_CAST(fd);
 	int err;
-
-	ATOMIC(err = af->status);
+	ATOMIC(err = afsk->status);
 	return err;
 }
 
-static void afsk_clearerr(KFile *fd)
-{
-	Afsk *af = AFSK_CAST(fd);
-	ATOMIC(af->status = 0);
+static void afsk_clearerr(KFile *fd) {
+	Afsk *afsk = AFSK_CAST(fd);
+	ATOMIC(afsk->status = 0);
 }
+
 
 //////////////////////////////////////////////////////
 // Modem Initialization                             //
