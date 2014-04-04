@@ -30,7 +30,7 @@ static void message_callback(struct AX25Msg *msg)
 
 	kfile_printf(&ser.fd, "DATA: %.*s\r\n", msg->len, msg->info);
 }
-//////////////////////////////////////////////
+///////////////////////////////////////////////
 
 
 static void init(void)

@@ -209,144 +209,110 @@ void afsk_adc_isr(Afsk *afsk, int8_t currentSample) {
 // Signal modulation and DAC                        //
 //////////////////////////////////////////////////////
 
-static void afsk_txStart(Afsk *af)
-{
-	if (!af->sending)
-	{
-		af->phaseInc = MARK_INC;
-		af->phaseAcc = 0;
-		af->bitstuffCount = 0;
-		af->sending = true;
-		af->preambleLength = DIV_ROUND(CONFIG_AFSK_PREAMBLE_LEN * BITRATE, 8000);
-		AFSK_DAC_IRQ_START(af->dacPin);
-	}
-	ATOMIC(af->tailLength  = DIV_ROUND(CONFIG_AFSK_TRAILER_LEN  * BITRATE, 8000));
-}
-
 #define BIT_STUFF_LEN 5
 #define SWITCH_TONE(inc)  (((inc) == MARK_INC) ? SPACE_INC : MARK_INC)
 
-/**
- * DAC ISR callback.
- * This function has to be called by the DAC ISR when a sample of the configured
- * channel has been converted out.
- */
-uint8_t afsk_dac_isr(Afsk *af)
-{
-	AFSK_STROBE_ON();
+static void afsk_txStart(Afsk *afsk) {
+	if (!afsk->sending) {
+		afsk->phaseInc = MARK_INC;
+		afsk->phaseAcc = 0;
+		afsk->bitstuffCount = 0;
+		afsk->sending = true;
+		afsk->preambleLength = DIV_ROUND(CONFIG_AFSK_PREAMBLE_LEN * BITRATE, 8000);
+		AFSK_DAC_IRQ_START(afsk->dacPin);
+	}
+	ATOMIC(afsk->tailLength = DIV_ROUND(CONFIG_AFSK_TRAILER_LEN * BITRATE, 8000));
+}
 
-	/* Check if we are at a start of a sample cycle */
-	if (af->sampleIndex == 0)
-	{
-		if (af->txBit == 0)
-		{
-			/* We have just finished transimitting a char, get a new one. */
-			if (fifo_isempty(&af->txFifo) && af->tailLength == 0)
-			{
-				AFSK_DAC_IRQ_STOP(af->dacPin);
-				af->sending = false;
-				AFSK_STROBE_OFF();
+// This is the DAC ISR, called at sampling ratewhenever the DAC IRQ is on.
+// It modulates the data to be transmitted and returns a value directly
+// for output on the DAC
+uint8_t afsk_dac_isr(Afsk *afsk) {
+	// Check whether we are at the beginning of a sample
+	if (afsk->sampleIndex == 0) {
+		if (afsk->txBit == 0) {
+			// If TX FIFO is empty and tail-length has decremented to 0
+			// we are done, stop the IRQ and reset
+			if (fifo_isempty(&afsk->txFifo) && afsk->tailLength == 0) {
+				AFSK_DAC_IRQ_STOP(afsk->dacPin);
+				afsk->sending = false;
 				return 0;
-			}
-			else
-			{
-				/*
-				 * If we have just finished sending an unstuffed byte,
-				 * reset bitstuff counter.
-				 */
-				if (!af->bitStuff)
-					af->bitstuffCount = 0;
+			} else {
+				// Reset the bitstuff counter if we have just sent
+				// a bitstuffed byte
+				if (!afsk->bitStuff) afsk->bitstuffCount = 0;
+				// Reset bitstuff indicator to true
+				afsk->bitStuff = true;
 
-				af->bitStuff = true;
-
-				/*
-				 * Handle preamble and trailer
-				 */
-				if (af->preambleLength == 0)
-				{
-					if (fifo_isempty(&af->txFifo))
-					{
-						af->tailLength--;
-						af->currentOutputByte = HDLC_FLAG;
+				// Check if we are in preamble or tail
+				if (afsk->preambleLength == 0) {
+					if (fifo_isempty(&afsk->txFifo)) {
+						afsk->tailLength--;
+						afsk->currentOutputByte = HDLC_FLAG;
+					} else {
+						// If preamble is already transmitted and TX
+						// buffer is not empty, we should get a byte
+						// for transmission
+						afsk->currentOutputByte = fifo_pop(&afsk->txFifo);
 					}
-					else
-						af->currentOutputByte = fifo_pop(&af->txFifo);
-				}
-				else
-				{
-					af->preambleLength--;
-					af->currentOutputByte = HDLC_FLAG;
+				} else {
+					afsk->preambleLength--;
+					afsk->currentOutputByte = HDLC_FLAG;
 				}
 
-				/* Handle char escape */
-				if (af->currentOutputByte == AX25_ESC)
-				{
-					if (fifo_isempty(&af->txFifo))
-					{
-						AFSK_DAC_IRQ_STOP(af->dacPin);
-						af->sending = false;
-						AFSK_STROBE_OFF();
+				// Handle escape sequences
+				if (afsk->currentOutputByte == AX25_ESC) {
+					if (fifo_isempty(&afsk->txFifo)) {
+						AFSK_DAC_IRQ_STOP(afsk->dacPin);
+						afsk->sending = false;
 						return 0;
+					} else {
+						afsk->currentOutputByte = fifo_pop(&afsk->txFifo);
 					}
-					else
-						af->currentOutputByte = fifo_pop(&af->txFifo);
+				} else if (afsk->currentOutputByte == HDLC_FLAG || afsk->currentOutputByte == HDLC_RESET) {
+					afsk->bitStuff = false;
 				}
-				else if (af->currentOutputByte == HDLC_FLAG || af->currentOutputByte == HDLC_RESET)
-					/* If these chars are not escaped disable bit stuffing */
-					af->bitStuff = false;
 			}
-			/* Start with LSB mask */
-			af->txBit = 0x01;
+			// Start with LSB mask
+			afsk->txBit = 0x01;
 		}
 
-		/* check for bit stuffing */
-		if (af->bitStuff && af->bitstuffCount >= BIT_STUFF_LEN)
-		{
-			/* If there are more than 5 ones in a row insert a 0 */
-			af->bitstuffCount = 0;
-			/* switch tone */
-			af->phaseInc = SWITCH_TONE(af->phaseInc);
-		}
-		else
-		{
-			/*
-			 * NRZI: if we want to transmit a 1 the modulated frequency will stay
-			 * unchanged; with a 0, there will be a change in the tone.
-			 */
-			if (af->currentOutputByte & af->txBit)
-			{
-				/*
-				 * Transmit a 1:
-				 * - Stay on the previous tone
-				 * - Increase bit stuff counter
-				 */
-				af->bitstuffCount++;
-			}
-			else
-			{
-				/*
-				 * Transmit a 0:
-				 * - Reset bit stuff counter
-				 * - Switch tone
-				 */
-				af->bitstuffCount = 0;
-				af->phaseInc = SWITCH_TONE(af->phaseInc);
+		// Check for bit stuffing
+		if (afsk->bitStuff && afsk->bitstuffCount >= BIT_STUFF_LEN) {
+			afsk->bitstuffCount = 0;
+			afsk->phaseInc = SWITCH_TONE(afsk->phaseInc);
+		} else {
+			// We are using NRZI so if we want to transmit a 1
+			// the modulated signal will stay the same. For a 0
+			// we make the signal transition
+			if (afsk->currentOutputByte & afsk->txBit) {
+				// We don't do anything, aka stay on the same
+				// tone as before. We have sent one 1, so we
+				// increment the bitstuff counter.
+				afsk->bitstuffCount++;
+			} else {
+				// We switch the tone, and reset the bitstuff
+				// counter, since we have now transmitted a
+				// zero
+				afsk->bitstuffCount = 0;
+				afsk->phaseInc = SWITCH_TONE(afsk->phaseInc);
 			}
 
-			/* Go to the next bit */
-			af->txBit <<= 1;
+			// Move on to the next bit
+			afsk->txBit <<= 1;
 		}
-		af->sampleIndex = DAC_SAMPLESPERBIT;
+
+		afsk->sampleIndex = DAC_SAMPLESPERBIT;
 	}
 
-	/* Get new sample and put it out on the DAC */
-	af->phaseAcc += af->phaseInc;
-	af->phaseAcc %= SIN_LEN;
-
-	af->sampleIndex--;
-	AFSK_STROBE_OFF();
-	return sinSample(af->phaseAcc);
+	// Retrieve af new sample index and DAC it
+	afsk->phaseAcc += afsk->phaseInc;
+	afsk->phaseAcc %= SIN_LEN;
+	afsk->sampleIndex--;
+	return sinSample(afsk->phaseAcc);
 }
+
+
 
 //////////////////////////////////////////////////////
 // File operation overwrites for read/write         //
