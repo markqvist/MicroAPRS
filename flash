@@ -1,2 +1,2 @@
 #!/bin/bash
-avrdude -p m328p -c arduino -P /dev/ttyACM$1 -b 115200 -F -U flash:w:images/Modem.hex
+avrdude -p m328p -c arduino -P /dev/tty$1 -b 115200 -F -U flash:w:images/Modem.hex

@@ -2,7 +2,8 @@
 #include <cpu/irq.h>
 #include <cfg/debug.h>
 
-#include "afsk.h"
+#include "afsk.h"			// Header for AFSK modem
+#include "protocol/mp1.h"	// Header for MP.1 protocol
 
 #include <drv/ser.h>
 #include <drv/timer.h>
@@ -12,6 +13,8 @@
 
 static Afsk afsk;
 static Serial ser;
+
+static MP1 mp1;
 
 #define ADC_CH 0
 
@@ -32,6 +35,10 @@ static void message_callback(struct AX25Msg *msg)
 }
 ///////////////////////////////////////////////
 
+static void mp1Callback(struct MP1Packet *packet) {
+	kfile_printf(&ser.fd, "\nMP1 Packet Received:\n");
+	kfile_printf(&ser.fd, "%.*s\r\n", packet->dataLength, packet->data);
+}
 
 static void init(void)
 {
@@ -41,6 +48,8 @@ static void init(void)
 
 	afsk_init(&afsk, ADC_CH, 0);
 	ax25_init(&ax25, &afsk.fd, message_callback);
+	mp1Init(&mp1, &afsk.fd, mp1Callback);
+
 	
 	ser_init(&ser, SER_UART0);
 	ser_setbaudrate(&ser, 115200);
@@ -53,11 +62,13 @@ int main(void)
 
 	while (1)
 	{
-		// Raw output, no protocol
-		if (!fifo_isempty(&afsk.rxFifo)) {
-			char c = fifo_pop(&afsk.rxFifo);
-			kprintf("%c", c);
-		}
+		// Raw read, no protocol
+		// if (!fifo_isempty(&afsk.rxFifo)) {
+		// 	char c = fifo_pop(&afsk.rxFifo);
+		// 	kprintf("%c", c);
+		// }
+
+		mp1Poll(&mp1);
 
 		// Use AX.25 to send test data
 		if (timer_clock() - start > ms_to_ticks(4000L))
