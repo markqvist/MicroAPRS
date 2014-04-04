@@ -71,21 +71,36 @@ typedef struct Afsk
 
 } Afsk;
 
+// Explanation nessecary for this. BertOS uses an
+// object-oriented approach for handling "file-like"
+// transactions (yes, we are using C :P). What we are
+// doing here is defining a specific "file type" for
+// the standard KFile to identify the modem as a "file"
+// that can be read from and written to.
 #define KFT_AFSK MAKE_ID('F', 'S', 'K', 'M')
 
-INLINE Afsk *AFSK_CAST(KFile *fd)
-{
+// We then make a macro that can "typecast" a generic
+// KFile file-pointer to an Afsk "object". This lets
+// other pieces of code read from and write to the AFSK
+// "objects" buffers with the standard KFile operations.
+// If this seems weird and confusing, check out the
+// BertOS KFile explanation at:
+// http://www.bertos.org/use/tutorial-front-page/drivers-kfile-interface
+INLINE Afsk *AFSK_CAST(KFile *fd) {
+  // We need to assert that the what we are trying
+  // to read/write is actually an AFSK "object",
+  // identified by the KFT_AFSK constant
   ASSERT(fd->_type == KFT_AFSK);
   return (Afsk *)fd;
 }
 
-
+// Declare ISRs and initialization functions
 void afsk_adc_isr(Afsk *af, int8_t sample);
 uint8_t afsk_dac_isr(Afsk *af);
 void afsk_init(Afsk *af, int adc_ch, int dac_ch);
 
-int afsk_testSetup(void);
-int afsk_testRun(void);
-int afsk_testTearDown(void);
+//int afsk_testSetup(void);
+//int afsk_testRun(void);
+//int afsk_testTearDown(void);
 
 #endif

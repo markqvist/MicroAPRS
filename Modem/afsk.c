@@ -313,18 +313,19 @@ uint8_t afsk_dac_isr(Afsk *afsk) {
 }
 
 
-
 //////////////////////////////////////////////////////
 // File operation overwrites for read/write         //
+// These functions make the "class" act like a file //
+// pointer, which can be read from or written to.   //
+// Handy for sending and receiving data :)          //
 //////////////////////////////////////////////////////
 
-static size_t afsk_read(KFile *fd, void *_buf, size_t size)
-{
-	Afsk *af = AFSK_CAST(fd);
-	uint8_t *buf = (uint8_t *)_buf;
+static size_t afsk_read(KFile *fd, void *_buf, size_t size) {
+	Afsk *afsk = AFSK_CAST(fd);
+	uint8_t *buffer = (uint8_t *)_buf;
 
 	#if CONFIG_AFSK_RXTIMEOUT == 0
-	while (size-- && !fifo_isempty_locked(&af->rxFifo))
+	while (size-- && !fifo_isempty_locked(&afsk->rxFifo))
 	#else
 	while (size--)
 	#endif
@@ -333,19 +334,18 @@ static size_t afsk_read(KFile *fd, void *_buf, size_t size)
 		ticks_t start = timer_clock();
 		#endif
 
-		while (fifo_isempty_locked(&af->rxFifo))
-		{
+		while (fifo_isempty_locked(&afsk->rxFifo)) {
 			cpu_relax();
 			#if CONFIG_AFSK_RXTIMEOUT != -1
-			if (timer_clock() - start > ms_to_ticks(CONFIG_AFSK_RXTIMEOUT))
-				return buf - (uint8_t *)_buf;
+			if (timer_clock() - start > ms_to_ticks(CONFIG_AFSK_RXTIMEOUT)) {
+				return buffer - (uint8_t *)_buf;
+			}
 			#endif
 		}
-
-		*buf++ = fifo_pop_locked(&af->rxFifo);
+		*buffer++ = fifo_pop_locked(&afsk->rxFifo);
 	}
 
-	return buf - (uint8_t *)_buf;
+	return buffer - (uint8_t *)_buf;
 }
 
 static size_t afsk_write(KFile *fd, const void *_buf, size_t size)
