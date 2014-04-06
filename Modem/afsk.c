@@ -346,9 +346,8 @@ static void afsk_txStart(Afsk *afsk) {
 		afsk->bitstuffCount = 0;
 		afsk->sending = true;
 		LED_TX_ON();
-		PTT_ON();
 		afsk->preambleLength = DIV_ROUND(CONFIG_AFSK_PREAMBLE_LEN * BITRATE, 8000);
-		AFSK_DAC_IRQ_START(afsk->dacPin);
+		AFSK_DAC_IRQ_START();
 	}
 	ATOMIC(afsk->tailLength = DIV_ROUND(CONFIG_AFSK_TRAILER_LEN * BITRATE, 8000));
 }
@@ -363,10 +362,9 @@ uint8_t afsk_dac_isr(Afsk *afsk) {
 			// If TX FIFO is empty and tail-length has decremented to 0
 			// we are done, stop the IRQ and reset
 			if (fifo_isempty(&afsk->txFifo) && afsk->tailLength == 0) {
-				AFSK_DAC_IRQ_STOP(afsk->dacPin);
+				AFSK_DAC_IRQ_STOP();
 				afsk->sending = false;
 				LED_TX_OFF();
-				PTT_OFF();
 				return 0;
 			} else {
 				// Reset the bitstuff counter if we have just sent
@@ -394,10 +392,9 @@ uint8_t afsk_dac_isr(Afsk *afsk) {
 				// Handle escape sequences
 				if (afsk->currentOutputByte == AX25_ESC) {
 					if (fifo_isempty(&afsk->txFifo)) {
-						AFSK_DAC_IRQ_STOP(afsk->dacPin);
+						AFSK_DAC_IRQ_STOP();
 						afsk->sending = false;
 						LED_TX_OFF();
-						PTT_OFF();
 						return 0;
 					} else {
 						afsk->currentOutputByte = fifo_pop(&afsk->txFifo);
@@ -543,10 +540,9 @@ void afsk_init(Afsk *afsk, int _adcPin, int _dacPin) {
 
 	// Init DAC & ADC
 	AFSK_ADC_INIT(_adcPin, afsk);
-	AFSK_DAC_INIT(_dacPin, afsk);
+	AFSK_DAC_INIT();
 	LED_TX_INIT();
 	LED_RX_INIT();
-	PTT_INIT();
 
 	DB(afsk->fd._type = KFT_AFSK);
 	afsk->fd.write = afsk_write;
