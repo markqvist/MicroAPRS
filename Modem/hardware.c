@@ -1,7 +1,7 @@
 
 #include "hardware.h"
+#include "afsk.h"
 
-#include <net/afsk.h>
 #include <cpu/irq.h>
 
 #include <avr/io.h>
@@ -48,7 +48,7 @@ DECLARE_ISR(ADC_vect) {
 	TIFR1 = BV(ICF1);
 	afsk_adc_isr(context, ((int16_t)((ADC) >> 2) - 128));
 	if (hw_afsk_dac_isr)
-		PORTD = afsk_dac_isr(context) & 0xF0;
+		PORTD = (afsk_dac_isr(context) & 0xF0) | BV(3); 
 	else
 		PORTD = 128;
 }

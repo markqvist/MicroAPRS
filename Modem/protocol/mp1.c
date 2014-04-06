@@ -1,18 +1,30 @@
 #include "mp1.h"
 #include <string.h>
 #include <drv/ser.h>
-//#include <ctype.h>
 
 static void mp1Decode(MP1 *mp1) {
+	// This decode function is basic and bare minimum.
+	// It does nothing more than extract the data
+	// payload from the buffer and put it into a struct
+	// for further processing.
 	MP1Packet packet;				// A decoded packet struct
 	uint8_t *buffer	= mp1->buffer;	// Get the buffer from the protocol context
 
+	// Set the payload length of the packet to the counted
+	// length minus 1, so we remove the checksum
 	packet.dataLength = mp1->packetLength - 1;
 	packet.data = buffer;
 
+	// If a callback have been specified, let's
+	// call it and pass the decoded packet
 	if (mp1->callback) mp1->callback(&packet);
 }
 
+////////////////////////////////////////////////////////////
+// The Poll function reads data from the modem, handles   //
+// frame recognition and passes data on to higher layers  //
+// if valid packets are found                             //
+////////////////////////////////////////////////////////////
 void mp1Poll(MP1 *mp1) {
 	int byte;
 
@@ -26,13 +38,13 @@ void mp1Poll(MP1 *mp1) {
 				// frame length, which means the flag signifies
 				// the end of the packet. Pass control to the
 				// decoder.
-				kprintf("Got checksum: %d.\n", mp1->buffer[mp1->packetLength-1]);
+				// kprintf("Got checksum: %d.\n", mp1->buffer[mp1->packetLength-1]);
 				if ((mp1->checksum_in & 0xff) == 0x00) {
 					//kprintf("Correct checksum. Found %d.\n", mp1->buffer[mp1->packetLength-1]);
 					mp1Decode(mp1);
 				} else {
 					// Checksum was incorrect
-					mp1Decode(mp1);
+					//mp1Decode(mp1);
 					//kprintf("Incorrect checksum. Found %d.\n", mp1->buffer[mp1->packetLength]);
 					//kprintf("should be %d", mp1->checksum_in);
 				}
@@ -127,7 +139,7 @@ void mp1Send(MP1 *mp1, const void *_buffer, size_t length) {
 	}
 
 	// Write checksum to end of packet
-	kprintf("Checksum of this packet is %d\n", mp1->checksum_out);
+	kprintf("Sending packet with checksum %d\n", mp1->checksum_out);
 	mp1Putbyte(mp1, mp1->checksum_out);
 
 	// Transmit a HDLC_FLAG to signify end of TX
@@ -137,6 +149,8 @@ void mp1Send(MP1 *mp1, const void *_buffer, size_t length) {
 void mp1Init(MP1 *mp1, KFile *modem, mp1_callback_t callback) {
 	// Allocate memory for our protocol "object"
 	memset(mp1, 0, sizeof(*mp1));
+	// Set references to our modem "object" and
+	// a callback for when a packet has been decoded
 	mp1->modem = modem;
 	mp1->callback = callback;
 }
