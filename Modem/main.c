@@ -29,7 +29,7 @@ static Serial ser;			// Declare a serial interface struct
 
 #define TEST_TX false		// Whether we should send test packets
 							// periodically, plus what to send:
-#define TEST_PACKET "Test MP1 AFSK Packet. This is a test. 1234567890. ABCDEFGHIJKLMNOPQRSTUVWXYZ."
+#define TEST_PACKET "Test MP1 AFSK Packet. Test123"
 
 
 static uint8_t serialBuffer[MP1_MAX_FRAME_LENGTH];	// This is a buffer for incoming serial data
@@ -47,7 +47,8 @@ static bool sertx = false;							// Flag signifying whether it's time to send da
 // so we can process each packet as they are decoded.
 // Right now it just prints the packet to the serial port.
 static void mp1Callback(struct MP1Packet *packet) {
-	kfile_printf(&ser.fd, "%.*s\r\n", packet->dataLength, packet->data);
+	//kfile_printf(&ser.fd, "%.*s\r\n", packet->dataLength, packet->data);
+	kprintf("%.*s\r\n", packet->dataLength, packet->data);
 }
 
 // Simple initialization function.
@@ -125,7 +126,7 @@ int main(void)
 		}
 
 		// Periodically send test data if we should do so
-		if (TEST_TX && timer_clock() - start > ms_to_ticks(15000L)) {
+		if (TEST_TX && timer_clock() - start > ms_to_ticks(4000L)) {
 			// Reset the timer counter;
 			start = timer_clock();
 			// And send a test packet!
