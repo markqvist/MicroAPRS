@@ -4,7 +4,7 @@
 //////////////////////////////////////////////////////
 
 #include <cpu/irq.h>		// Interrupt functionality from BertOS
-#include <cfg/debug.h>		// Debug configuration from BertOS
+#include "cfg/debug.h"		// Debug configuration from BertOS
 
 #include <drv/ser.h>		// Serial driver from BertOS
 #include <drv/timer.h>		// Timer driver from BertOS
@@ -101,6 +101,7 @@ int main(void)
 			// and the byte is not a "transmit" (newline) character,
 			// we should store it for transmission.
 			if ((serialLen < MP1_MAX_FRAME_LENGTH) && (sbyte != 138)) {
+				kprintf("%d\n", sbyte);
 				// Put the read byte into the buffer;
 				serialBuffer[serialLen] = sbyte;
 				// Increment the read length counter

@@ -49,7 +49,7 @@
  * Baudrate for the debug console.
  * $WIZ$ type = "int"; min = 300
  */
-#define CONFIG_KDEBUG_BAUDRATE  115200UL
+#define CONFIG_KDEBUG_BAUDRATE  57600UL
 
 /**
  * Clock source for the UART module. You need to write the code to reprogram the respective clock at the required frequency in your project before calling kdbg_init().
