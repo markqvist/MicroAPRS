@@ -1,18 +1,32 @@
+//////////////////////////////////////////////////////
+// First things first, all the includes we need     //
+//////////////////////////////////////////////////////
 
-#include "hardware.h"
-#include "afsk.h"
+#include "hardware.h"		// We need the header for this code
+#include "afsk.h"			// We also need to know about the AFSK modem
 
-#include <cpu/irq.h>
+#include <cpu/irq.h>		// Interrupt functions from BertOS
 
-#include <avr/io.h>
-#include <avr/interrupt.h>
+#include <avr/io.h>			// AVR IO functions from BertOS
+#include <avr/interrupt.h>	// AVR interrupt functions from BertOS
 
-
+// A reference to our modem "object"
 static Afsk *context;
 
+//////////////////////////////////////////////////////
+// And now for the actual hardware functions        //
+//////////////////////////////////////////////////////
+
+// This function initializes the ADC and configures
+// it the way we need.
 void hw_afsk_adcInit(int ch, Afsk *_context)
 {
+	// Store a reference to our modem "object"
+	// FIXME: rename this
 	context = _context;
+
+	// Also make sure that we are not trying to use
+	// a pin that can't be used for analog input
 	ASSERT(ch <= 5);
 
 	// We need to do some configuration on the Timer/Counter Control
