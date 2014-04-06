@@ -26,7 +26,7 @@ static void mp1Decode(MP1 *mp1) {
 // if valid packets are found                             //
 ////////////////////////////////////////////////////////////
 void mp1Poll(MP1 *mp1) {
-	int byte;
+	int byte; // A place to store our read byte
 
 	// Read bytes from the modem until we reach EOF
 	while ((byte = kfile_getc(mp1->modem)) != EOF) {

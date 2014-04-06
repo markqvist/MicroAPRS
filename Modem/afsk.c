@@ -396,16 +396,29 @@ void afsk_adc_isr(Afsk *afsk, int8_t currentSample) {
 // synthesized by the DAC.
 #define SWITCH_TONE(inc)  (((inc) == MARK_INC) ? SPACE_INC : MARK_INC)
 
+// This function starts the transmission
 static void afsk_txStart(Afsk *afsk) {
 	if (!afsk->sending) {
+		// Initialize the phase increment to
+		// that of the mark frequency
 		afsk->phaseInc = MARK_INC;
+		// Reset the phase accumulator to 0
 		afsk->phaseAcc = 0;
+		// And also the bitstuff counter
 		afsk->bitstuffCount = 0;
+		// Indicate we are now sending
 		afsk->sending = true;
+		// And turn on the blingy LED
 		LED_TX_ON();
+		// We also need to calculate how many HDLC_FLAG
+		// bytes we need to send in preamble
 		afsk->preambleLength = DIV_ROUND(CONFIG_AFSK_PREAMBLE_LEN * BITRATE, 8000);
 		AFSK_DAC_IRQ_START();
 	}
+	// We make the same calculation for the tail length,
+	// but this needs to be atomic, since the txStart
+	// function could potentially be called while we
+	// are already transmitting.
 	ATOMIC(afsk->tailLength = DIV_ROUND(CONFIG_AFSK_TRAILER_LEN * BITRATE, 8000));
 }
 
@@ -550,10 +563,16 @@ uint8_t afsk_dac_isr(Afsk *afsk) {
 		afsk->sampleIndex = DAC_SAMPLESPERBIT;
 	}
 
-	// Retrieve af new sample and DAC it
+	// We increment the phase accumulator
+	// by the amount needed for the tone
 	afsk->phaseAcc += afsk->phaseInc;
+	// We then make sure that we have not
+	// exceeded the length of our sine table
 	afsk->phaseAcc %= SIN_LEN;
+	// Finally we decrement the sample counter
 	afsk->sampleIndex--;
+	// ... and return the sample to for it to
+	// be written out
 	return sinSample(afsk->phaseAcc);
 }
 
