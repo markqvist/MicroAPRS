@@ -524,13 +524,12 @@ static void afsk_clearerr(KFile *fd) {
 // Modem Initialization                             //
 //////////////////////////////////////////////////////
 
-void afsk_init(Afsk *afsk, int _adcPin, int _dacPin) {
+void afsk_init(Afsk *afsk, int _adcPin) {
 	// Allocate memory for struct
 	memset(afsk, 0, sizeof(*afsk));
 
 	// Configure pins
 	afsk->adcPin = _adcPin;
-	afsk->dacPin = _dacPin;
 	afsk->phaseInc = MARK_INC;
 
 	// Init FIFO buffers

@@ -48,7 +48,6 @@ typedef struct Afsk
 
 	// I/O hardware pins
 	int adcPin;								// Pin for incoming signal
-	int dacPin;								// Pin for outgoing signal
 
 	// General values
 	Hdlc hdlc; 								// We need a link control structure
@@ -116,6 +115,6 @@ INLINE Afsk *AFSK_CAST(KFile *fd) {
 // and initialization functions
 void afsk_adc_isr(Afsk *af, int8_t sample);
 uint8_t afsk_dac_isr(Afsk *af);
-void afsk_init(Afsk *af, int adc_ch, int dac_ch);
+void afsk_init(Afsk *af, int adc_ch);
 
 #endif

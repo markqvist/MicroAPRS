@@ -68,7 +68,7 @@ static void init(void)
 	ser_setbaudrate(&ser, 57600);
 
 	// Create a modem context
-	afsk_init(&afsk, ADC_CH, 0);
+	afsk_init(&afsk, ADC_CH);
 	// ... and a protocol context with the modem
 	mp1Init(&mp1, &afsk.fd, mp1Callback);
 
