@@ -415,7 +415,16 @@ static void afsk_txStart(Afsk *afsk) {
 uint8_t afsk_dac_isr(Afsk *afsk) {
 	// Check whether we are at the beginning of a sample
 	if (afsk->sampleIndex == 0) {
+		// If we are, we should figure out what we are
+		// actually going to modulate and transmit :)
 		if (afsk->txBit == 0) {
+			// txBit is a bitmask that is ANDed to the
+			// byte we are sending. It is bitshifted one
+			// position left each time we shift the next
+			// bit. If it is 0, we know we are at the
+			// beginning of the next byte, and nothing
+			// has been transmitted yet.
+
 			// If TX FIFO is empty and tail-length has decremented to 0
 			// we are done, stop the IRQ and reset
 			if (fifo_isempty(&afsk->txFifo) && afsk->tailLength == 0) {
@@ -427,12 +436,18 @@ uint8_t afsk_dac_isr(Afsk *afsk) {
 				// Reset the bitstuff counter if we have just sent
 				// a bitstuffed byte
 				if (!afsk->bitStuff) afsk->bitstuffCount = 0;
-				// Reset bitstuff indicator to true
+				// Reset bitstuff indicator to true, signifying
+				// that it's ok to bit stuff.
 				afsk->bitStuff = true;
 
 				// Check if we are in preamble or tail
 				if (afsk->preambleLength == 0) {
+					// We are not in preamble
 					if (fifo_isempty(&afsk->txFifo)) {
+						// If the TX buffer is empty, we must
+						// be in the TX tail then.
+						// Decrement the tail counter and send
+						// a HDLC_FLAG
 						afsk->tailLength--;
 						afsk->currentOutputByte = HDLC_FLAG;
 					} else {
@@ -442,36 +457,74 @@ uint8_t afsk_dac_isr(Afsk *afsk) {
 						afsk->currentOutputByte = fifo_pop(&afsk->txFifo);
 					}
 				} else {
+					// We are in preamble. We'll decrement
+					// the preamble counter and transmit a
+					// HDLC_FLAG
 					afsk->preambleLength--;
 					afsk->currentOutputByte = HDLC_FLAG;
 				}
 
-				// Handle escape sequences
+				// This handles escape sequences and control
+				// characters. First we check if the current
+				// byte is an escape character. If it is, we
+				// know the next byte, even though it looks
+				// like an HDLC control character, in fact is
+				// not. Therefore we'll fetch it and transmit
+				// it as data using bit stuffing.
 				if (afsk->currentOutputByte == AX25_ESC) {
+					// First make sure that the TX buffer is
+					// not empty for some strange reason
 					if (fifo_isempty(&afsk->txFifo)) {
 						AFSK_DAC_IRQ_STOP();
 						afsk->sending = false;
 						LED_TX_OFF();
 						return 0;
 					} else {
+						// If it is not, fetch the next byte
 						afsk->currentOutputByte = fifo_pop(&afsk->txFifo);
 					}
 				} else if (afsk->currentOutputByte == HDLC_FLAG || afsk->currentOutputByte == HDLC_RESET) {
+					// If there was not an escape character and
+					// this byte is an HDLC control character,
+					// we know that it is an _actual_ control
+					// character, and we indicate that it should
+					// not be bitstuffed.
 					afsk->bitStuff = false;
 				}
 			}
-			// Start with LSB mask
+			// Since we are at the beginning of a byte,
+			// we'll initialize the txBit mask to:
+			// 00000001. It will then be bit-shifted one
+			// position to the left each time we send the
+			// next bit. By ANDing this mask to the byte
+			// we are sending, we can quickly figure out
+			// what tone we should transmit. For example:
+			// 
+			// If we are sending bit number 4 of the
+			// byte:                      01101011
+			// The bit mask would be:     00001000
+			// If we AND the byte and the
+			// mask, we get:			  00001000
+			// Since this is not zero, we know we should
+			// transmit a one.
 			afsk->txBit = 0x01;
 		}
 
-		// Check for bit stuffing
+		// First we need to check for bit-stuffing
 		if (afsk->bitStuff && afsk->bitstuffCount >= BIT_STUFF_LEN) {
+			// If we are allowed to bit-stuff, and we have
+			// reached the maximum number of consecutive
+			// ones, we'll reset the bit-stuff counter and
+			// insert a zero into the bitstream
 			afsk->bitstuffCount = 0;
 			afsk->phaseInc = SWITCH_TONE(afsk->phaseInc);
 		} else {
-			// We are using NRZI so if we want to transmit a 1
+			// If we don't need to bit-stuff now, we can get
+			// on with the actual transmission.
+			//
+			// We are using NRZ so if we want to transmit a 1
 			// the modulated signal will stay the same. For a 0
-			// we make the signal transition
+			// we make the signal transition.
 			if (afsk->currentOutputByte & afsk->txBit) {
 				// We don't do anything, aka stay on the same
 				// tone as before. We have sent one 1, so we
@@ -485,14 +538,19 @@ uint8_t afsk_dac_isr(Afsk *afsk) {
 				afsk->phaseInc = SWITCH_TONE(afsk->phaseInc);
 			}
 
-			// Move on to the next bit
+			// Bitshift the mast to allow for the next
+			// bit in the byte to be transmitted
 			afsk->txBit <<= 1;
 		}
 
+		// We set sampleIndex to DAC_SAMPLESPERBIT,
+		// so we will transmit this bit for the number
+		// of samples one bit requires to transmit at
+		// the chosen bitrate.
 		afsk->sampleIndex = DAC_SAMPLESPERBIT;
 	}
 
-	// Retrieve af new sample index and DAC it
+	// Retrieve af new sample and DAC it
 	afsk->phaseAcc += afsk->phaseInc;
 	afsk->phaseAcc %= SIN_LEN;
 	afsk->sampleIndex--;
