@@ -565,6 +565,7 @@ uint8_t afsk_dac_isr(Afsk *afsk) {
 // Handy for sending and receiving data :)          //
 //////////////////////////////////////////////////////
 
+// Read from the modem
 static size_t afsk_read(KFile *fd, void *_buf, size_t size) {
 	Afsk *afsk = AFSK_CAST(fd);
 	uint8_t *buffer = (uint8_t *)_buf;
@@ -593,6 +594,7 @@ static size_t afsk_read(KFile *fd, void *_buf, size_t size) {
 	return buffer - (uint8_t *)_buf;
 }
 
+// Write to the modem
 static size_t afsk_write(KFile *fd, const void *_buf, size_t size) {
 	Afsk *afsk = AFSK_CAST(fd);
 	const uint8_t *buf = (const uint8_t *)_buf;
@@ -609,6 +611,7 @@ static size_t afsk_write(KFile *fd, const void *_buf, size_t size) {
 	return buf - (const uint8_t *)_buf;
 }
 
+// Waits for the write operation to finish
 static int afsk_flush(KFile *fd) {
 	Afsk *afsk = AFSK_CAST(fd);
 	while (afsk->sending) {
@@ -617,6 +620,8 @@ static int afsk_flush(KFile *fd) {
 	return 0;
 }
 
+// Check whether there was any errors
+// while reading or writing
 static int afsk_error(KFile *fd) {
 	Afsk *afsk = AFSK_CAST(fd);
 	int err;
@@ -624,6 +629,7 @@ static int afsk_error(KFile *fd) {
 	return err;
 }
 
+// Allows resetting the error-state
 static void afsk_clearerr(KFile *fd) {
 	Afsk *afsk = AFSK_CAST(fd);
 	ATOMIC(afsk->status = 0);
