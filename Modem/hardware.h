@@ -13,7 +13,7 @@ void hw_afsk_dacInit(int ch, struct Afsk *_ctx);
 // ADC initialization
 #define AFSK_ADC_INIT(ch, ctx) hw_afsk_adcInit(ch, ctx)
 
-// LED TX/RX on/off (pin 9/10)
+// Here's some macros for controlling the RX/TX LEDs
 #define LED_TX_INIT() do { DDRB |= BV(1); } while (0)
 #define LED_TX_ON()   do { PORTB |= BV(1); } while (0)
 #define LED_TX_OFF()  do { PORTB &= ~BV(1); } while (0)
@@ -22,6 +22,8 @@ void hw_afsk_dacInit(int ch, struct Afsk *_ctx);
 #define LED_RX_ON()   do { PORTB |= BV(2); } while (0)
 #define LED_RX_OFF()  do { PORTB &= ~BV(2); } while (0)
 
+
+// FIXME: remove these, they're in the DAC writes now
 #define PTT_INIT() do { DDRD |= BV(3); } while (0)
 #define PTT_ON()   do { PORTD |= BV(3); } while (0)
 #define PTT_OFF()  do { PORTD &= ~BV(3); } while (0)
