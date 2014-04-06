@@ -11,7 +11,7 @@
 #include <avr/interrupt.h>	// AVR interrupt functions from BertOS
 
 // A reference to our modem "object"
-static Afsk *context;
+static Afsk *modem;
 
 //////////////////////////////////////////////////////
 // And now for the actual hardware functions        //
@@ -19,11 +19,10 @@ static Afsk *context;
 
 // This function initializes the ADC and configures
 // it the way we need.
-void hw_afsk_adcInit(int ch, Afsk *_context)
+void hw_afsk_adcInit(int ch, Afsk *_modem)
 {
 	// Store a reference to our modem "object"
-	// FIXME: rename this
-	context = _context;
+	modem = _modem;
 
 	// Also make sure that we are not trying to use
 	// a pin that can't be used for analog input
@@ -109,7 +108,7 @@ DECLARE_ISR(ADC_vect) {
 	// can't read negative voltages. By doing this simple
 	// math, we bring it back to an AC representation
 	// we can do further calculations on.
-	afsk_adc_isr(context, ((int16_t)((ADC) >> 2) - 128));
+	afsk_adc_isr(modem, ((int16_t)((ADC) >> 2) - 128));
 
 	// We also need to check if we're supposed to spit
 	// out some modulated data to the DAC.
@@ -124,7 +123,7 @@ DECLARE_ISR(ADC_vect) {
 		// we also need to trigger another pin controlled
 		// by the PORTD register. This is the PTT pin
 		// which tells the radio to open it transmitter.
-		PORTD = (afsk_dac_isr(context) & 0xF0) | BV(3); 
+		PORTD = (afsk_dac_isr(modem) & 0xF0) | BV(3); 
 	else
 		// If we're not supposed to transmit anything, we
 		// keep quiet by continously sending 128, which

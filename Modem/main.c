@@ -1,4 +1,8 @@
 
+//////////////////////////////////////////////////////
+// First things first, all the includes we need     //
+//////////////////////////////////////////////////////
+
 #include <cpu/irq.h>		// Interrupt functionality from BertOS
 #include <cfg/debug.h>		// Debug configuration from BertOS
 
@@ -10,6 +14,11 @@
 
 #include "afsk.h"			// Header for AFSK modem
 #include "protocol/mp1.h"	// Header for MP.1 protocol
+
+
+//////////////////////////////////////////////////////
+// A few definitions				                //
+//////////////////////////////////////////////////////
 
 static Afsk afsk;			// Declare a AFSK modem struct
 static MP1 mp1;				// Declare a protocol struct
@@ -29,6 +38,10 @@ static int serialLen = 0;							// Counter for counting length of data from seri
 static bool sertx = false;							// Flag signifying whether it's time to send data
 													// Received on the serial port.
 
+
+//////////////////////////////////////////////////////
+// And here comes the actual program :)             //
+//////////////////////////////////////////////////////
 
 // This is a callback we register with the protocol,
 // so we can process each packet as they are decoded.

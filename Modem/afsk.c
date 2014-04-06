@@ -336,7 +336,12 @@ void afsk_adc_isr(Afsk *afsk, int8_t currentSample) {
 // Signal modulation and DAC                        //
 //////////////////////////////////////////////////////
 
+// Defines how many consecutive ones we send
+// before we need "stuff" in a zero
 #define BIT_STUFF_LEN 5
+
+// A macro for switching what tone is being
+// synthesized by the DAC.
 #define SWITCH_TONE(inc)  (((inc) == MARK_INC) ? SPACE_INC : MARK_INC)
 
 static void afsk_txStart(Afsk *afsk) {
@@ -352,7 +357,7 @@ static void afsk_txStart(Afsk *afsk) {
 	ATOMIC(afsk->tailLength = DIV_ROUND(CONFIG_AFSK_TRAILER_LEN * BITRATE, 8000));
 }
 
-// This is the DAC ISR, called at sampling ratewhenever the DAC IRQ is on.
+// This is the DAC ISR, called at sampling rate whenever the DAC IRQ is on.
 // It modulates the data to be transmitted and returns a value directly
 // for output on the DAC
 uint8_t afsk_dac_isr(Afsk *afsk) {
@@ -444,7 +449,7 @@ uint8_t afsk_dac_isr(Afsk *afsk) {
 
 
 //////////////////////////////////////////////////////
-// File operation overwrites for read/write         //
+// File operation functions for read/write          //
 // These functions make the "class" act like a file //
 // pointer, which can be read from or written to.   //
 // Handy for sending and receiving data :)          //

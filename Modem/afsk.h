@@ -1,19 +1,35 @@
+//////////////////////////////////////////////////////
+// First things first, all the includes we need     //
+//////////////////////////////////////////////////////
 
 #ifndef FSK_MODEM_H
 #define FSK_MODEM_H
 
-#include "config.h"
-#include "hardware.h"
+#include "config.h"				// Various configuration values
+#include "hardware.h"			// Hardware functions
 
-#include <cfg/compiler.h>
-#include <io/kfile.h>
-#include <struct/fifobuf.h>
+#include <cfg/compiler.h>		// Compiler info from BertOS
+#include <struct/fifobuf.h>		// FIFO buffer implementation from BertOS
+#include <io/kfile.h>			// The BertOS KFile interface. This is
+								// used for letting other functions read
+								// from or write to the modem like a
+								// file descriptor.
 
+//////////////////////////////////////////////////////
+// Our type definitions and function declarations   //
+//////////////////////////////////////////////////////
 
 #define SAMPLERATE 9600			// The rate at which we are sampling and synthesizing
 #define BITRATE    1200			// The actual bitrate at baseband. This is the baudrate.
-#define SAMPLESPERBIT (SAMPLERATE / BITRATE)	// How many DAC/ADC samples constitute on bit (8).
+#define SAMPLESPERBIT (SAMPLERATE / BITRATE)	// How many DAC/ADC samples constitute one bit (8).
 
+// This defines an errortype for a receive-
+// buffer overrun.
+#define RX_OVERRUN BV(0)
+
+// This struct defines a Hdlc parser. It will let
+// us parse the raw bits coming in from the modem
+// and synchronise to byte boundaries.
 typedef struct Hdlc
 {
 	uint8_t demodulatedBits;  	// Incoming bitstream from demodulator
@@ -22,11 +38,13 @@ typedef struct Hdlc
 	bool receiving;				// Whether or not where actually receiving data (or just noise ;P)
 } Hdlc;
 
-#define RX_OVERRUN BV(0)
-
+// This is our primary modem struct. It defines
+// all the values we need to modulate and
+// demodulate data from the physical medium.
 typedef struct Afsk
 {
-	KFile fd;
+	KFile fd;								// A file descriptor for reading from and
+											// writing to the modem
 
 	// I/O hardware pins
 	int adcPin;								// Pin for incoming signal
@@ -94,7 +112,8 @@ INLINE Afsk *AFSK_CAST(KFile *fd) {
   return (Afsk *)fd;
 }
 
-// Declare ISRs and initialization functions
+// Declare Interrupt Service Routines
+// and initialization functions
 void afsk_adc_isr(Afsk *af, int8_t sample);
 uint8_t afsk_dac_isr(Afsk *af);
 void afsk_init(Afsk *af, int adc_ch, int dac_ch);
