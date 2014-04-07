@@ -281,8 +281,8 @@ void afsk_adc_isr(Afsk *afsk, int8_t currentSample) {
 
 	afsk->iirY[0] = afsk->iirY[1];
 	
-	af->iirY[1] = af->iirX[0] + af->iirX[1] + (af->iirY[0] >> 1) + (af->iirY[0] >> 3) + (af->iirY[0] >> 5); // Butterworth
-	//afsk->iirY[1] = afsk->iirX[0] + afsk->iirX[1] + (afsk->iirY[0] >> 1); // Chebyshev
+	//af->iirY[1] = afsk->iirX[0] + afsk->iirX[1] + (afsk->iirY[0] >> 1) + (afsk->iirY[0] >> 3) + (afsk->iirY[0] >> 5); // Butterworth
+	afsk->iirY[1] = afsk->iirX[0] + afsk->iirX[1] + (afsk->iirY[0] >> 1); // Chebyshev
 
 
 	// We put the sampled bit in a delay-line:
