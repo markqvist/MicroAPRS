@@ -81,9 +81,9 @@ INLINE uint8_t sinSample(uint16_t i) {
 
 // Phase sync constants
 #define PHASE_BITS    8
-#define PHASE_INC    1
+#define PHASE_INC    1 										// FIXME: originally 1
 #define PHASE_MAX    (SAMPLESPERBIT * PHASE_BITS)
-#define PHASE_THRESHOLD  (PHASE_MAX / 2)
+#define PHASE_THRESHOLD  (PHASE_MAX / 2) + (PHASE_MAX / 8)  // FIXME: originally /2
 
 // Modulation constants
 #define MARK_FREQ  1200

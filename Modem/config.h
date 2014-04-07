@@ -11,7 +11,7 @@
 #define CONFIG_AFSK_RXTIMEOUT 0				// How long a read operation from the modem
 											// will wait for data before timing out.
 
-#define CONFIG_AFSK_PREAMBLE_LEN 650UL		// The length of the packet preamble in milliseconds
+#define CONFIG_AFSK_PREAMBLE_LEN 1000UL		// The length of the packet preamble in milliseconds
 #define CONFIG_AFSK_TRAILER_LEN 100UL		// The length of the packet tail in milliseconds
 
 #endif

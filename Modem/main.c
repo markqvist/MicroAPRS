@@ -66,7 +66,7 @@ static void init(void)
 	// Initialize serial comms on UART0,
 	// which is the hardware serial on arduino
 	ser_init(&ser, SER_UART0);
-	ser_setbaudrate(&ser, 57600);
+	ser_setbaudrate(&ser, 115200);
 
 	// Create a modem context
 	afsk_init(&afsk, ADC_CH);
@@ -102,7 +102,7 @@ int main(void)
 			// and the byte is not a "transmit" (newline) character,
 			// we should store it for transmission.
 			if ((serialLen < MP1_MAX_FRAME_LENGTH) && (sbyte != 138)) {
-				kprintf("%d\n", sbyte);
+				kprintf("Byte: %d\n", sbyte);
 				// Put the read byte into the buffer;
 				serialBuffer[serialLen] = sbyte;
 				// Increment the read length counter
@@ -126,7 +126,7 @@ int main(void)
 		}
 
 		// Periodically send test data if we should do so
-		if (TEST_TX && timer_clock() - start > ms_to_ticks(4000L)) {
+		if (TEST_TX && timer_clock() - start > ms_to_ticks(5000L)) {
 			// Reset the timer counter;
 			start = timer_clock();
 			// And send a test packet!

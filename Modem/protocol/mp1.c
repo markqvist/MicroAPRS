@@ -45,8 +45,8 @@ void mp1Poll(MP1 *mp1) {
 				} else {
 					// Checksum was incorrect
 					mp1Decode(mp1);
-					kprintf("Incorrect checksum. Found %d, ", mp1->buffer[mp1->packetLength]);
-					kprintf("should be %d\n", mp1->checksum_in);
+					//kprintf("Incorrect checksum. Found %d, ", mp1->buffer[mp1->packetLength]);
+					//kprintf("should be %d\n", mp1->checksum_in);
 				}
 			}
 			// If the above is not the case, this must be the
