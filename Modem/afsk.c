@@ -353,6 +353,8 @@ void afsk_adc_isr(Afsk *afsk, int8_t currentSample) {
 		// the last 3 sampled bits. If there is two or
 		// more 1's, we will assume that the transmitter
 		// sent us a one, otherwise we assume a zero
+
+		// FIXME: Increasing this to 5 bit determine
 		uint8_t bits = afsk->sampledBits & 0x07;
 		if (bits == 0x07 || // 111
 			bits == 0x06 || // 110
@@ -361,6 +363,14 @@ void afsk_adc_isr(Afsk *afsk, int8_t currentSample) {
 			) {
 			afsk->actualBits |= 1;
 		}
+		// uint8_t bits = afsk->sampledBits & 0x0f;
+		// uint8_t c = 0;
+	 	// c += bits & BV(1);
+	 	// c += bits & BV(2);
+	 	// c += bits & BV(3);
+	 	// c += bits & BV(4);
+	 	// c += bits & BV(5);
+	 	// if (c >= 3) afsk->actualBits |= 1;
 
 		// Now we can pass the actual bit to the HDLC parser.
 		// We are using NRZ coding, so if 2 consecutive bits
