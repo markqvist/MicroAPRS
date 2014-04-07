@@ -280,7 +280,10 @@ void afsk_adc_isr(Afsk *afsk, int8_t currentSample) {
 	afsk->iirX[1] = ((int8_t)fifo_pop(&afsk->delayFifo) * currentSample) >> 2;
 
 	afsk->iirY[0] = afsk->iirY[1];
-	afsk->iirY[1] = afsk->iirX[0] + afsk->iirX[1] + (afsk->iirY[0] >> 1);
+	
+	af->iirY[1] = af->iirX[0] + af->iirX[1] + (af->iirY[0] >> 1) + (af->iirY[0] >> 3) + (af->iirY[0] >> 5); // Butterworth
+	//afsk->iirY[1] = afsk->iirX[0] + afsk->iirX[1] + (afsk->iirY[0] >> 1); // Chebyshev
+
 
 	// We put the sampled bit in a delay-line:
 	// First we bitshift everything 1 left
