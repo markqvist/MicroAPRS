@@ -1,6 +1,10 @@
 #include "mp1.h"
+#include "hardware.h"
 #include <string.h>
 #include <drv/ser.h>
+
+static int okC; // FIXME: remove
+static int erC;
 
 static void mp1Decode(MP1 *mp1) {
 	// This decode function is basic and bare minimum.
@@ -41,9 +45,11 @@ void mp1Poll(MP1 *mp1) {
 				// kprintf("Got checksum: %d.\n", mp1->buffer[mp1->packetLength-1]);
 				if ((mp1->checksum_in & 0xff) == 0x00) {
 					//kprintf("Correct checksum. Found %d.\n", mp1->buffer[mp1->packetLength-1]);
+					kprintf("[OK%d]  ", okC++);
 					mp1Decode(mp1);
 				} else {
 					// Checksum was incorrect
+					kprintf("[ER%d]  ", erC++);
 					mp1Decode(mp1);
 					//kprintf("Incorrect checksum. Found %d, ", mp1->buffer[mp1->packetLength]);
 					//kprintf("should be %d\n", mp1->checksum_in);

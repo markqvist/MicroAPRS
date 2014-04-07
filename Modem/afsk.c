@@ -83,7 +83,7 @@ INLINE uint8_t sinSample(uint16_t i) {
 #define PHASE_BITS    8
 #define PHASE_INC    1 										// FIXME: originally 1
 #define PHASE_MAX    (SAMPLESPERBIT * PHASE_BITS)
-#define PHASE_THRESHOLD  (PHASE_MAX / 2) + (PHASE_MAX / 8)  // FIXME: originally /2
+#define PHASE_THRESHOLD  (PHASE_MAX / 4) + (PHASE_MAX / 8)  // FIXME: originally /2
 
 // Modulation constants
 #define MARK_FREQ  1200
@@ -111,6 +111,7 @@ STATIC_ASSERT(!(CONFIG_AFSK_DAC_SAMPLERATE % BITRATE));
 // Link Layer Control and Demodulation              //
 //////////////////////////////////////////////////////
 
+static int adjustCount;						// FIXME: Debug
 // hdlcParse /////////////////////////////////////////
 // This function looks at the raw bits demodulated from
 // the physical medium and tries to parse actual data
@@ -157,6 +158,7 @@ static bool hdlcParse(Hdlc *hdlc, bool bit, FIFOBuffer *fifo) {
 			// false and stopping the here.
 			ret = false;
 			hdlc->receiving = false;
+			kprintf("RX overrun 1!"); // FIXME: remove these
 			LED_RX_OFF();
 		}
 
@@ -167,10 +169,18 @@ static bool hdlcParse(Hdlc *hdlc, bool bit, FIFOBuffer *fifo) {
 		// of the received bytes.
 		hdlc->currentByte = 0;
 		hdlc->bitIndex = 0;
+		//if (adjustCount > 25) kprintf("[AC%d]", adjustCount); // this slows down stuff and makes it work. wtf?!
+		adjustCount = 0;
 		return ret;
 	}
 
 	// Check if we have received a RESET flag (01111111)
+	// In this comparison we also detect when no transmission
+	// (or silence) is taking place, and the demodulator
+	// returns an endless stream of zeroes. Due to the NRZ
+	// coding, the actual bits send to this function will
+	// be an endless stream of ones, which this AND operation
+	// will also detect.
 	if ((hdlc->demodulatedBits & HDLC_RESET) == HDLC_RESET) {
 		// If we have, something probably went wrong at the
 		// transmitting end, and we abort the reception.
@@ -232,6 +242,7 @@ static bool hdlcParse(Hdlc *hdlc, bool bit, FIFOBuffer *fifo) {
 				// If it is, abort and return false
 				hdlc->receiving = false;
 				LED_RX_OFF();
+				kprintf("RX overrun 3!");
 				ret = false;
 			}
 		}
@@ -244,6 +255,7 @@ static bool hdlcParse(Hdlc *hdlc, bool bit, FIFOBuffer *fifo) {
 			// If it is, well, you know by now!
 			hdlc->receiving = false;
 			LED_RX_OFF();
+			kprintf("RX overrun 4!");
 			ret = false;
 		}
 
@@ -328,6 +340,7 @@ void afsk_adc_isr(Afsk *afsk, int8_t currentSample) {
 	// our timing to the transmitter, even if it's timing is
 	// a little off compared to our own.
 	if (TRANSITION_FOUND(afsk->sampledBits)) {
+		adjustCount++;
 		if (afsk->currentPhase < PHASE_THRESHOLD) {
 			afsk->currentPhase += PHASE_INC;
 		} else {
@@ -391,6 +404,7 @@ void afsk_adc_isr(Afsk *afsk, int8_t currentSample) {
 		//
 		// We also check the return of the Link Control parser
 		// to check if an error occured.
+
 		if (!hdlcParse(&afsk->hdlc, !TRANSITION_FOUND(afsk->actualBits), &afsk->rxFifo)) {
 			afsk->status |= RX_OVERRUN;
 		}

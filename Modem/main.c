@@ -48,7 +48,7 @@ static bool sertx = false;							// Flag signifying whether it's time to send da
 // Right now it just prints the packet to the serial port.
 static void mp1Callback(struct MP1Packet *packet) {
 	//kfile_printf(&ser.fd, "%.*s\r\n", packet->dataLength, packet->data);
-	kprintf("%.*s\r\n", packet->dataLength, packet->data);
+	kprintf("%.*s\n", packet->dataLength, packet->data);
 }
 
 // Simple initialization function.
@@ -90,6 +90,7 @@ int main(void)
 		// incoming data
 		mp1Poll(&mp1);
 
+		
 		// We then read a byte from the serial port.
 		// Notice that we use "_nowait" since we can't
 		// have this blocking execution until a byte
