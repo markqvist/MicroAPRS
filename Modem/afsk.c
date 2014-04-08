@@ -83,7 +83,7 @@ INLINE uint8_t sinSample(uint16_t i) {
 #define PHASE_BITS    8
 #define PHASE_INC    1 										// FIXME: originally 1
 #define PHASE_MAX    (SAMPLESPERBIT * PHASE_BITS)
-#define PHASE_THRESHOLD  (PHASE_MAX / 4) + (PHASE_MAX / 8)  // FIXME: originally /2
+#define PHASE_THRESHOLD  (PHASE_MAX / 4)  // FIXME: originally /2
 
 // Modulation constants
 #define MARK_FREQ  1200
@@ -348,7 +348,7 @@ void afsk_adc_isr(Afsk *afsk, int8_t currentSample) {
 		}
 	}
 
-	// We incroment our phase counter
+	// We increment our phase counter
 	afsk->currentPhase += PHASE_BITS;
 
 	// Check if we have reached the end of

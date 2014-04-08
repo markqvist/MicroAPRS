@@ -103,7 +103,7 @@ int main(void)
 			// and the byte is not a "transmit" (newline) character,
 			// we should store it for transmission.
 			if ((serialLen < MP1_MAX_FRAME_LENGTH) && (sbyte != 138)) {
-				kprintf("Byte: %d\n", sbyte);
+				//kprintf("Byte: %d\n", sbyte); // FIXME: delete
 				// Put the read byte into the buffer;
 				serialBuffer[serialLen] = sbyte;
 				// Increment the read length counter
