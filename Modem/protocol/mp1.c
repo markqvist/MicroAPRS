@@ -3,9 +3,6 @@
 #include <string.h>
 #include <drv/ser.h>
 
-static int okC; // FIXME: remove
-static int erC;
-
 static void mp1Decode(MP1 *mp1) {
 	// This decode function is basic and bare minimum.
 	// It does nothing more than extract the data
@@ -42,17 +39,13 @@ void mp1Poll(MP1 *mp1) {
 				// frame length, which means the flag signifies
 				// the end of the packet. Pass control to the
 				// decoder.
-				// kprintf("Got checksum: %d.\n", mp1->buffer[mp1->packetLength-1]);
 				if ((mp1->checksum_in & 0xff) == 0x00) {
-					//kprintf("Correct checksum. Found %d.\n", mp1->buffer[mp1->packetLength-1]);
-					kprintf("[OK%d]  ", okC++);
 					mp1Decode(mp1);
 				} else {
-					// Checksum was incorrect
-					kprintf("[ER%d]  ", erC++);
-					mp1Decode(mp1);
-					//kprintf("Incorrect checksum. Found %d, ", mp1->buffer[mp1->packetLength]);
-					//kprintf("should be %d\n", mp1->checksum_in);
+					// Checksum was incorrect, we don't do anything,
+					// but you can enable the decode anyway, if you
+					// need it for testing or debugging
+					// mp1Decode(mp1);
 				}
 			}
 			// If the above is not the case, this must be the
@@ -60,7 +53,6 @@ void mp1Poll(MP1 *mp1) {
 			mp1->reading = true;
 			mp1->packetLength = 0;
 			mp1->checksum_in = MP1_CHECKSUM_INIT;
-			//kprintf("Checksum init with %d\n", mp1->checksum_in);
 
 			// We have indicated that we are reading,
 			// and reset the length counter. Now we'll
@@ -91,7 +83,6 @@ void mp1Poll(MP1 *mp1) {
 				// still less than our max length, put the incoming
 				// byte in the buffer.
 				if (!mp1->escape) mp1->checksum_in = mp1->checksum_in ^ byte;
-				//kprintf("Checksum is now %d\n", mp1->checksum_in);
 				mp1->buffer[mp1->packetLength++] = byte;
 			} else {
 				// If not, we have a problem: The buffer has overrun
@@ -130,7 +121,6 @@ void mp1Send(MP1 *mp1, const void *_buffer, size_t length) {
 
 	// Initialize checksum
 	mp1->checksum_out = MP1_CHECKSUM_INIT;
-	//kprintf("Checksum init with %d\n", mp1->checksum_out);
 
 	// Transmit the HDLC_FLAG to signify start of TX
 	kfile_putc(HDLC_FLAG, mp1->modem);
@@ -140,12 +130,10 @@ void mp1Send(MP1 *mp1, const void *_buffer, size_t length) {
 	// output function
 	while (length--) {
 		mp1->checksum_out = mp1->checksum_out ^ *buffer;
-		//kprintf("Checksum is now %d\n", mp1->checksum_out);
 		mp1Putbyte(mp1, *buffer++);
 	}
 
 	// Write checksum to end of packet
-	kprintf("Sending packet with checksum %d\n", mp1->checksum_out);
 	mp1Putbyte(mp1, mp1->checksum_out);
 
 	// Transmit a HDLC_FLAG to signify end of TX

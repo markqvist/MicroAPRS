@@ -29,7 +29,8 @@ static Serial ser;			// Declare a serial interface struct
 
 #define TEST_TX false		// Whether we should send test packets
 							// periodically, plus what to send:
-#define TEST_PACKET "Test MP1 AFSK Packet. Test123"
+#define TEST_PACKET "Test MP1 AFSK Packet. Test123."
+#define TEST_TX_INTERVAL 10000L
 
 
 static uint8_t serialBuffer[MP1_MAX_FRAME_LENGTH];	// This is a buffer for incoming serial data
@@ -47,8 +48,8 @@ static bool sertx = false;							// Flag signifying whether it's time to send da
 // so we can process each packet as they are decoded.
 // Right now it just prints the packet to the serial port.
 static void mp1Callback(struct MP1Packet *packet) {
-	//kfile_printf(&ser.fd, "%.*s\r\n", packet->dataLength, packet->data);
-	kprintf("%.*s\n", packet->dataLength, packet->data);
+	kfile_printf(&ser.fd, "%.*s\n", packet->dataLength, packet->data);
+	//kprintf("%.*s\n", packet->dataLength, packet->data);
 }
 
 // Simple initialization function.
@@ -57,8 +58,7 @@ static void init(void)
 	// Enable interrupts
 	IRQ_ENABLE;
 	// Initialize BertOS debug bridge
-	kdbg_init();
-    kprintf("Init\n");
+	// kdbg_init();
 
     // Initialize hardware timers
 	timer_init();
@@ -103,7 +103,6 @@ int main(void)
 			// and the byte is not a "transmit" (newline) character,
 			// we should store it for transmission.
 			if ((serialLen < MP1_MAX_FRAME_LENGTH) && (sbyte != 138)) {
-				//kprintf("Byte: %d\n", sbyte); // FIXME: delete
 				// Put the read byte into the buffer;
 				serialBuffer[serialLen] = sbyte;
 				// Increment the read length counter
@@ -127,7 +126,7 @@ int main(void)
 		}
 
 		// Periodically send test data if we should do so
-		if (TEST_TX && timer_clock() - start > ms_to_ticks(5000L)) {
+		if (TEST_TX && timer_clock() - start > ms_to_ticks(TEST_TX_INTERVAL)) {
 			// Reset the timer counter;
 			start = timer_clock();
 			// And send a test packet!

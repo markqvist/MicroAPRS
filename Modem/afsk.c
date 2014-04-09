@@ -6,8 +6,7 @@
 #include "config.h"			// This stores basic configuration
 #include "hardware.h"		// Hardware functions are nice to have too :)
 
-#include <drv/timer.h>		// Timer driver from BertOS
-//FIXME: is this needed ? #include <cfg/module.h>		
+#include <drv/timer.h>		// Timer driver from BertOS	
 
 #include <cpu/power.h>		// Power management from BertOS
 #include <cpu/pgm.h>		// Access to PROGMEM from BertOS
@@ -79,16 +78,30 @@ INLINE uint8_t sinSample(uint16_t i) {
 // bits in a stream and returns true if they differ.
 #define TRANSITION_FOUND(bits) BITS_DIFFER((bits), (bits) >> 1)
 
+// We use this macro to check if the signal transitioned
+// from one bit (tone) to another. This is used in the phase
+// synchronisation. We look at the last four bits in the
+// stream of demodulated bits and if they differ in sets of
+// two bits, we assume a signal transition occured. We look
+// at pairs of bits to eliminate false positives where a
+// single erroneously demodulated bit will trigger an
+// incorrect phase syncronisation.
+#define DUAL_XOR(bits1, bits2) ((((bits1)^(bits2)) & 0x03) == 0x03)
+#define SIGNAL_TRANSITIONED(bits) DUAL_XOR((bits), (bits) >> 2)
+
 // Phase sync constants
-#define PHASE_BITS    8
-#define PHASE_INC    1 										// FIXME: originally 1
-#define PHASE_MAX    (SAMPLESPERBIT * PHASE_BITS)
-#define PHASE_THRESHOLD  (PHASE_MAX / 4)  // FIXME: originally /2
+#define PHASE_BITS   8								// How much to increment phase counter each sample
+#define PHASE_INC    1								// Nudge by an eigth of a sample each adjustment
+#define PHASE_MAX    (SAMPLESPERBIT * PHASE_BITS)	// Resolution of our phase counter = 64
+#define PHASE_THRESHOLD  (PHASE_MAX / 4)            // Target transition point of our phase window
 
 // Modulation constants
-#define MARK_FREQ  1200
+#define MARK_FREQ  1200		// The tone frequency signifying a binary one
+#define SPACE_FREQ 2200		// The tone frequency signifying a binary zero
+
+// We calculate the amount we need to increment the index
+// in our sine table for each sample of the two tones
 #define MARK_INC   (uint16_t)(DIV_ROUND(SIN_LEN * (uint32_t)MARK_FREQ, CONFIG_AFSK_DAC_SAMPLERATE))
-#define SPACE_FREQ 2200
 #define SPACE_INC  (uint16_t)(DIV_ROUND(SIN_LEN * (uint32_t)SPACE_FREQ, CONFIG_AFSK_DAC_SAMPLERATE))
 
 // HDLC flag bytes
@@ -111,7 +124,6 @@ STATIC_ASSERT(!(CONFIG_AFSK_DAC_SAMPLERATE % BITRATE));
 // Link Layer Control and Demodulation              //
 //////////////////////////////////////////////////////
 
-static int adjustCount;						// FIXME: Debug
 // hdlcParse /////////////////////////////////////////
 // This function looks at the raw bits demodulated from
 // the physical medium and tries to parse actual data
@@ -158,7 +170,6 @@ static bool hdlcParse(Hdlc *hdlc, bool bit, FIFOBuffer *fifo) {
 			// false and stopping the here.
 			ret = false;
 			hdlc->receiving = false;
-			kprintf("RX overrun 1!"); // FIXME: remove these
 			LED_RX_OFF();
 		}
 
@@ -169,8 +180,6 @@ static bool hdlcParse(Hdlc *hdlc, bool bit, FIFOBuffer *fifo) {
 		// of the received bytes.
 		hdlc->currentByte = 0;
 		hdlc->bitIndex = 0;
-		//if (adjustCount > 25) kprintf("[AC%d]", adjustCount); // this slows down stuff and makes it work. wtf?!
-		adjustCount = 0;
 		return ret;
 	}
 
@@ -242,7 +251,6 @@ static bool hdlcParse(Hdlc *hdlc, bool bit, FIFOBuffer *fifo) {
 				// If it is, abort and return false
 				hdlc->receiving = false;
 				LED_RX_OFF();
-				kprintf("RX overrun 3!");
 				ret = false;
 			}
 		}
@@ -255,7 +263,6 @@ static bool hdlcParse(Hdlc *hdlc, bool bit, FIFOBuffer *fifo) {
 			// If it is, well, you know by now!
 			hdlc->receiving = false;
 			LED_RX_OFF();
-			kprintf("RX overrun 4!");
 			ret = false;
 		}
 
@@ -339,8 +346,7 @@ void afsk_adc_isr(Afsk *afsk, int8_t currentSample) {
 	// it's center at the bit transitions. Thus, we synchronise
 	// our timing to the transmitter, even if it's timing is
 	// a little off compared to our own.
-	if (TRANSITION_FOUND(afsk->sampledBits)) {
-		adjustCount++;
+	if (SIGNAL_TRANSITIONED(afsk->sampledBits)) {
 		if (afsk->currentPhase < PHASE_THRESHOLD) {
 			afsk->currentPhase += PHASE_INC;
 		} else {
@@ -363,27 +369,29 @@ void afsk_adc_isr(Afsk *afsk, int8_t currentSample) {
 		afsk->actualBits <<= 1;
 
 		// We determine the actual bit value by reading
-		// the last 3 sampled bits. If there is two or
+		// the last 5 sampled bits. If there is three or
 		// more 1's, we will assume that the transmitter
 		// sent us a one, otherwise we assume a zero
 
-		// FIXME: Increasing this to 5 bit determine
-		uint8_t bits = afsk->sampledBits & 0x07;
-		if (bits == 0x07 || // 111
-			bits == 0x06 || // 110
-			bits == 0x05 || // 101
-			bits == 0x03	// 011
-			) {
-			afsk->actualBits |= 1;
-		}
-		// uint8_t bits = afsk->sampledBits & 0x0f;
-		// uint8_t c = 0;
-	 	// c += bits & BV(1);
-	 	// c += bits & BV(2);
-	 	// c += bits & BV(3);
-	 	// c += bits & BV(4);
-	 	// c += bits & BV(5);
-	 	// if (c >= 3) afsk->actualBits |= 1;
+		uint8_t bits = afsk->sampledBits & 0x0f;
+		uint8_t c = 0;
+	 	c += bits & BV(1);
+	 	c += bits & BV(2);
+	 	c += bits & BV(3);
+	 	c += bits & BV(4);
+	 	c += bits & BV(5);
+	 	if (c >= 3) afsk->actualBits |= 1;
+
+	 	//// Alternative using only three bits //////////
+		// uint8_t bits = afsk->sampledBits & 0x07;
+		// if (bits == 0x07 || // 111
+		// 	bits == 0x06 || // 110
+		// 	bits == 0x05 || // 101
+		// 	bits == 0x03	// 011
+		// 	) {
+		// 	afsk->actualBits |= 1;
+		// }
+		/////////////////////////////////////////////////
 
 		// Now we can pass the actual bit to the HDLC parser.
 		// We are using NRZ coding, so if 2 consecutive bits
@@ -420,14 +428,17 @@ void afsk_adc_isr(Afsk *afsk, int8_t currentSample) {
 #define BIT_STUFF_LEN 5
 
 // A macro for switching what tone is being
-// synthesized by the DAC.
+// synthesized by the DAC. We basically just
+// change how quickly we go through the sine
+// table each time we send out a sample. This
+// is done by changing the phaseInc variable
 #define SWITCH_TONE(inc)  (((inc) == MARK_INC) ? SPACE_INC : MARK_INC)
 
 // This function starts the transmission
 static void afsk_txStart(Afsk *afsk) {
 	if (!afsk->sending) {
 		// Initialize the phase increment to
-		// that of the mark frequency
+		// that of the mark frequency (zero)
 		afsk->phaseInc = MARK_INC;
 		// Reset the phase accumulator to 0
 		afsk->phaseAcc = 0;

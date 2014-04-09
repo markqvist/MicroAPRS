@@ -17,6 +17,10 @@ static Afsk *modem;
 // And now for the actual hardware functions        //
 //////////////////////////////////////////////////////
 
+// M1 correction = 9500
+// M2 correction = 40000
+#define FREQUENCY_CORRECTION 0
+
 // This function initializes the ADC and configures
 // it the way we need.
 void hw_afsk_adcInit(int ch, Afsk *_modem)
@@ -28,15 +32,19 @@ void hw_afsk_adcInit(int ch, Afsk *_modem)
 	// a pin that can't be used for analog input
 	ASSERT(ch <= 5);
 
-	// We need to do some configuration on the Timer/Counter Control
-	// Register 1, aka Timer1
+	// We need a timer to control how often our sampling functions
+	// should run. To do this we will need to change some registers.
+	// First we do some configuration on the Timer/Counter Control
+	// Register 1, aka Timer1.
+	//
 	// The following bits are set:
-	// CS11: ClockSource 11, sets the prescaler to 8, ie 2MHz
-	// WGM13 and WGM12 together enables Timer Mode 12, which
+	// CS10: ClockSource 10, sets no prescaler on the clock,
+	// meaning it will run at the same speed as the CPU, ie 16MHz
+	// WGM13 and WGM12 together enables "Timer Mode 12", which
 	// is Clear Timer on Compare, compare set to TOP, and the
 	// source for the TOP value is ICR1 (Input Capture Register1).
 	TCCR1A = 0;									
-	TCCR1B = BV(CS11) | BV(WGM13) | BV(WGM12);
+	TCCR1B = BV(CS10) | BV(WGM13) | BV(WGM12);
 
 	// Then we set the ICR1 register to what count value we want to
 	// reset (and thus trigger the interrupt) at.
@@ -47,7 +55,8 @@ void hw_afsk_adcInit(int ch, Afsk *_modem)
 	//    (CPUClock / Prescaler) / desired frequency - 1
 	// So that's what well put in this register to set up our
 	// 9.6KHz sampling rate.
-	ICR1 = ((CPU_FREQ / 8) / 9600) - 1;
+	ICR1 = (((CPU_FREQ+FREQUENCY_CORRECTION)) / 9600) - 1;
+	kprintf("ICR1=%d",ICR1);
 
 	// Set reference to AVCC (5V), select pin
 	// Set the ADMUX register. The first part (BV(REFS0)) sets
