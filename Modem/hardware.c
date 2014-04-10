@@ -19,7 +19,7 @@ static Afsk *modem;
 
 // M1 correction = 9500
 // M2 correction = 40000
-#define FREQUENCY_CORRECTION 0
+#define FREQUENCY_CORRECTION 9500
 
 // This function initializes the ADC and configures
 // it the way we need.
@@ -43,18 +43,29 @@ void hw_afsk_adcInit(int ch, Afsk *_modem)
 	// WGM13 and WGM12 together enables "Timer Mode 12", which
 	// is Clear Timer on Compare, compare set to TOP, and the
 	// source for the TOP value is ICR1 (Input Capture Register1).
+	// TOP means that we specify a maximum value for the timer, and
+	// once that value is reached, an interrupt will be triggered.
+	// The timer will then start from zero again. As just noted,
+	// the place we specify this value is in the ICR1 register.
 	TCCR1A = 0;									
 	TCCR1B = BV(CS10) | BV(WGM13) | BV(WGM12);
 
-	// Then we set the ICR1 register to what count value we want to
+	// We now set the ICR1 register to what count value we want to
 	// reset (and thus trigger the interrupt) at.
-	// Since the prescaler is set to 2MHz, the counter will be
-	// incremented two million times each second, and we want the
-	// interrupt to trigger 9600 time each second. The formula for
+	// Since the timer is running at 16MHz, the counter will be
+	// incremented 16 million times each second, and we want the
+	// interrupt to trigger 9600 times each second. The formula for
 	// calculating the value of ICR1 (the TOP value) is:
 	//    (CPUClock / Prescaler) / desired frequency - 1
 	// So that's what well put in this register to set up our
-	// 9.6KHz sampling rate.
+	// 9.6KHz sampling rate. Note that we can also specify a clock
+	// correction to this calculation. If you measure your processors
+	// actual clock speed to 16.095MHz, define FREQUENCY_CORRECTION
+	// as 9500, and the actual sampling (and this modulation and
+	// demodulation) will be much closer to an actual 9600 Hz.
+	// No crystals are perfect though, and will also drift with
+	// temperature variations, but if you have a board with a
+	// crystal that is way off frequency, this can help alot.
 	ICR1 = (((CPU_FREQ+FREQUENCY_CORRECTION)) / 9600) - 1;
 	kprintf("ICR1=%d",ICR1);
 
