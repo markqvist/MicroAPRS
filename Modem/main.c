@@ -15,7 +15,6 @@
 #include "afsk.h"			// Header for AFSK modem
 #include "protocol/mp1.h"	// Header for MP.1 protocol
 
-
 //////////////////////////////////////////////////////
 // A few definitions				                //
 //////////////////////////////////////////////////////
@@ -85,7 +84,7 @@ int main(void)
 	
 	// Go into ye good ol' infinite loop
 	while (1)
-	{
+	{	
 		// First we instruct the protocol to check for
 		// incoming data
 		mp1Poll(&mp1);
