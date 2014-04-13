@@ -369,20 +369,9 @@ void afsk_adc_isr(Afsk *afsk, int8_t currentSample) {
 		afsk->actualBits <<= 1;
 
 		// We determine the actual bit value by reading
-		// the last 5 sampled bits. If there is three or
+		// the last 3 sampled bits. If there is three or
 		// more 1's, we will assume that the transmitter
 		// sent us a one, otherwise we assume a zero
-
-		// uint8_t bits = afsk->sampledBits & 0x0f;
-		// uint8_t c = 0;
-	 // 	c += bits & BV(1);
-	 // 	c += bits & BV(2);
-	 // 	c += bits & BV(3);
-	 // 	c += bits & BV(4);
-	 // 	c += bits & BV(5);
-	 // 	if (c >= 3) afsk->actualBits |= 1;
-
-	 	//// Alternative using only three bits //////////
 		uint8_t bits = afsk->sampledBits & 0x07;
 		if (bits == 0x07 || // 111
 			bits == 0x06 || // 110
@@ -391,6 +380,16 @@ void afsk_adc_isr(Afsk *afsk, int8_t currentSample) {
 			) {
 			afsk->actualBits |= 1;
 		}
+
+	 	//// Alternative using five bits ////////////////
+ 		// uint8_t bits = afsk->sampledBits & 0x0f;
+ 		// uint8_t c = 0;
+	 	// c += bits & BV(1);
+	 	// c += bits & BV(2);
+	 	// c += bits & BV(3);
+	 	// c += bits & BV(4);
+	 	// c += bits & BV(5);
+	 	// if (c >= 3) afsk->actualBits |= 1;
 		/////////////////////////////////////////////////
 
 		// Now we can pass the actual bit to the HDLC parser.
