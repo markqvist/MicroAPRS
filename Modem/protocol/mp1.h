@@ -26,6 +26,7 @@ typedef struct MP1 {
 	uint8_t buffer[MP1_MAX_FRAME_LENGTH];	// A buffer for incoming packets
 	KFile *modem;							// KFile access to the modem
 	size_t packetLength;					// Counter for received packet length
+	size_t readLength;						// This is the full read length, including parity bytes
 	mp1_callback_t callback;				// The function to call when a packet has been received
 	uint8_t checksum_in;					// Rolling checksum for incoming packets
 	uint8_t checksum_out;					// Rolling checksum for outgoing packets
