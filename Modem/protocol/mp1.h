@@ -24,14 +24,17 @@ typedef void (*mp1_callback_t)(struct MP1Packet *packet);
 // Struct for a protocol context
 typedef struct MP1 {
 	uint8_t buffer[MP1_MAX_FRAME_LENGTH];	// A buffer for incoming packets
+	uint8_t fecBuffer[3];					// FEC buffer
 	KFile *modem;							// KFile access to the modem
 	size_t packetLength;					// Counter for received packet length
 	size_t readLength;						// This is the full read length, including parity bytes
+	uint8_t calculatedParity;				// Calculated parity for incoming data block
 	mp1_callback_t callback;				// The function to call when a packet has been received
 	uint8_t checksum_in;					// Rolling checksum for incoming packets
 	uint8_t checksum_out;					// Rolling checksum for outgoing packets
 	bool reading;							// True when we have seen a HDLC flag
 	bool escape;							// We need to know if we are in an escape sequence
+	bool fecEscape;							// fec escape
 } MP1;
 
 // A struct encapsulating a network packet
@@ -41,6 +44,7 @@ typedef struct MP1Packet {
 } MP1Packet;
 
 void mp1Init(MP1 *mp1, KFile *modem, mp1_callback_t callback);
+void mp1Read(MP1 *mp1, int byte);
 void mp1Poll(MP1 *mp1);
 void mp1Send(MP1 *mp1, const void *_buffer, size_t length);
 
