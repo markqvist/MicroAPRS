@@ -93,7 +93,7 @@ INLINE uint8_t sinSample(uint16_t i) {
 #define PHASE_BITS   8								// How much to increment phase counter each sample
 #define PHASE_INC    1								// Nudge by an eigth of a sample each adjustment
 #define PHASE_MAX    (SAMPLESPERBIT * PHASE_BITS)	// Resolution of our phase counter = 64
-#define PHASE_THRESHOLD  (PHASE_MAX / 4)            // Target transition point of our phase window
+#define PHASE_THRESHOLD  (PHASE_MAX / 2)            // Target transition point of our phase window
 
 // Modulation constants
 #define MARK_FREQ  1200		// The tone frequency signifying a binary one
@@ -373,24 +373,24 @@ void afsk_adc_isr(Afsk *afsk, int8_t currentSample) {
 		// more 1's, we will assume that the transmitter
 		// sent us a one, otherwise we assume a zero
 
-		uint8_t bits = afsk->sampledBits & 0x0f;
-		uint8_t c = 0;
-	 	c += bits & BV(1);
-	 	c += bits & BV(2);
-	 	c += bits & BV(3);
-	 	c += bits & BV(4);
-	 	c += bits & BV(5);
-	 	if (c >= 3) afsk->actualBits |= 1;
+		// uint8_t bits = afsk->sampledBits & 0x0f;
+		// uint8_t c = 0;
+	 // 	c += bits & BV(1);
+	 // 	c += bits & BV(2);
+	 // 	c += bits & BV(3);
+	 // 	c += bits & BV(4);
+	 // 	c += bits & BV(5);
+	 // 	if (c >= 3) afsk->actualBits |= 1;
 
 	 	//// Alternative using only three bits //////////
-		// uint8_t bits = afsk->sampledBits & 0x07;
-		// if (bits == 0x07 || // 111
-		// 	bits == 0x06 || // 110
-		// 	bits == 0x05 || // 101
-		// 	bits == 0x03	// 011
-		// 	) {
-		// 	afsk->actualBits |= 1;
-		// }
+		uint8_t bits = afsk->sampledBits & 0x07;
+		if (bits == 0x07 || // 111
+			bits == 0x06 || // 110
+			bits == 0x05 || // 101
+			bits == 0x03	// 011
+			) {
+			afsk->actualBits |= 1;
+		}
 		/////////////////////////////////////////////////
 
 		// Now we can pass the actual bit to the HDLC parser.

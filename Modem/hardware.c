@@ -67,7 +67,6 @@ void hw_afsk_adcInit(int ch, Afsk *_modem)
 	// temperature variations, but if you have a board with a
 	// crystal that is way off frequency, this can help alot.
 	ICR1 = (((CPU_FREQ+FREQUENCY_CORRECTION)) / 9600) - 1;
-	kprintf("ICR1=%d",ICR1);
 
 	// Set reference to AVCC (5V), select pin
 	// Set the ADMUX register. The first part (BV(REFS0)) sets
