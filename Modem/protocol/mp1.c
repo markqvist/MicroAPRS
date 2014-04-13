@@ -117,14 +117,13 @@ void mp1Poll(MP1 *mp1) {
 				// the end of the packet. Pass control to the
 				// decoder.
 				if ((mp1->checksum_in & 0xff) == 0x00) {
-					kprintf("[OK] ");
 					mp1Decode(mp1);
 				} else {
 					// Checksum was incorrect, we don't do anything,
 					// but you can enable the decode anyway, if you
 					// need it for testing or debugging
-					kprintf("[ER] [%d] ", mp1->checksum_in);
-					mp1Decode(mp1);
+					// kprintf("[ER] [%d] ", mp1->checksum_in);
+					//mp1Decode(mp1);
 				}
 			}
 			// If the above is not the case, this must be the
