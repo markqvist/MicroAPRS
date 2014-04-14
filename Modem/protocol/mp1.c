@@ -3,9 +3,13 @@
 #include <string.h>
 #include <drv/ser.h>
 
+#include "compression/heatshrink_encoder.h"
+#include "compression/heatshrink_decoder.h"
+
 // FIXME: Describe these
 static uint8_t lastByte = 0x00;
 static bool sendParityBlock = false;
+
 
 // FIXME: Describe this
 INLINE bool BIT(uint8_t byte, int n) { return ((byte & BV(n-1))>>(n-1)); }
@@ -39,13 +43,21 @@ static void mp1Decode(MP1 *mp1) {
 
 	// If header indicates a padded packet, remove
 	// padding
-	if (header & 0x01) {
+	if (header & MP1_HEADER_PADDED) {
 		buffer++;
 	}
 
 	// Set the payload length of the packet to the counted
 	// length minus 1, so we remove the checksum
 	packet.dataLength = mp1->packetLength - 2 - (header & 0x01);
+
+	// Check if we have received a compressed packet
+	if (header & MP1_HEADER_COMPRESSION) {
+		size_t decompressedSize = decompress(buffer, packet.dataLength);
+		packet.dataLength = decompressedSize;
+		memcpy(buffer, compressionBuffer, decompressedSize);
+	}
+
 	packet.data = buffer;
 
 	// If a callback have been specified, let's
@@ -219,19 +231,37 @@ void mp1Send(MP1 *mp1, const void *_buffer, size_t length) {
 	// Transmit the HDLC_FLAG to signify start of TX
 	kfile_putc(HDLC_FLAG, mp1->modem);
 
+	bool packetCompression = false;
+	size_t compressedSize = compress(buffer, length);
+	if (compressedSize != 0 && compressedSize < length) {
+		//kprintf("Using compression\n");
+		// Compression saved us some space, we'll
+		// send the paket compressed
+		packetCompression = true;
+		memcpy(buffer, compressionBuffer, compressedSize);
+		length = compressedSize;
+	} else {
+		// We are not going to use compression
+	}
+
 	// Write header and possibly padding
 	// Remember we also write a header and
 	// a checksum. This ensures that we will
 	// always end our packet with a checksum
 	// and a parity byte.
+
+	uint8_t header = 0xf0;
+	if (packetCompression) header ^= MP1_HEADER_COMPRESSION;
+
 	if (length % 2 != 0) {
-		mp1->checksum_out = mp1->checksum_out ^ 0xf1;
-		mp1Putbyte(mp1, 0xf1);
-		mp1->checksum_out = mp1->checksum_out ^ 0x55;
-		mp1Putbyte(mp1, 0x55);
+		header ^= MP1_HEADER_PADDED;
+		mp1->checksum_out = mp1->checksum_out ^ header;
+		mp1Putbyte(mp1, header);
+		mp1->checksum_out = mp1->checksum_out ^ MP1_PADDING;
+		mp1Putbyte(mp1, MP1_PADDING);
 	} else {
-		mp1->checksum_out = mp1->checksum_out ^ 0xf0;
-		mp1Putbyte(mp1, 0xf0);
+		mp1->checksum_out = mp1->checksum_out ^ header;
+		mp1Putbyte(mp1, header);
 	}
 
 	// Continously increment the pointer address
@@ -256,4 +286,72 @@ void mp1Init(MP1 *mp1, KFile *modem, mp1_callback_t callback) {
 	// a callback for when a packet has been decoded
 	mp1->modem = modem;
 	mp1->callback = callback;
+}
+
+int freeRam(void) {
+   extern int __heap_start, *__brkval; 
+   int v; 
+   return (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval); 
+}
+
+size_t compress(uint8_t *input, size_t length) {
+	heatshrink_encoder *hse = heatshrink_encoder_alloc(8, 4);
+	if (hse == NULL) {
+		//kprintf("Could not allocate encoder\n");
+		return 0;
+	}
+
+	size_t written = 0;
+	size_t sunk = 0;
+	heatshrink_encoder_sink(hse, input, length, &sunk);
+	int status = heatshrink_encoder_finish(hse);
+
+	if (sunk < length) {
+		//kprintf("Not all data was sunk into encoder\n");
+		heatshrink_encoder_free(hse);
+		return 0;
+	} else {
+		//kprintf("Bytes sunk into HSE: %d\n", length);
+		if (status == HSER_FINISH_MORE) {
+			heatshrink_encoder_poll(hse, compressionBuffer, MP1_MAX_FRAME_LENGTH, &written);
+			//kprintf("Bytes written into buffer: %d\n", written);
+		} else {
+			//kprintf("All input data was sunk, but encoder doesn't have any data for us.");
+		}
+	}
+
+	heatshrink_encoder_free(hse);
+	return written;
+}
+
+size_t decompress(uint8_t *input, size_t length) {
+	heatshrink_decoder *hsd = heatshrink_decoder_alloc(MP1_MAX_FRAME_LENGTH, 8, 4);
+	if (hsd == NULL) {
+		//kprintf("Could not allocate decoder\n");
+		return 0;
+	}
+
+	//kprintf("\nDecoder allocated. Free RAM: %d bytes\n", freeRam());
+
+	size_t written = 0;
+	size_t sunk = 0;
+	heatshrink_decoder_sink(hsd, input, length, &sunk);
+	int status = heatshrink_decoder_finish(hsd);
+
+	if (sunk < length) {
+		//kprintf("Not all data was sunk into decoder\n");
+		heatshrink_decoder_free(hsd);
+		return 0;
+	} else {
+		//kprintf("Bytes sunk into HSD: %d\n", length);
+		if (status == HSER_FINISH_MORE) {
+			heatshrink_decoder_poll(hsd, compressionBuffer, MP1_MAX_FRAME_LENGTH, &written);
+			//kprintf("Bytes written into decompression buffer: %d\n", written);
+		} else {
+			//kprintf("All input data was sunk, but the decoder doesn't have any data for us.");
+		}
+	}
+
+	heatshrink_decoder_free(hsd);
+	return written;
 }

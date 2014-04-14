@@ -14,6 +14,15 @@
 #define HDLC_RESET 0x7F
 #define AX25_ESC   0x1B
 
+// Some further definitions FIXME: 
+#define MP1_PADDING 			0x55
+#define MP1_HEADER_PADDED		0x01
+#define MP1_HEADER_COMPRESSION 	0x02
+
+// FIXME: describe
+//static uint8_t compressedData[MP1_MAX_FRAME_LENGTH-0];
+static uint8_t compressionBuffer[MP1_MAX_FRAME_LENGTH+10];
+
 // Just a forward declaration that this struct exists
 struct MP1Packet;
 
@@ -47,5 +56,9 @@ void mp1Init(MP1 *mp1, KFile *modem, mp1_callback_t callback);
 void mp1Read(MP1 *mp1, int byte);
 void mp1Poll(MP1 *mp1);
 void mp1Send(MP1 *mp1, const void *_buffer, size_t length);
+
+int freeRam(void);
+size_t compress(uint8_t *input, size_t length);
+size_t decompress(uint8_t *input, size_t length);
 
 #endif

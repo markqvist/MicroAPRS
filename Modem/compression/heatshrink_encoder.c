@@ -92,7 +92,7 @@ heatshrink_encoder *heatshrink_encoder_alloc(uint8_t window_sz2,
      * will be scanned for useful backreferences. */
     size_t buf_sz = (2 << window_sz2);
 
-    kprintf("Trying to allocate: %d\n", buf_sz);
+    //kprintf("Trying to allocate: %d\n", buf_sz);
     heatshrink_encoder *hse = HEATSHRINK_MALLOC(sizeof(*hse) + buf_sz);
     if (hse == NULL) { return NULL; }
     hse->window_sz2 = window_sz2;

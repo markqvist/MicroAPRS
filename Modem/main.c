@@ -15,8 +15,6 @@
 #include "afsk.h"			// Header for AFSK modem
 #include "protocol/mp1.h"	// Header for MP.1 protocol
 
-#include "compression/heatshrink_encoder.h"
-#include "compression/heatshrink_decoder.h"
 
 //////////////////////////////////////////////////////
 // A few definitions				                //
@@ -31,7 +29,7 @@ static Serial ser;			// Declare a serial interface struct
 
 #define TEST_TX false		// Whether we should send test packets
 							// periodically, plus what to send:
-#define TEST_PACKET "Test MP1 AFSK Packet. Test123."
+#define TEST_PACKET "Packet received. This is an ACK."
 #define TEST_TX_INTERVAL 10000L
 
 
@@ -41,114 +39,6 @@ static int serialLen = 0;							// Counter for counting length of data from seri
 static bool sertx = false;							// Flag signifying whether it's time to send data
 													// Received on the serial port.
 
-static uint8_t compressedData[MP1_MAX_FRAME_LENGTH];
-static uint8_t decompressedData[MP1_MAX_FRAME_LENGTH];
-
-
-static int freeRam () {
-   extern int __heap_start, *__brkval; 
-   int v; 
-   return (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval); 
-}
-
-static size_t compress(uint8_t *input, size_t length) {
-	heatshrink_encoder *hse = heatshrink_encoder_alloc(8, 4);
-	if (hse == NULL) {
-		kprintf("Could not allocate encoder");
-		return 0;
-	}
-
-	size_t written = 0;
-	size_t sunk = 0;
-	heatshrink_encoder_sink(hse, input, length, &sunk);
-	int status = heatshrink_encoder_finish(hse);
-
-	if (sunk < length) {
-		kprintf("Not all data was sunk into encoder\n");
-		heatshrink_encoder_free(hse);
-		return 0;
-	} else {
-		kprintf("Bytes sunk into HSE: %d\n", length);
-		if (status == HSER_FINISH_MORE) {
-			heatshrink_encoder_poll(hse, compressedData, MP1_MAX_FRAME_LENGTH, &written);
-			kprintf("Bytes written into buffer: %d\n", written);
-		} else {
-			kprintf("All input data was sunk, but encoder doesn't have any data for us.");
-		}
-	}
-
-	heatshrink_encoder_free(hse);
-	return written;
-}
-
-static size_t decompress(uint8_t *input, size_t length) {
-	heatshrink_decoder *hsd = heatshrink_decoder_alloc(MP1_MAX_FRAME_LENGTH, 8, 4);
-	if (hsd == NULL) {
-		kprintf("Could not allocate decoder");
-		return 0;
-	}
-
-	kprintf("\nDecoder allocated. Free RAM: %d bytes\n", freeRam());
-
-	size_t written = 0;
-	size_t sunk = 0;
-	heatshrink_decoder_sink(hsd, input, length, &sunk);
-	int status = heatshrink_decoder_finish(hsd);
-
-	if (sunk < length) {
-		kprintf("Not all data was sunk into decoder\n");
-		heatshrink_decoder_free(hsd);
-		return 0;
-	} else {
-		kprintf("Bytes sunk into HSD: %d\n", length);
-		if (status == HSER_FINISH_MORE) {
-			heatshrink_decoder_poll(hsd, decompressedData, MP1_MAX_FRAME_LENGTH, &written);
-			kprintf("Bytes written into decompression buffer: %d\n", written);
-		} else {
-			kprintf("All input data was sunk, but the decoder doesn't have any data for us.");
-		}
-	}
-
-	heatshrink_decoder_free(hsd);
-	return written;
-}
-
-static void hseTest() { 
-	kprintf("\nFree RAM: %d bytes\n", freeRam());
-	size_t compressed_size = compress(serialBuffer, serialLen);
-	size_t decompressed_size = decompress(compressedData, compressed_size);
-	kprintf("\n-------------------\nInput size: %d\nCompressed size: %d\nDecompressed size: %d\n", serialLen, compressed_size, decompressed_size);
-
-	// heatshrink_encoder *hse = heatshrink_encoder_alloc(8, 4);
-	// kprintf("\nFree RAM: %d bytes\n", freeRam());
-	
-	// size_t out_sz = 50;
-	// uint8_t out_buf[out_sz];
-	// size_t written = 0;
-	// kprintf("\nFree RAM: %d bytes\n", freeRam());
-
-	// size_t length = serialLen;
-
-	// heatshrink_encoder_sink(hse, serialBuffer, serialLen, &length);
-
-	
-
-	// int returnv = heatshrink_encoder_finish(hse);
-	// kprintf("Encoder finish returned: %d\n", returnv);
-
-	// if (length < serialLen) {
-	// 	kprintf("Not all data was sunk into encoder\n");
-	// } else {
-	// 	// All data delivered
-	// 	kprintf("Bytes sunk into HSE: %d\n", length);
-
-	// 	heatshrink_encoder_poll(hse, out_buf, out_sz, &written);
-
-	// 	kprintf("2: Bytes written into buffer: %d\n", written);
-	// }
-
-	// heatshrink_encoder_free(hse);
-}
 
 //////////////////////////////////////////////////////
 // And here comes the actual program :)             //
@@ -159,6 +49,13 @@ static void hseTest() {
 // Right now it just prints the packet to the serial port.
 static void mp1Callback(struct MP1Packet *packet) {
 	kfile_printf(&ser.fd, "%.*s\n", packet->dataLength, packet->data);
+	
+	// if (false) {
+	// 	// strcmp(packet->data, "OZ7TMD")
+	// 	timer_delay(300);
+	// 	mp1Send(&mp1, TEST_PACKET, sizeof(TEST_PACKET));
+	// }
+	
 	//kprintf("%.*s\n", packet->dataLength, packet->data);
 }
 
@@ -230,9 +127,8 @@ int main(void)
 			// If we should, pass the buffer to the protocol's
 			// send function.
 			
-			hseTest();
-			// mp1Send(&mp1, serialBuffer, serialLen);
-
+			mp1Send(&mp1, serialBuffer, serialLen);
+			
 			// Reset the transmission flag and length counter
 			sertx = false;
 			serialLen = 0;
