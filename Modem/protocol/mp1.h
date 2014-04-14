@@ -4,9 +4,11 @@
 #include <cfg/compiler.h>
 #include <io/kfile.h>
 
+#include "compression/lzfx.h"
+
 // Frame sizing & checksum
 #define MP1_MIN_FRAME_LENGTH 3
-#define MP1_MAX_FRAME_LENGTH 300
+#define MP1_MAX_FRAME_LENGTH 200
 #define MP1_CHECKSUM_INIT 0xAA
 
 // We need to know some basic HDLC flag bytes

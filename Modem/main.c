@@ -15,6 +15,7 @@
 #include "afsk.h"			// Header for AFSK modem
 #include "protocol/mp1.h"	// Header for MP.1 protocol
 
+
 //////////////////////////////////////////////////////
 // A few definitions				                //
 //////////////////////////////////////////////////////
@@ -50,6 +51,12 @@ static void mp1Callback(struct MP1Packet *packet) {
 	kfile_printf(&ser.fd, "%.*s\n", packet->dataLength, packet->data);
 	//kprintf("%.*s\n", packet->dataLength, packet->data);
 }
+
+// static int freeRam () {
+//   extern int __heap_start, *__brkval; 
+//   int v; 
+//   return (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval); 
+// }
 
 // Simple initialization function.
 static void init(void)
@@ -119,6 +126,7 @@ int main(void)
 			// If we should, pass the buffer to the protocol's
 			// send function.
 			mp1Send(&mp1, serialBuffer, serialLen);
+
 			// Reset the transmission flag and length counter
 			sertx = false;
 			serialLen = 0;

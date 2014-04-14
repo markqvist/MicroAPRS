@@ -12,6 +12,6 @@
 											// will wait for data before timing out.
 
 #define CONFIG_AFSK_PREAMBLE_LEN 10UL		// The length of the packet preamble in milliseconds
-#define CONFIG_AFSK_TRAILER_LEN 2UL		// The length of the packet tail in milliseconds
+#define CONFIG_AFSK_TRAILER_LEN 2UL			// The length of the packet tail in milliseconds
 
 #endif
