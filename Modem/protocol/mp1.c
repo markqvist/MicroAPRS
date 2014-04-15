@@ -113,6 +113,8 @@ void mp1Poll(MP1 *mp1) {
 							mp1->checksum_in ^= correction;
 						}
 						mp1->buffer[mp1->packetLength-(2-i)] ^= correction;
+
+						if (s != 0) mp1->correctionsMade += 1;
 					}
 				}
 				continue;
@@ -129,13 +131,15 @@ void mp1Poll(MP1 *mp1) {
 				// the end of the packet. Pass control to the
 				// decoder.
 				if ((mp1->checksum_in & 0xff) == 0x00) {
+					kprintf("[CHK-OK] [C=%d] ", mp1->correctionsMade);
 					mp1Decode(mp1);
 				} else {
 					// Checksum was incorrect, we don't do anything,
 					// but you can enable the decode anyway, if you
 					// need it for testing or debugging
 					// kprintf("[ER] [%d] ", mp1->checksum_in);
-					//mp1Decode(mp1);
+					kprintf("[CHK-ER] [C=%d] ", mp1->correctionsMade);
+					mp1Decode(mp1);
 				}
 			}
 			// If the above is not the case, this must be the
@@ -144,6 +148,7 @@ void mp1Poll(MP1 *mp1) {
 			mp1->packetLength = 0;
 			mp1->readLength = 0;
 			mp1->checksum_in = MP1_CHECKSUM_INIT;
+			mp1->correctionsMade = 0;
 
 			// We have indicated that we are reading,
 			// and reset the length counter. Now we'll
@@ -206,8 +211,6 @@ static void mp1Putbyte(MP1 *mp1, uint8_t byte) {
 		byte == HDLC_RESET ||
 		byte == AX25_ESC) {
 		kfile_putc(AX25_ESC, mp1->modem);
-		lastByte = AX25_ESC;
-		//sendParityBlock ^= true;
 	}
 
 	kfile_putc(byte, mp1->modem);
@@ -219,6 +222,19 @@ static void mp1Putbyte(MP1 *mp1, uint8_t byte) {
 
 	lastByte = byte;
 	sendParityBlock ^= true;
+}
+
+static void mp1WriteByte(MP1 *mp1, uint8_t byte) {
+		// If we are sending something that looks
+	// like an HDLC special byte, send an escape
+	// character first
+	if (byte == HDLC_FLAG ||
+		byte == HDLC_RESET ||
+		byte == AX25_ESC) {
+		kfile_putc(AX25_ESC, mp1->modem);
+	}
+
+	kfile_putc(byte, mp1->modem);
 }
 
 void mp1Send(MP1 *mp1, const void *_buffer, size_t length) {
@@ -234,7 +250,6 @@ void mp1Send(MP1 *mp1, const void *_buffer, size_t length) {
 	bool packetCompression = false;
 	size_t compressedSize = compress(buffer, length);
 	if (compressedSize != 0 && compressedSize < length) {
-		//kprintf("Using compression\n");
 		// Compression saved us some space, we'll
 		// send the paket compressed
 		packetCompression = true;

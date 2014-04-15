@@ -49,13 +49,12 @@ static bool sertx = false;							// Flag signifying whether it's time to send da
 // Right now it just prints the packet to the serial port.
 static void mp1Callback(struct MP1Packet *packet) {
 	kfile_printf(&ser.fd, "%.*s\n", packet->dataLength, packet->data);
-	
-	// if (false) {
-	// 	// strcmp(packet->data, "OZ7TMD")
-	// 	timer_delay(300);
-	// 	mp1Send(&mp1, TEST_PACKET, sizeof(TEST_PACKET));
-	// }
-	
+
+	if (packet->data[0]-128 == 'R' && packet->data[1]-128 == 'Q') {
+		timer_delay(1000);
+		mp1Send(&mp1, TEST_PACKET, sizeof(TEST_PACKET));
+	}
+
 	//kprintf("%.*s\n", packet->dataLength, packet->data);
 }
 
@@ -118,6 +117,8 @@ int main(void)
 				// If one of the above conditions were actually the
 				// case, it means we have to transmit, se we set
 				// transmission flag to true.
+				serialBuffer[serialLen] = sbyte;
+				serialLen++;
 				sertx = true;
 			}
 		}

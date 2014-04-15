@@ -19,7 +19,7 @@ static Afsk *modem;
 
 // M1 correction = 9500
 // M2 correction = 40000
-#define FREQUENCY_CORRECTION 40000
+#define FREQUENCY_CORRECTION 9500
 
 // This function initializes the ADC and configures
 // it the way we need.
