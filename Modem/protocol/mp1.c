@@ -7,13 +7,29 @@
 #include "compression/heatshrink_encoder.h"
 #include "compression/heatshrink_decoder.h"
 
-// FIXME: Describe these
-static uint8_t lastByte = 0x00;
+// We need an indicator to tell us whether we
+// should send a parity byte. This happens
+// whenever two normal bytes of data has been
+// sent. We also keep the last sent byte in
+// memory because we need it to calculate the
+// parity byte.
 static bool sendParityBlock = false;
+static uint8_t lastByte = 0x00;
 
+// We also need a buffer for compressing and
+// decompressing packet data.
+static uint8_t compressionBuffer[MP1_MAX_FRAME_LENGTH+10];
 
-// FIXME: Describe this
+// The GET_BIT macro is used in the interleaver
+// and deinterleaver to access single bits of a
+// byte.
 INLINE bool GET_BIT(uint8_t byte, int n) { return (byte & (1 << (8-n))) == (1 << (8-n)); }
+
+// This function calculates and returns a parity
+// byte for two input bytes. The parity byte is
+// used for correcting errors in the transmission.
+// The error correction algorithm is a standard
+// (12,8) Hamming code.
 INLINE bool BIT(uint8_t byte, int n) { return ((byte & BV(n-1))>>(n-1)); }
 static uint8_t mp1ParityBlock(uint8_t first, uint8_t other) {
 	uint8_t parity = 0x00;
@@ -31,11 +47,14 @@ static uint8_t mp1ParityBlock(uint8_t first, uint8_t other) {
 	return parity;
 }
 
+// This deode function retrieves the buffer of
+// received, deinterleaved and error-corrected
+// bytes, inspects the header and determines
+// whether there is padding to be removed, and
+// whether the packet is compressed. If it is
+// it is decompressed before being passed to
+// the registered callback.
 static void mp1Decode(MP1 *mp1) {
-	// This decode function is basic and bare minimum.
-	// It does nothing more than extract the data
-	// payload from the buffer and put it into a struct
-	// for further processing.
 	MP1Packet packet;				// A decoded packet struct
 	uint8_t *buffer	= mp1->buffer;	// Get the buffer from the protocol context
 	
@@ -55,11 +74,14 @@ static void mp1Decode(MP1 *mp1) {
 
 	// Check if we have received a compressed packet
 	if (header & MP1_HEADER_COMPRESSION) {
+		// If we have, we decompress it and use the
+		// decompressed data for the packet
 		size_t decompressedSize = decompress(buffer, packet.dataLength);
 		packet.dataLength = decompressedSize;
 		memcpy(buffer, compressionBuffer, decompressedSize);
 	}
 
+	// Set the data field of the packet to our buffer
 	packet.data = buffer;
 
 	// If a callback have been specified, let's
@@ -67,43 +89,6 @@ static void mp1Decode(MP1 *mp1) {
 	if (mp1->callback) mp1->callback(&packet);
 }
 
-// Interleaved:
-// abcabcab cabcabca bcabcabc
-// 11144477 22255578 63336688
-// 
-//     0        1        2
-static void mp1Deinterleave(MP1 *mp1) {
-	uint8_t a = (GET_BIT(mp1->interleaveIn[0], 1) << 7) +
-				(GET_BIT(mp1->interleaveIn[1], 2) << 6) +
-				(GET_BIT(mp1->interleaveIn[2], 3) << 5) +
-				(GET_BIT(mp1->interleaveIn[0], 4) << 4) +
-				(GET_BIT(mp1->interleaveIn[1], 5) << 3) +
-				(GET_BIT(mp1->interleaveIn[2], 6) << 2) +
-				(GET_BIT(mp1->interleaveIn[0], 7) << 1) +
-				(GET_BIT(mp1->interleaveIn[1], 8));
-
-	uint8_t b = (GET_BIT(mp1->interleaveIn[0], 2) << 7) +
-				(GET_BIT(mp1->interleaveIn[1], 3) << 6) +
-				(GET_BIT(mp1->interleaveIn[2], 4) << 5) +
-				(GET_BIT(mp1->interleaveIn[0], 5) << 4) +
-				(GET_BIT(mp1->interleaveIn[1], 6) << 3) +
-				(GET_BIT(mp1->interleaveIn[2], 1) << 2) +
-				(GET_BIT(mp1->interleaveIn[0], 8) << 1) +
-				(GET_BIT(mp1->interleaveIn[2], 7));
-
-	uint8_t c = (GET_BIT(mp1->interleaveIn[0], 3) << 7) +
-				(GET_BIT(mp1->interleaveIn[1], 1) << 6) +
-				(GET_BIT(mp1->interleaveIn[2], 2) << 5) +
-				(GET_BIT(mp1->interleaveIn[0], 6) << 4) +
-				(GET_BIT(mp1->interleaveIn[1], 4) << 3) +
-				(GET_BIT(mp1->interleaveIn[2], 5) << 2) +
-				(GET_BIT(mp1->interleaveIn[1], 7) << 1) +
-				(GET_BIT(mp1->interleaveIn[2], 8));
-
-	mp1->interleaveIn[0] = a;
-	mp1->interleaveIn[1] = b;
-	mp1->interleaveIn[2] = c;
-}
 
 ////////////////////////////////////////////////////////////
 // The Poll function reads data from the modem, handles   //
@@ -118,37 +103,87 @@ void mp1Poll(MP1 *mp1) {
 	while ((byte = kfile_getc(mp1->modem)) != EOF) {
 		// We have a byte, increment our read counter
 
-		// FIXME: Describe error correction
+		/////////////////////////////////////////////
+		// This following block handles forward    //
+		// error correction using an interleaved   //
+		// (12,8) Hamming code                     //
+		/////////////////////////////////////////////
+
+		// If we have started reading (received an
+		// HDLC_FLAG), we will start looking at the
+		// incoming data and perform forward error
+		// correction on it.
 		if (mp1->reading && (byte != AX25_ESC) ) {
 			mp1->readLength++;
 
-
+			// Check if we have read three bytes. If we
+			// have, we should now have a block of two
+			// data bytes and a parity byte. This block
 			if (mp1->readLength % 3 == 0) {
-				// Put bytes in deinterleave buffer
+				// The block is interleaved, so we will
+				// first put the received bytes in the
+				// deinterleaving buffer
 				mp1->interleaveIn[0] = mp1->buffer[mp1->packetLength-2];
 				mp1->interleaveIn[1] = mp1->buffer[mp1->packetLength-1];
 				mp1->interleaveIn[2] = byte;
 
+				// We then deinterleave the block
 				mp1Deinterleave(mp1);
+
+				// And write the deinterleaved data
+				// back into the buffer
 				mp1->buffer[mp1->packetLength-2] = mp1->interleaveIn[0];
 				mp1->buffer[mp1->packetLength-1] = mp1->interleaveIn[1];
 
+				// We now calculate a parity byte on the
+				// received data.
 				mp1->calculatedParity = mp1ParityBlock(mp1->buffer[mp1->packetLength-2], mp1->buffer[mp1->packetLength-1]);
+
+				// By XORing the calculated parity byte
+				// with the received parity byte, we get
+				// what is called the "syndrome". This
+				// number will tell us if we had any
+				// errors during transmission, and if so
+				// where they are. Using Hamming code, we
+				// can only detect single bit errors in a
+				// byte though, which is why we interleave
+				// the data, since most errors will usually
+				// occur in bursts of more than one bit.
+				// With 2 data byte interleaving we can
+				// correct 2 consecutive bit errors.
 				uint8_t syndrome = mp1->calculatedParity ^ mp1->interleaveIn[2];
 				if (syndrome == 0x00) {
-					// No problems!
+					// If the syndrome equals 0, we either
+					// don't have any errors, or the error
+					// is unrecoverable, so we don't do
+					// anything
 				} else {
+					// If the syndrome is not equal to 0,
+					// there is a problem, and we will try
+					// to correct it. We first need to split
+					// the syndrome byte up into the two
+					// actual syndrome numbers, one for
+					// each data byte.
 					uint8_t syndromes[2];
 					syndromes[0] = syndrome & 0x0f;
 					syndromes[1] = (syndrome & 0xf0) >> 4;
 
+					// Then we look at each syndrome number
+					// to determine what bit in the data
+					// bytes to correct.
 					for (int i = 0; i < 2; i++) {
 						uint8_t s = syndromes[i];
 						uint8_t correction = 0x00;
 						if (s == 1 || s == 2 || s == 4 || s == 8) {
-							// Error in parity bit, no correction needed
+							// This signifies an error in the
+							// parity block, so we actually
+							// don't need any correction
 							continue;
 						}
+
+						// The following determines what
+						// bit to correct according to
+						// the syndrome value.
 						if (s == 3)  correction = 0x01;
 						if (s == 5)  correction = 0x02;
 						if (s == 6)  correction = 0x04;
@@ -158,21 +193,36 @@ void mp1Poll(MP1 *mp1) {
 						if (s == 11) correction = 0x40;
 						if (s == 12) correction = 0x80;
 
+						// And finally we apply the correction
 						mp1->buffer[mp1->packetLength-(2-i)] ^= correction;
 
+						// This is just for testing purposes.
+						// Nice to know when corrections were
+						// actually made.
 						if (s != 0) mp1->correctionsMade += 1;
 					}
 				}
 
+				// We now update the checksum of the packet
+				// with the deinterleaved and possibly
+				// corrected bytes.
 				mp1->checksum_in ^= mp1->buffer[mp1->packetLength-2];
 				mp1->checksum_in ^= mp1->buffer[mp1->packetLength-1];
-				//mp1->checksum_in ^= mp1->interleaveIn[2];
 
 				continue;
 			}
 		}
-		// FIXME: Describe error correction //////////
+		/////////////////////////////////////////////
+		// End of forward error correction block   //
+		/////////////////////////////////////////////
 		
+		// This next part of the poll function handles
+		// the reading from the modem, and looks for
+		// starts and ends of transmissions. It also
+		// handles escape characters by discarding them
+		// so they don't get put into the output data.
+
+		// Let's first check if we have read an HDLC_FLAG.
 		if (!mp1->escape && byte == HDLC_FLAG) {
 			// We are not in an escape sequence and we
 			// found a HDLC_FLAG. This can mean two things:
@@ -216,13 +266,12 @@ void mp1Poll(MP1 *mp1) {
 			continue;
 		}
 
-		// This should be a parity byte
-
 		if (!mp1->escape && byte == AX25_ESC) {
 			// We found an escape character. We'll set
 			// the escape seqeunce indicator so we don't
 			// interpret the next byte as a reset or flag
 			mp1->escape = true;
+			// We then continue reading the next byte.
 			continue;
 		}
 
@@ -231,8 +280,10 @@ void mp1Poll(MP1 *mp1) {
 			if (mp1->packetLength < MP1_MAX_FRAME_LENGTH) {
 				// If the length of the current incoming frame is
 				// still less than our max length, put the incoming
-				// byte in the buffer.
-				// mp1->checksum_in = mp1->checksum_in ^ byte;
+				// byte in the buffer. When we have collected 3
+				// bytes, they will be processed by the error
+				// correction part above.
+
 				mp1->buffer[mp1->packetLength++] = byte;
 			} else {
 				// If not, we have a problem: The buffer has overrun
@@ -267,6 +318,162 @@ static void mp1WriteByte(MP1 *mp1, uint8_t byte) {
 	}
 	kfile_putc(byte, mp1->modem);
 }
+
+// This is an intermediary function that
+// receives outgoing bytes, and adds
+// interleaving and a parity byte to the
+// outgoing data in blocks of two data
+// bytes. The actual transmitted block will
+// be 3 bytes long due to the added parity
+// byte.
+static void mp1Putbyte(MP1 *mp1, uint8_t byte) {
+	mp1Interleave(mp1, byte);
+
+	if (sendParityBlock) {
+		uint8_t p = mp1ParityBlock(lastByte, byte);
+		//kfile_putc(p, mp1->modem);
+		mp1Interleave(mp1, p);
+	}
+
+	lastByte = byte;
+	sendParityBlock ^= true;
+}
+
+// This function accepts a buffer with data
+// to be transmitted, and structures it into
+// a valid packet.
+void mp1Send(MP1 *mp1, const void *_buffer, size_t length) {
+	// Get the transmit data buffer
+	const uint8_t *buffer = (const uint8_t *)_buffer;
+
+	// Initialize checksum to zero
+	mp1->checksum_out = MP1_CHECKSUM_INIT;
+
+	// We also reset the interleave counter to zero
+	mp1->interleaveCounter = 0;
+
+	// Transmit the HDLC_FLAG to signify start of TX
+	kfile_putc(HDLC_FLAG, mp1->modem);
+
+	// We start out assuming we should not use
+	// compression.
+	bool packetCompression = false;
+
+	// We then try to compress the data to see
+	// if we can save some space with compression.
+	size_t compressedSize = compress(buffer, length);
+	if (compressedSize != 0 && compressedSize < length) {
+		// Compression saved us some space, we'll
+		// send the paket compressed
+		packetCompression = true;
+		// Write the compressed data into the
+		// outgoing data buffer
+		memcpy(buffer, compressionBuffer, compressedSize);
+		// Make sure to set the length of the
+		// data to the new (compressed) length
+		length = compressedSize;
+	} else {
+		// We are not going to use compression,
+		// so we don't do anything.
+	}
+
+	
+	// We now need to construct a header, that
+	// can tell the receiving end whether the
+	// packet is compressed. Since a packet must
+	// have an even number of total payload bytes
+	// (including the header), we check the length
+	// of the outgoing data, and if it is not even,
+	// we add a single byte of padding to the
+	// packet. Remember that we also send a single
+	// byte checksum at the end of the packet, so
+	// the header and checksum bytes together don't
+	// change whether the payload length is even
+	// or not. The payload length needs to be even
+	// since we are sending a parity byte for every
+	// two data bytes sent, and because interleaving
+	// happens in blocks of three bytes.
+	uint8_t header = 0xf0;
+
+	// If we are using compression, set the
+	// appropriate header flag to true.
+	if (packetCompression) header ^= MP1_HEADER_COMPRESSION;
+
+	// We check if the data length is even
+	if (length % 2 != 0) {
+		// If it is not, we set the appropriate
+		// header flag to indicate that we are
+		// padding this packet with one byte.
+		header ^= MP1_HEADER_PADDED;
+
+		// We then update the checksum with the
+		// header byte and queue it for transmit
+		mp1->checksum_out = mp1->checksum_out ^ header;
+		mp1Putbyte(mp1, header);
+
+		// We now update the checksum with the
+		// padding byte, and queue that for
+		// transmission as well. At this point,
+		// we will have pushed out two bytes of
+		// data. The output function will detect
+		// this, and a parity byte will be
+		// calculated. The 3-byte block is then
+		// actually transmitted.
+		mp1->checksum_out = mp1->checksum_out ^ MP1_PADDING;
+		mp1Putbyte(mp1, MP1_PADDING);
+	} else {
+		// If the length was already even, we
+		// just update the checksum with the
+		// header byte and queue it.
+		mp1->checksum_out = mp1->checksum_out ^ header;
+		mp1Putbyte(mp1, header);
+	}
+
+	// Now we'll transmit the actual data of
+	// the packet. We continously increment the
+	// pointer address of the buffer while
+	// passing it to the intermediary output
+	// function. Everytime the interleaving
+	// counter reaches 3, a block will be
+	// transmitted.
+	while (length--) {
+			mp1->checksum_out = mp1->checksum_out ^ *buffer;
+			mp1Putbyte(mp1, *buffer++);
+	}
+
+	// Finally we write the checksum to the
+	// end of the packet.
+	mp1Putbyte(mp1, mp1->checksum_out);
+
+	// And transmit a HDLC_FLAG to signify
+	// end of the transmission.
+	kfile_putc(HDLC_FLAG, mp1->modem);
+}
+
+// This function will simply initialize
+// the protocol context and allocate the
+// needed memory.
+void mp1Init(MP1 *mp1, KFile *modem, mp1_callback_t callback) {
+	// Allocate memory for our protocol "object"
+	memset(mp1, 0, sizeof(*mp1));
+	// Set references to our modem "object" and
+	// a callback for when a packet has been decoded
+	mp1->modem = modem;
+	mp1->callback = callback;
+}
+
+// A handy debug function that can determine
+// how much available memory we have left.
+int freeRam(void) {
+   extern int __heap_start, *__brkval; 
+   int v; 
+   return (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval); 
+}
+
+// Following is the functions responsible
+// for interleaving and deinterleaving
+// blocks of data. The interleaving table
+// is also included.
 
 ///////////////////////////////
 // Interleave-table          //
@@ -310,7 +517,7 @@ static void mp1WriteByte(MP1 *mp1, uint8_t byte) {
 //
 ///////////////////////////////
 
-static void mp1Interleave(MP1 *mp1, uint8_t byte) {
+void mp1Interleave(MP1 *mp1, uint8_t byte) {
 	mp1->interleaveOut[mp1->interleaveCounter] = byte;
 	mp1->interleaveCounter++;
 	if (mp1->interleaveCounter == 3) {
@@ -355,94 +562,42 @@ static void mp1Interleave(MP1 *mp1, uint8_t byte) {
 	}
 }
 
-// FIXME: Desribe additions here
-static void mp1Putbyte(MP1 *mp1, uint8_t byte) {
-	//kfile_putc(byte, mp1->modem);
-	mp1Interleave(mp1, byte);
 
-	if (sendParityBlock) {
-		uint8_t p = mp1ParityBlock(lastByte, byte);
-		//kfile_putc(p, mp1->modem);
-		mp1Interleave(mp1, p);
-	}
+void mp1Deinterleave(MP1 *mp1) {
+	uint8_t a = (GET_BIT(mp1->interleaveIn[0], 1) << 7) +
+				(GET_BIT(mp1->interleaveIn[1], 2) << 6) +
+				(GET_BIT(mp1->interleaveIn[2], 3) << 5) +
+				(GET_BIT(mp1->interleaveIn[0], 4) << 4) +
+				(GET_BIT(mp1->interleaveIn[1], 5) << 3) +
+				(GET_BIT(mp1->interleaveIn[2], 6) << 2) +
+				(GET_BIT(mp1->interleaveIn[0], 7) << 1) +
+				(GET_BIT(mp1->interleaveIn[1], 8));
 
-	lastByte = byte;
-	sendParityBlock ^= true;
+	uint8_t b = (GET_BIT(mp1->interleaveIn[0], 2) << 7) +
+				(GET_BIT(mp1->interleaveIn[1], 3) << 6) +
+				(GET_BIT(mp1->interleaveIn[2], 4) << 5) +
+				(GET_BIT(mp1->interleaveIn[0], 5) << 4) +
+				(GET_BIT(mp1->interleaveIn[1], 6) << 3) +
+				(GET_BIT(mp1->interleaveIn[2], 1) << 2) +
+				(GET_BIT(mp1->interleaveIn[0], 8) << 1) +
+				(GET_BIT(mp1->interleaveIn[2], 7));
+
+	uint8_t c = (GET_BIT(mp1->interleaveIn[0], 3) << 7) +
+				(GET_BIT(mp1->interleaveIn[1], 1) << 6) +
+				(GET_BIT(mp1->interleaveIn[2], 2) << 5) +
+				(GET_BIT(mp1->interleaveIn[0], 6) << 4) +
+				(GET_BIT(mp1->interleaveIn[1], 4) << 3) +
+				(GET_BIT(mp1->interleaveIn[2], 5) << 2) +
+				(GET_BIT(mp1->interleaveIn[1], 7) << 1) +
+				(GET_BIT(mp1->interleaveIn[2], 8));
+
+	mp1->interleaveIn[0] = a;
+	mp1->interleaveIn[1] = b;
+	mp1->interleaveIn[2] = c;
 }
 
-void mp1Send(MP1 *mp1, const void *_buffer, size_t length) {
-	// Get the transmit data buffer
-	const uint8_t *buffer = (const uint8_t *)_buffer;
-
-	// Initialize checksum
-	mp1->checksum_out = MP1_CHECKSUM_INIT;
-	mp1->interleaveCounter = 0; // FIXME:
-
-	// Transmit the HDLC_FLAG to signify start of TX
-	kfile_putc(HDLC_FLAG, mp1->modem);
-
-	bool packetCompression = false;
-	size_t compressedSize = compress(buffer, length);
-	if (compressedSize != 0 && compressedSize < length) {
-		// Compression saved us some space, we'll
-		// send the paket compressed
-		packetCompression = true;
-		memcpy(buffer, compressionBuffer, compressedSize);
-		length = compressedSize;
-	} else {
-		// We are not going to use compression
-	}
-
-	// Write header and possibly padding
-	// Remember we also write a header and
-	// a checksum. This ensures that we will
-	// always end our packet with a checksum
-	// and a parity byte.
-
-	uint8_t header = 0xf0;
-	if (packetCompression) header ^= MP1_HEADER_COMPRESSION;
-
-	if (length % 2 != 0) {
-		header ^= MP1_HEADER_PADDED;
-		mp1->checksum_out = mp1->checksum_out ^ header;
-		mp1Putbyte(mp1, header);
-		mp1->checksum_out = mp1->checksum_out ^ MP1_PADDING;
-		mp1Putbyte(mp1, MP1_PADDING);
-	} else {
-		mp1->checksum_out = mp1->checksum_out ^ header;
-		mp1Putbyte(mp1, header);
-	}
-
-	// Continously increment the pointer address
-	// of the buffer while passing it to the byte
-	// output function
-	while (length--) {
-			mp1->checksum_out = mp1->checksum_out ^ *buffer;
-			mp1Putbyte(mp1, *buffer++);
-	}
-
-	// Write checksum to end of packet
-	mp1Putbyte(mp1, mp1->checksum_out);
-
-	// Transmit a HDLC_FLAG to signify end of TX
-	kfile_putc(HDLC_FLAG, mp1->modem);
-}
-
-void mp1Init(MP1 *mp1, KFile *modem, mp1_callback_t callback) {
-	// Allocate memory for our protocol "object"
-	memset(mp1, 0, sizeof(*mp1));
-	// Set references to our modem "object" and
-	// a callback for when a packet has been decoded
-	mp1->modem = modem;
-	mp1->callback = callback;
-}
-
-int freeRam(void) {
-   extern int __heap_start, *__brkval; 
-   int v; 
-   return (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval); 
-}
-
+// This function compresses data using
+// the Heatshrink library
 size_t compress(uint8_t *input, size_t length) {
 	heatshrink_encoder *hse = heatshrink_encoder_alloc(8, 4);
 	if (hse == NULL) {
@@ -467,6 +622,8 @@ size_t compress(uint8_t *input, size_t length) {
 	return written;
 }
 
+// This function decompresses data using
+// the Heatshrink library
 size_t decompress(uint8_t *input, size_t length) {
 	heatshrink_decoder *hsd = heatshrink_decoder_alloc(MP1_MAX_FRAME_LENGTH, 8, 4);
 	if (hsd == NULL) {
