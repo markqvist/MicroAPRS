@@ -1,5 +1,6 @@
 #include "mp1.h"
 #include "hardware.h"
+#include "config.h"
 #include <string.h>
 #include <drv/ser.h>
 
@@ -12,6 +13,7 @@ static bool sendParityBlock = false;
 
 
 // FIXME: Describe this
+INLINE bool GET_BIT(uint8_t byte, int n) { return (byte & (1 << (8-n))) == (1 << (8-n)); }
 INLINE bool BIT(uint8_t byte, int n) { return ((byte & BV(n-1))>>(n-1)); }
 static uint8_t mp1ParityBlock(uint8_t first, uint8_t other) {
 	uint8_t parity = 0x00;
@@ -65,6 +67,44 @@ static void mp1Decode(MP1 *mp1) {
 	if (mp1->callback) mp1->callback(&packet);
 }
 
+// Interleaved:
+// abcabcab cabcabca bcabcabc
+// 11144477 22255578 63336688
+// 
+//     0        1        2
+static void mp1Deinterleave(MP1 *mp1) {
+	uint8_t a = (GET_BIT(mp1->interleaveIn[0], 1) << 7) +
+				(GET_BIT(mp1->interleaveIn[1], 2) << 6) +
+				(GET_BIT(mp1->interleaveIn[2], 3) << 5) +
+				(GET_BIT(mp1->interleaveIn[0], 4) << 4) +
+				(GET_BIT(mp1->interleaveIn[1], 5) << 3) +
+				(GET_BIT(mp1->interleaveIn[2], 6) << 2) +
+				(GET_BIT(mp1->interleaveIn[0], 7) << 1) +
+				(GET_BIT(mp1->interleaveIn[1], 8));
+
+	uint8_t b = (GET_BIT(mp1->interleaveIn[0], 2) << 7) +
+				(GET_BIT(mp1->interleaveIn[1], 3) << 6) +
+				(GET_BIT(mp1->interleaveIn[2], 4) << 5) +
+				(GET_BIT(mp1->interleaveIn[0], 5) << 4) +
+				(GET_BIT(mp1->interleaveIn[1], 6) << 3) +
+				(GET_BIT(mp1->interleaveIn[2], 1) << 2) +
+				(GET_BIT(mp1->interleaveIn[0], 8) << 1) +
+				(GET_BIT(mp1->interleaveIn[2], 7));
+
+	uint8_t c = (GET_BIT(mp1->interleaveIn[0], 3) << 7) +
+				(GET_BIT(mp1->interleaveIn[1], 1) << 6) +
+				(GET_BIT(mp1->interleaveIn[2], 2) << 5) +
+				(GET_BIT(mp1->interleaveIn[0], 6) << 4) +
+				(GET_BIT(mp1->interleaveIn[1], 4) << 3) +
+				(GET_BIT(mp1->interleaveIn[2], 5) << 2) +
+				(GET_BIT(mp1->interleaveIn[1], 7) << 1) +
+				(GET_BIT(mp1->interleaveIn[2], 8));
+
+	mp1->interleaveIn[0] = a;
+	mp1->interleaveIn[1] = b;
+	mp1->interleaveIn[2] = c;
+}
+
 ////////////////////////////////////////////////////////////
 // The Poll function reads data from the modem, handles   //
 // frame recognition and passes data on to higher layers  //
@@ -84,8 +124,17 @@ void mp1Poll(MP1 *mp1) {
 
 
 			if (mp1->readLength % 3 == 0) {
+				// Put bytes in deinterleave buffer
+				mp1->interleaveIn[0] = mp1->buffer[mp1->packetLength-2];
+				mp1->interleaveIn[1] = mp1->buffer[mp1->packetLength-1];
+				mp1->interleaveIn[2] = byte;
+
+				mp1Deinterleave(mp1);
+				mp1->buffer[mp1->packetLength-2] = mp1->interleaveIn[0];
+				mp1->buffer[mp1->packetLength-1] = mp1->interleaveIn[1];
+
 				mp1->calculatedParity = mp1ParityBlock(mp1->buffer[mp1->packetLength-2], mp1->buffer[mp1->packetLength-1]);
-				uint8_t syndrome = mp1->calculatedParity ^ byte;
+				uint8_t syndrome = mp1->calculatedParity ^ mp1->interleaveIn[2];
 				if (syndrome == 0x00) {
 					// No problems!
 				} else {
@@ -109,14 +158,16 @@ void mp1Poll(MP1 *mp1) {
 						if (s == 11) correction = 0x40;
 						if (s == 12) correction = 0x80;
 
-						if (correction != 0x00) {
-							mp1->checksum_in ^= correction;
-						}
 						mp1->buffer[mp1->packetLength-(2-i)] ^= correction;
 
 						if (s != 0) mp1->correctionsMade += 1;
 					}
 				}
+
+				mp1->checksum_in ^= mp1->buffer[mp1->packetLength-2];
+				mp1->checksum_in ^= mp1->buffer[mp1->packetLength-1];
+				//mp1->checksum_in ^= mp1->interleaveIn[2];
+
 				continue;
 			}
 		}
@@ -131,15 +182,16 @@ void mp1Poll(MP1 *mp1) {
 				// the end of the packet. Pass control to the
 				// decoder.
 				if ((mp1->checksum_in & 0xff) == 0x00) {
-					kprintf("[CHK-OK] [C=%d] ", mp1->correctionsMade);
+					if (SERIAL_DEBUG) kprintf("[CHK-OK] [C=%d] ", mp1->correctionsMade);
 					mp1Decode(mp1);
 				} else {
 					// Checksum was incorrect, we don't do anything,
 					// but you can enable the decode anyway, if you
 					// need it for testing or debugging
-					// kprintf("[ER] [%d] ", mp1->checksum_in);
-					kprintf("[CHK-ER] [C=%d] ", mp1->correctionsMade);
-					mp1Decode(mp1);
+					if (PASSALL) {
+						if (SERIAL_DEBUG) kprintf("[CHK-ER] [C=%d] ", mp1->correctionsMade);
+						mp1Decode(mp1);
+					}
 				}
 			}
 			// If the above is not the case, this must be the
@@ -180,7 +232,7 @@ void mp1Poll(MP1 *mp1) {
 				// If the length of the current incoming frame is
 				// still less than our max length, put the incoming
 				// byte in the buffer.
-				mp1->checksum_in = mp1->checksum_in ^ byte;
+				// mp1->checksum_in = mp1->checksum_in ^ byte;
 				mp1->buffer[mp1->packetLength++] = byte;
 			} else {
 				// If not, we have a problem: The buffer has overrun
@@ -202,8 +254,9 @@ void mp1Poll(MP1 *mp1) {
 	}
 }
 
-// FIXME: Desribe additions here
-static void mp1Putbyte(MP1 *mp1, uint8_t byte) {
+// This is called to actually send the bytes
+// after they have been interleaved
+static void mp1WriteByte(MP1 *mp1, uint8_t byte) {
 	// If we are sending something that looks
 	// like an HDLC special byte, send an escape
 	// character first
@@ -212,29 +265,109 @@ static void mp1Putbyte(MP1 *mp1, uint8_t byte) {
 		byte == AX25_ESC) {
 		kfile_putc(AX25_ESC, mp1->modem);
 	}
-
 	kfile_putc(byte, mp1->modem);
+}
+
+///////////////////////////////
+// Interleave-table          //
+///////////////////////////////
+//
+// Non-interleaved:
+// aaaaaaaa bbbbbbbb cccccccc
+// 12345678 12345678 12345678
+// M      L
+// S      S
+// B      B
+//
+// Interleaved:
+// abcabcab cabcabca bcabcabc
+// 11144477 22255578 63336688
+// 
+//
+// 3bit burst error patterns:
+// X||||||| X||||||| X|||||||
+// |||X|||| X||||||| X|||||||
+// |||X|||| |||X|||| X|||||||
+// |||X|||| |||X|||| |||X||||
+// ||||||X| |||X|||| |||X||||
+// ||||||X| ||||||X| |||X||||
+// ||||||X| ||||||X| |X||||||
+// |X|||||| ||||||X| |X||||||
+// |X|||||| |X|||||| |X||||||
+// |X|||||| |X|||||| ||||X|||
+// ||||X||| |X|||||| ||||X|||
+// ||||X||| ||||X||| ||||X|||
+// ||||X||| ||||X||| ||||||X|
+// |||||||X ||||X||| ||||||X|
+// |||||||X |||||X|| ||||||X|
+// |||||||X |||||X|| ||X|||||
+// ||X||||| |||||X|| ||X|||||
+// ||X||||| ||X||||| ||X|||||
+// ||X||||| ||X||||| |||||X||
+// |||||X|| ||X||||| |||||X||
+// |||||X|| |||||||X |||||X||
+// |||||X|| |||||||X |||||||X
+//
+///////////////////////////////
+
+static void mp1Interleave(MP1 *mp1, uint8_t byte) {
+	mp1->interleaveOut[mp1->interleaveCounter] = byte;
+	mp1->interleaveCounter++;
+	if (mp1->interleaveCounter == 3) {
+		// We have three bytes in the buffer and
+		// are ready to interleave them.
+
+		uint8_t a = (GET_BIT(mp1->interleaveOut[0], 1) << 7) +
+					(GET_BIT(mp1->interleaveOut[1], 1) << 6) +
+					(GET_BIT(mp1->interleaveOut[2], 1) << 5) +
+					(GET_BIT(mp1->interleaveOut[0], 4) << 4) +
+					(GET_BIT(mp1->interleaveOut[1], 4) << 3) +
+					(GET_BIT(mp1->interleaveOut[2], 4) << 2) +
+					(GET_BIT(mp1->interleaveOut[0], 7) << 1) +
+					(GET_BIT(mp1->interleaveOut[1], 7));
+		mp1WriteByte(mp1, a);
+
+		uint8_t b = (GET_BIT(mp1->interleaveOut[2], 2) << 7) +
+					(GET_BIT(mp1->interleaveOut[0], 2) << 6) +
+					(GET_BIT(mp1->interleaveOut[1], 2) << 5) +
+					(GET_BIT(mp1->interleaveOut[2], 5) << 4) +
+					(GET_BIT(mp1->interleaveOut[0], 5) << 3) +
+					(GET_BIT(mp1->interleaveOut[1], 5) << 2) +
+					(GET_BIT(mp1->interleaveOut[2], 7) << 1) +
+					(GET_BIT(mp1->interleaveOut[0], 8));
+		mp1WriteByte(mp1, b);
+
+		uint8_t c = (GET_BIT(mp1->interleaveOut[1], 6) << 7) +
+					(GET_BIT(mp1->interleaveOut[2], 3) << 6) +
+					(GET_BIT(mp1->interleaveOut[0], 3) << 5) +
+					(GET_BIT(mp1->interleaveOut[1], 3) << 4) +
+					(GET_BIT(mp1->interleaveOut[2], 6) << 3) +
+					(GET_BIT(mp1->interleaveOut[0], 6) << 2) +
+					(GET_BIT(mp1->interleaveOut[1], 8) << 1) +
+					(GET_BIT(mp1->interleaveOut[2], 8));
+
+		mp1WriteByte(mp1, c);
+		// mp1WriteByte(mp1, a);
+		// mp1WriteByte(mp1, b);
+		// mp1WriteByte(mp1, c);
+
+		mp1->interleaveCounter = 0;
+	}
+}
+
+// FIXME: Desribe additions here
+static void mp1Putbyte(MP1 *mp1, uint8_t byte) {
+	//kfile_putc(byte, mp1->modem);
+	mp1Interleave(mp1, byte);
 
 	if (sendParityBlock) {
 		uint8_t p = mp1ParityBlock(lastByte, byte);
-		kfile_putc(p, mp1->modem);
+		//kfile_putc(p, mp1->modem);
+		mp1Interleave(mp1, p);
 	}
 
 	lastByte = byte;
 	sendParityBlock ^= true;
-}
-
-static void mp1WriteByte(MP1 *mp1, uint8_t byte) {
-		// If we are sending something that looks
-	// like an HDLC special byte, send an escape
-	// character first
-	if (byte == HDLC_FLAG ||
-		byte == HDLC_RESET ||
-		byte == AX25_ESC) {
-		kfile_putc(AX25_ESC, mp1->modem);
-	}
-
-	kfile_putc(byte, mp1->modem);
 }
 
 void mp1Send(MP1 *mp1, const void *_buffer, size_t length) {
@@ -243,6 +376,7 @@ void mp1Send(MP1 *mp1, const void *_buffer, size_t length) {
 
 	// Initialize checksum
 	mp1->checksum_out = MP1_CHECKSUM_INIT;
+	mp1->interleaveCounter = 0; // FIXME:
 
 	// Transmit the HDLC_FLAG to signify start of TX
 	kfile_putc(HDLC_FLAG, mp1->modem);
@@ -312,7 +446,6 @@ int freeRam(void) {
 size_t compress(uint8_t *input, size_t length) {
 	heatshrink_encoder *hse = heatshrink_encoder_alloc(8, 4);
 	if (hse == NULL) {
-		//kprintf("Could not allocate encoder\n");
 		return 0;
 	}
 
@@ -322,16 +455,11 @@ size_t compress(uint8_t *input, size_t length) {
 	int status = heatshrink_encoder_finish(hse);
 
 	if (sunk < length) {
-		//kprintf("Not all data was sunk into encoder\n");
 		heatshrink_encoder_free(hse);
 		return 0;
 	} else {
-		//kprintf("Bytes sunk into HSE: %d\n", length);
 		if (status == HSER_FINISH_MORE) {
 			heatshrink_encoder_poll(hse, compressionBuffer, MP1_MAX_FRAME_LENGTH, &written);
-			//kprintf("Bytes written into buffer: %d\n", written);
-		} else {
-			//kprintf("All input data was sunk, but encoder doesn't have any data for us.");
 		}
 	}
 
@@ -342,11 +470,8 @@ size_t compress(uint8_t *input, size_t length) {
 size_t decompress(uint8_t *input, size_t length) {
 	heatshrink_decoder *hsd = heatshrink_decoder_alloc(MP1_MAX_FRAME_LENGTH, 8, 4);
 	if (hsd == NULL) {
-		//kprintf("Could not allocate decoder\n");
 		return 0;
 	}
-
-	//kprintf("\nDecoder allocated. Free RAM: %d bytes\n", freeRam());
 
 	size_t written = 0;
 	size_t sunk = 0;
@@ -354,16 +479,11 @@ size_t decompress(uint8_t *input, size_t length) {
 	int status = heatshrink_decoder_finish(hsd);
 
 	if (sunk < length) {
-		//kprintf("Not all data was sunk into decoder\n");
 		heatshrink_decoder_free(hsd);
 		return 0;
 	} else {
-		//kprintf("Bytes sunk into HSD: %d\n", length);
 		if (status == HSER_FINISH_MORE) {
 			heatshrink_decoder_poll(hsd, compressionBuffer, MP1_MAX_FRAME_LENGTH, &written);
-			//kprintf("Bytes written into decompression buffer: %d\n", written);
-		} else {
-			//kprintf("All input data was sunk, but the decoder doesn't have any data for us.");
 		}
 	}
 

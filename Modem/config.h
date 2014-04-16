@@ -2,6 +2,12 @@
 #ifndef FSK_CFG
 #define FSK_CFG
 
+// Debug & test options
+#define SERIAL_DEBUG true
+#define PASSALL false
+#define AUTOREPLY false
+
+// Modem options
 #define CONFIG_AFSK_RX_BUFLEN 64			// The size of the modems receive buffer
 #define CONFIG_AFSK_TX_BUFLEN 64			// The size of the modems transmit buffer
 #define CONFIG_AFSK_DAC_SAMPLERATE 9600		// The samplerate of the DAC. Note that

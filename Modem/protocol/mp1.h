@@ -7,6 +7,7 @@
 // Frame sizing & checksum
 #define MP1_MIN_FRAME_LENGTH 3
 #define MP1_MAX_FRAME_LENGTH 300
+#define MP1_INTERLEAVE_SIZE 3
 #define MP1_CHECKSUM_INIT 0xAA
 
 // We need to know some basic HDLC flag bytes
@@ -45,6 +46,9 @@ typedef struct MP1 {
 	bool escape;							// We need to know if we are in an escape sequence
 	bool fecEscape;							// fec escape
 	long correctionsMade;					// correction count
+	uint8_t interleaveCounter;				// interleave counter
+	uint8_t interleaveOut[MP1_INTERLEAVE_SIZE];
+	uint8_t interleaveIn[MP1_INTERLEAVE_SIZE];
 } MP1;
 
 // A struct encapsulating a network packet
