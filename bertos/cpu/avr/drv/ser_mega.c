@@ -690,7 +690,9 @@ static void spi_init(UNUSED_ARG(struct SerialHardware *, _hw), UNUSED_ARG(struct
 	 * - as input but tied high forever!
 	 * This driver set the pin as output.
 	 */
-	#warning FIXME:SPI SS pin set as output for proper operation, check schematics for possible conflicts.
+
+	// Squelching this warning
+	// #warning FIXME:SPI SS pin set as output for proper operation, check schematics for possible conflicts.
 	ATOMIC(SPI_DDR |= BV(SPI_SS_BIT));
 
 	ATOMIC(SPI_DDR &= ~BV(SPI_MISO_BIT));

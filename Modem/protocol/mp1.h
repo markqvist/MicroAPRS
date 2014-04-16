@@ -6,7 +6,7 @@
 
 // Frame sizing & checksum
 #define MP1_MIN_FRAME_LENGTH 3
-#define MP1_MAX_FRAME_LENGTH 300
+#define MP1_MAX_FRAME_LENGTH 250
 #define MP1_INTERLEAVE_SIZE 3
 #define MP1_CHECKSUM_INIT 0xAA
 
@@ -59,7 +59,7 @@ typedef struct MP1Packet {
 void mp1Init(MP1 *mp1, KFile *modem, mp1_callback_t callback);
 void mp1Read(MP1 *mp1, int byte);
 void mp1Poll(MP1 *mp1);
-void mp1Send(MP1 *mp1, const void *_buffer, size_t length);
+void mp1Send(MP1 *mp1, void *_buffer, size_t length);
 
 int freeRam(void);
 size_t compress(uint8_t *input, size_t length);

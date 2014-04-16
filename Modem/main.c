@@ -39,7 +39,6 @@ static size_t serialLen = 0;							// Counter for counting length of data from s
 static bool sertx = false;							// Flag signifying whether it's time to send data
 													// Received on the serial port.
 
-
 //////////////////////////////////////////////////////
 // And here comes the actual program :)             //
 //////////////////////////////////////////////////////
@@ -52,7 +51,9 @@ static void mp1Callback(struct MP1Packet *packet) {
 
 	if (AUTOREPLY && packet->data[0]-128 == 'R' && packet->data[1]-128 == 'Q') {
 		timer_delay(1000);
-		mp1Send(&mp1, TEST_PACKET, sizeof(TEST_PACKET));
+		
+		uint8_t output[sizeof(TEST_PACKET)] = TEST_PACKET;
+		mp1Send(&mp1, output, sizeof(TEST_PACKET));
 	}
 }
 
@@ -134,7 +135,8 @@ int main(void)
 			// Reset the timer counter;
 			start = timer_clock();
 			// And send a test packet!
-			mp1Send(&mp1, TEST_PACKET, sizeof(TEST_PACKET));
+			uint8_t output[sizeof(TEST_PACKET)] = TEST_PACKET;
+			mp1Send(&mp1, output, sizeof(TEST_PACKET));
 		}
 	}
 	return 0;

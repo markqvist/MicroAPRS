@@ -20,6 +20,10 @@ static uint8_t lastByte = 0x00;
 // decompressing packet data.
 static uint8_t compressionBuffer[MP1_MAX_FRAME_LENGTH+10];
 
+// An int to hold amount of free RAM updated
+// by the FREE_RAM function;
+static int FREE_RAM;
+
 // The GET_BIT macro is used in the interleaver
 // and deinterleaver to access single bits of a
 // byte.
@@ -68,6 +72,8 @@ static void mp1Decode(MP1 *mp1) {
 		buffer++;
 	}
 
+	if (SERIAL_DEBUG) kprintf("[TS=%d] ", mp1->packetLength);
+
 	// Set the payload length of the packet to the counted
 	// length minus 1, so we remove the checksum
 	packet.dataLength = mp1->packetLength - 2 - (header & 0x01);
@@ -76,7 +82,9 @@ static void mp1Decode(MP1 *mp1) {
 	if (header & MP1_HEADER_COMPRESSION) {
 		// If we have, we decompress it and use the
 		// decompressed data for the packet
+		if (SERIAL_DEBUG) kprintf("[CS=%d] ", packet.dataLength);
 		size_t decompressedSize = decompress(buffer, packet.dataLength);
+		if (SERIAL_DEBUG) kprintf("[DS=%d]", decompressedSize);
 		packet.dataLength = decompressedSize;
 		memcpy(buffer, compressionBuffer, decompressedSize);
 	}
@@ -113,7 +121,7 @@ void mp1Poll(MP1 *mp1) {
 		// HDLC_FLAG), we will start looking at the
 		// incoming data and perform forward error
 		// correction on it.
-		if (mp1->reading && (byte != AX25_ESC) ) {
+		if ((mp1->reading && (byte != AX25_ESC )) || (mp1->reading && (mp1->escape && byte == AX25_ESC))) {
 			mp1->readLength++;
 
 			// Check if we have read three bytes. If we
@@ -331,7 +339,6 @@ static void mp1Putbyte(MP1 *mp1, uint8_t byte) {
 
 	if (sendParityBlock) {
 		uint8_t p = mp1ParityBlock(lastByte, byte);
-		//kfile_putc(p, mp1->modem);
 		mp1Interleave(mp1, p);
 	}
 
@@ -342,18 +349,17 @@ static void mp1Putbyte(MP1 *mp1, uint8_t byte) {
 // This function accepts a buffer with data
 // to be transmitted, and structures it into
 // a valid packet.
-void mp1Send(MP1 *mp1, const void *_buffer, size_t length) {
+void mp1Send(MP1 *mp1, void *_buffer, size_t length) {
 	// Get the transmit data buffer
-	const uint8_t *buffer = (const uint8_t *)_buffer;
+	uint8_t *buffer = (uint8_t *)_buffer;
+
+	uint8_t *compressed = (uint8_t *)compressionBuffer;
 
 	// Initialize checksum to zero
 	mp1->checksum_out = MP1_CHECKSUM_INIT;
 
 	// We also reset the interleave counter to zero
 	mp1->interleaveCounter = 0;
-
-	// Transmit the HDLC_FLAG to signify start of TX
-	kfile_putc(HDLC_FLAG, mp1->modem);
 
 	// We start out assuming we should not use
 	// compression.
@@ -369,6 +375,7 @@ void mp1Send(MP1 *mp1, const void *_buffer, size_t length) {
 		// Write the compressed data into the
 		// outgoing data buffer
 		memcpy(buffer, compressionBuffer, compressedSize);
+		
 		// Make sure to set the length of the
 		// data to the new (compressed) length
 		length = compressedSize;
@@ -377,6 +384,8 @@ void mp1Send(MP1 *mp1, const void *_buffer, size_t length) {
 		// so we don't do anything.
 	}
 
+	// Transmit the HDLC_FLAG to signify start of TX
+	kfile_putc(HDLC_FLAG, mp1->modem);
 	
 	// We now need to construct a header, that
 	// can tell the receiving end whether the
@@ -437,8 +446,8 @@ void mp1Send(MP1 *mp1, const void *_buffer, size_t length) {
 	// counter reaches 3, a block will be
 	// transmitted.
 	while (length--) {
-			mp1->checksum_out = mp1->checksum_out ^ *buffer;
-			mp1Putbyte(mp1, *buffer++);
+		mp1->checksum_out = mp1->checksum_out ^ *buffer;
+		mp1Putbyte(mp1, *buffer++);
 	}
 
 	// Finally we write the checksum to the
@@ -466,8 +475,9 @@ void mp1Init(MP1 *mp1, KFile *modem, mp1_callback_t callback) {
 // how much available memory we have left.
 int freeRam(void) {
    extern int __heap_start, *__brkval; 
-   int v; 
-   return (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval); 
+   int v;
+   FREE_RAM = (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval);
+   return FREE_RAM; 
 }
 
 // Following is the functions responsible
@@ -601,6 +611,7 @@ void mp1Deinterleave(MP1 *mp1) {
 size_t compress(uint8_t *input, size_t length) {
 	heatshrink_encoder *hse = heatshrink_encoder_alloc(8, 4);
 	if (hse == NULL) {
+		if (SERIAL_DEBUG) kprintf("Could not allocate compressor\n");
 		return 0;
 	}
 
@@ -627,6 +638,7 @@ size_t compress(uint8_t *input, size_t length) {
 size_t decompress(uint8_t *input, size_t length) {
 	heatshrink_decoder *hsd = heatshrink_decoder_alloc(MP1_MAX_FRAME_LENGTH, 8, 4);
 	if (hsd == NULL) {
+		if (SERIAL_DEBUG) kprintf("Could not allocate decompressor\n");
 		return 0;
 	}
 

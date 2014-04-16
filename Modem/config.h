@@ -3,7 +3,7 @@
 #define FSK_CFG
 
 // Debug & test options
-#define SERIAL_DEBUG true
+#define SERIAL_DEBUG false
 #define PASSALL false
 #define AUTOREPLY false
 
@@ -17,7 +17,7 @@
 #define CONFIG_AFSK_RXTIMEOUT 0				// How long a read operation from the modem
 											// will wait for data before timing out.
 
-#define CONFIG_AFSK_PREAMBLE_LEN 500UL		// The length of the packet preamble in milliseconds
-#define CONFIG_AFSK_TRAILER_LEN 100UL		// The length of the packet tail in milliseconds
+#define CONFIG_AFSK_PREAMBLE_LEN 250UL		// The length of the packet preamble in milliseconds
+#define CONFIG_AFSK_TRAILER_LEN 20UL		// The length of the packet tail in milliseconds
 
 #endif
