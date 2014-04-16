@@ -353,8 +353,6 @@ void mp1Send(MP1 *mp1, void *_buffer, size_t length) {
 	// Get the transmit data buffer
 	uint8_t *buffer = (uint8_t *)_buffer;
 
-	uint8_t *compressed = (uint8_t *)compressionBuffer;
-
 	// Initialize checksum to zero
 	mp1->checksum_out = MP1_CHECKSUM_INIT;
 
