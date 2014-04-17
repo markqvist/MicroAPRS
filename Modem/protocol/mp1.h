@@ -5,9 +5,10 @@
 #include <io/kfile.h>
 
 // Frame sizing & checksum
-#define MP1_MIN_FRAME_LENGTH 3
+#define MP1_INTERLEAVE_SIZE 12
+#define MP1_MIN_FRAME_LENGTH MP1_INTERLEAVE_SIZE
+#define MP1_DATA_BLOCK_SIZE ((MP1_INTERLEAVE_SIZE/3)*2)
 #define MP1_MAX_FRAME_LENGTH 250
-#define MP1_INTERLEAVE_SIZE 3
 #define MP1_CHECKSUM_INIT 0xAA
 
 // We need to know some basic HDLC flag bytes
@@ -33,7 +34,7 @@ typedef void (*mp1_callback_t)(struct MP1Packet *packet);
 // Struct for a protocol context
 typedef struct MP1 {
 	uint8_t buffer[MP1_MAX_FRAME_LENGTH];		// A buffer for incoming packets
-	uint8_t fecBuffer[3];						// FEC buffer
+	uint8_t fecBuffer[3];						// Forward Error Correction buffer
 	KFile *modem;								// KFile access to the modem
 	size_t packetLength;						// Counter for received packet length
 	size_t readLength;							// This is the full read length, including parity bytes
