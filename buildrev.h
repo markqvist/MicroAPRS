@@ -1,2 +1,2 @@
-#define VERS_BUILD 1374
-#define VERS_HOST  "vixen"
+#define VERS_BUILD 1392
+#define VERS_HOST  "shard"

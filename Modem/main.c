@@ -71,6 +71,11 @@ static void init(void)
 	ser_init(&ser, SER_UART0);
 	ser_setbaudrate(&ser, 115200);
 
+	// For some reason BertOS sets the serial
+	// to 7 bit characters by default. We set
+	// it to 8 instead.
+	UCSR0C = _BV(UCSZ01) | _BV(UCSZ00);
+
 	// Create a modem context
 	afsk_init(&afsk, ADC_CH);
 	// ... and a protocol context with the modem
@@ -105,7 +110,7 @@ int main(void)
 			// If we have not yet surpassed the maximum frame length
 			// and the byte is not a "transmit" (newline) character,
 			// we should store it for transmission.
-			if ((serialLen < MP1_MAX_FRAME_LENGTH) && (sbyte != 138)) {
+			if ((serialLen < MP1_MAX_FRAME_LENGTH) && (sbyte != 10)) {
 				// Put the read byte into the buffer;
 				serialBuffer[serialLen] = sbyte;
 				// Increment the read length counter
@@ -137,6 +142,7 @@ int main(void)
 			// And send a test packet!
 			uint8_t output[sizeof(TEST_PACKET)] = TEST_PACKET;
 			mp1Send(&mp1, output, sizeof(TEST_PACKET));
+			kprintf("TX done\n");
 		}
 	}
 	return 0;
