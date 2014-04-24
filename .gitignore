@@ -1,2 +1,4 @@
 obj
 images
+*.project
+*.workspace
