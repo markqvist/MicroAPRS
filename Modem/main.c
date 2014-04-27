@@ -28,7 +28,7 @@ static Serial ser;			// Declare a serial interface struct
 							// for the ADC (this is A0 on arduino)
 
 
-static uint8_t serialBuffer[MP1_MAX_DATA_SIZE];	// This is a buffer for incoming serial data
+static uint8_t serialBuffer[MP1_MAX_DATA_SIZE];		// This is a buffer for incoming serial data
 
 static int sbyte;									// For holding byte read from serial port
 static size_t serialLen = 0;						// Counter for counting length of data from serial

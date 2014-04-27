@@ -4,9 +4,17 @@
 #include <cfg/compiler.h>
 #include <io/kfile.h>
 
+// Options
+#define MP1_ENABLE_COMPRESSION false
+#define MP1_ENABLE_CSMA true
+
 // Frame sizing & checksum
 #define MP1_INTERLEAVE_SIZE 12
-#define MP1_MAX_FRAME_LENGTH 22 * MP1_INTERLEAVE_SIZE
+#if MP1_ENABLE_COMPRESSION
+	#define MP1_MAX_FRAME_LENGTH 22 * MP1_INTERLEAVE_SIZE
+#else
+	#define MP1_MAX_FRAME_LENGTH 56 * MP1_INTERLEAVE_SIZE
+#endif
 #define MP1_HEADER_SIZE 1
 #define MP1_CHECKSUM_SIZE 1
 #define MP1_MAX_DATA_SIZE MP1_MAX_FRAME_LENGTH - MP1_HEADER_SIZE - MP1_CHECKSUM_SIZE
@@ -16,7 +24,6 @@
 
 // These two parameters are used for 
 // P-persistent CSMA
-#define MP1_ENABLE_CSMA false
 #define MP1_SETTLE_TIME 100UL		// The minimum wait time before considering sending
 #define MP1_P_PERSISTENCE 85UL		// The probability (between 0 and 255) for sending
 #define MP1_TXDELAY 150UL			// Delay between turning on the transmitter and sending

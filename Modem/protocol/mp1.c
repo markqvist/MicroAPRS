@@ -20,11 +20,15 @@ static uint8_t lastByte = 0x00;
 
 // We also need a buffer for compressing and
 // decompressing packet data.
-static uint8_t compressionBuffer[MP1_MAX_FRAME_LENGTH+10];
+#if MP1_ENABLE_COMPRESSION
+	static uint8_t compressionBuffer[MP1_MAX_DATA_SIZE];
+#endif
 
+#if SERIAL_DEBUG
 // An int to hold amount of free RAM updated
 // by the FREE_RAM function;
 static int FREE_RAM;
+#endif
 
 // The GET_BIT macro is used in the interleaver
 // and deinterleaver to access single bits of a
@@ -84,14 +88,16 @@ static void mp1Decode(MP1 *mp1) {
 	packet.dataLength = mp1->packetLength - 2 - (header & MP1_HEADER_PADDED)*padding;
 
 	// Check if we have received a compressed packet
-	if (header & MP1_HEADER_COMPRESSION) {
+	if (MP1_ENABLE_COMPRESSION && (header & MP1_HEADER_COMPRESSION)) {
 		// If we have, we decompress it and use the
 		// decompressed data for the packet
-		if (SERIAL_DEBUG) kprintf("[CS=%d] ", packet.dataLength);
-		size_t decompressedSize = decompress(buffer, packet.dataLength);
-		if (SERIAL_DEBUG) kprintf("[DS=%d]", decompressedSize);
-		packet.dataLength = decompressedSize;
-		memcpy(mp1->buffer, compressionBuffer, decompressedSize);
+		#if MP1_ENABLE_COMPRESSION
+			if (SERIAL_DEBUG) kprintf("[CS=%d] ", packet.dataLength);
+			size_t decompressedSize = decompress(buffer, packet.dataLength);
+			if (SERIAL_DEBUG) kprintf("[DS=%d]", decompressedSize);
+			packet.dataLength = decompressedSize;
+			memcpy(mp1->buffer, compressionBuffer, decompressedSize);
+		#endif
 	} else {
 		// If the packet was not compressed, we shift
 		// the data in our buffer back down to the actual
@@ -420,22 +426,24 @@ void mp1Send(MP1 *mp1, void *_buffer, size_t length) {
 
 	// We then try to compress the data to see
 	// if we can save some space with compression.
-	size_t compressedSize = compress(buffer, length);
-	if (compressedSize != 0 && compressedSize < length) {
-		// Compression saved us some space, we'll
-		// send the paket compressed
-		packetCompression = true;
-		// Write the compressed data into the
-		// outgoing data buffer
-		memcpy(buffer, compressionBuffer, compressedSize);
-		
-		// Make sure to set the length of the
-		// data to the new (compressed) length
-		length = compressedSize;
-	} else {
-		// We are not going to use compression,
-		// so we don't do anything.
-	}
+	#if MP1_ENABLE_COMPRESSION
+		size_t compressedSize = compress(buffer, length);
+		if (compressedSize != 0 && compressedSize < length) {
+			// Compression saved us some space, we'll
+			// send the paket compressed
+			packetCompression = true;
+			// Write the compressed data into the
+			// outgoing data buffer
+			memcpy(buffer, compressionBuffer, compressedSize);
+			
+			// Make sure to set the length of the
+			// data to the new (compressed) length
+			length = compressedSize;
+		} else {
+			// We are not going to use compression,
+			// so we don't do anything.
+		}
+	#endif
 
 	// Transmit the HDLC_FLAG to signify start of TX
 	kfile_putc(HDLC_FLAG, mp1->modem);
@@ -568,15 +576,18 @@ bool mp1CarrierSense(MP1 *mp1) {
 
 // A handy debug function that can determine
 // how much available memory we have left.
+#if SERIAL_DEBUG
 int freeRam(void) {
    extern int __heap_start, *__brkval; 
    int v;
    FREE_RAM = (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval);
    return FREE_RAM; 
 }
+#endif
 
 // This function compresses data using
 // the Heatshrink library
+#if MP1_ENABLE_COMPRESSION
 size_t compress(uint8_t *input, size_t length) {
 	heatshrink_encoder *hse = heatshrink_encoder_alloc(8, 4);
 	if (hse == NULL) {
@@ -601,9 +612,11 @@ size_t compress(uint8_t *input, size_t length) {
 	heatshrink_encoder_free(hse);
 	return written;
 }
+#endif
 
 // This function decompresses data using
 // the Heatshrink library
+#if MP1_ENABLE_COMPRESSION
 size_t decompress(uint8_t *input, size_t length) {
 	heatshrink_decoder *hsd = heatshrink_decoder_alloc(MP1_MAX_FRAME_LENGTH, 8, 4);
 	if (hsd == NULL) {
@@ -628,6 +641,7 @@ size_t decompress(uint8_t *input, size_t length) {
 	heatshrink_decoder_free(hsd);
 	return written;
 }
+#endif
 
 
 // Following is the functions responsible
