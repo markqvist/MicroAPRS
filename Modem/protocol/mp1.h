@@ -16,6 +16,7 @@
 
 // These two parameters are used for 
 // P-persistent CSMA
+#define MP1_ENABLE_CSMA false
 #define MP1_SETTLE_TIME 100UL		// The minimum wait time before considering sending
 #define MP1_P_PERSISTENCE 85UL		// The probability (between 0 and 255) for sending
 #define MP1_TXDELAY 150UL			// Delay between turning on the transmitter and sending

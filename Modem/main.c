@@ -27,11 +27,6 @@ static Serial ser;			// Declare a serial interface struct
 #define ADC_CH 0			// Define which channel (pin) we want
 							// for the ADC (this is A0 on arduino)
 
-#define TEST_TX false		// Whether we should send test packets
-							// periodically, plus what to send:
-#define TEST_PACKET "Packet received. This is an ACK."
-#define TEST_TX_INTERVAL 10000L
-
 
 static uint8_t serialBuffer[MP1_MAX_DATA_SIZE];	// This is a buffer for incoming serial data
 
@@ -50,13 +45,6 @@ static bool sertx = false;							// Flag signifying whether it's time to send da
 static void mp1Callback(struct MP1Packet *packet) {
 	if (SERIAL_DEBUG) {
 		kfile_printf(&ser.fd, "%.*s\n", packet->dataLength, packet->data);
-
-		if (AUTOREPLY && packet->data[0]-128 == 'R' && packet->data[1]-128 == 'Q') {
-			timer_delay(1000);
-			
-			uint8_t output[sizeof(TEST_PACKET)] = TEST_PACKET;
-			mp1Send(&mp1, output, sizeof(TEST_PACKET));
-		}
 	} else {
 		for (unsigned long i = 0; i < packet->dataLength; i++) {
 			kfile_putc(packet->data[i], &ser.fd);
@@ -173,15 +161,6 @@ int main(void)
 				sertx = false;
 				serialLen = 0;
 			}
-		}
-
-		// Periodically send test data if we should do so
-		if (SERIAL_DEBUG && TEST_TX && timer_clock() - start > ms_to_ticks(TEST_TX_INTERVAL)) {
-			// Reset the timer counter;
-			start = timer_clock();
-			// And send a test packet!
-			uint8_t output[sizeof(TEST_PACKET)] = TEST_PACKET;
-			mp1Send(&mp1, output, sizeof(TEST_PACKET));
 		}
 	}
 	return 0;

@@ -544,21 +544,25 @@ void mp1Init(MP1 *mp1, KFile *modem, mp1_callback_t callback) {
 // number, and if it is less than
 // MP1_P_PERSISTENCE, we transmit.
 bool mp1CarrierSense(MP1 *mp1) {
-	if (mp1->randomSeed == 0) {
-		mp1->randomSeed = timer_clock();
-		srand(mp1->randomSeed);
-	}
+	if (MP1_ENABLE_CSMA) {
+		if (mp1->randomSeed == 0) {
+			mp1->randomSeed = timer_clock();
+			srand(mp1->randomSeed);
+		}
 
-	if (timer_clock() - mp1->settleTimer > ms_to_ticks(MP1_SETTLE_TIME)) {
-		uint8_t r = rand() % 255;
-		if (r < MP1_P_PERSISTENCE) {
-			return false;
+		if (timer_clock() - mp1->settleTimer > ms_to_ticks(MP1_SETTLE_TIME)) {
+			uint8_t r = rand() % 255;
+			if (r < MP1_P_PERSISTENCE) {
+				return false;
+			} else {
+				mp1->settleTimer = timer_clock();
+				return true;
+			}
 		} else {
-			mp1->settleTimer = timer_clock();
 			return true;
 		}
 	} else {
-		return true;
+		return false;
 	}
 }
 
