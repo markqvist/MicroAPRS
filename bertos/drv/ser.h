@@ -197,6 +197,7 @@ void ser_setparity(struct Serial *fd, int parity);
 void ser_settimeouts(struct Serial *fd, mtime_t rxtimeout, mtime_t txtimeout);
 void ser_resync(struct Serial *fd, mtime_t delay);
 int ser_getchar_nowait(struct Serial *fd);
+bool ser_available(struct Serial *fd);
 
 void ser_purgeRx(struct Serial *fd);
 void ser_purgeTx(struct Serial *fd);

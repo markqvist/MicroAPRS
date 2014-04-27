@@ -33,9 +33,10 @@ static Serial ser;			// Declare a serial interface struct
 #define TEST_TX_INTERVAL 10000L
 
 
-static uint8_t serialBuffer[MP1_MAX_FRAME_LENGTH];	// This is a buffer for incoming serial data
+static uint8_t serialBuffer[MP1_MAX_DATA_SIZE];	// This is a buffer for incoming serial data
+
 static int sbyte;									// For holding byte read from serial port
-static size_t serialLen = 0;							// Counter for counting length of data from serial
+static size_t serialLen = 0;						// Counter for counting length of data from serial
 static bool sertx = false;							// Flag signifying whether it's time to send data
 													// Received on the serial port.
 
@@ -47,13 +48,19 @@ static bool sertx = false;							// Flag signifying whether it's time to send da
 // so we can process each packet as they are decoded.
 // Right now it just prints the packet to the serial port.
 static void mp1Callback(struct MP1Packet *packet) {
-	kfile_printf(&ser.fd, "%.*s\n", packet->dataLength, packet->data);
+	if (SERIAL_DEBUG) {
+		kfile_printf(&ser.fd, "%.*s\n", packet->dataLength, packet->data);
 
-	if (AUTOREPLY && packet->data[0]-128 == 'R' && packet->data[1]-128 == 'Q') {
-		timer_delay(1000);
-		
-		uint8_t output[sizeof(TEST_PACKET)] = TEST_PACKET;
-		mp1Send(&mp1, output, sizeof(TEST_PACKET));
+		if (AUTOREPLY && packet->data[0]-128 == 'R' && packet->data[1]-128 == 'Q') {
+			timer_delay(1000);
+			
+			uint8_t output[sizeof(TEST_PACKET)] = TEST_PACKET;
+			mp1Send(&mp1, output, sizeof(TEST_PACKET));
+		}
+	} else {
+		for (unsigned long i = 0; i < packet->dataLength; i++) {
+			kfile_putc(packet->data[i], &ser.fd);
+		}
 	}
 }
 
@@ -69,7 +76,7 @@ static void init(void)
 	// Initialize serial comms on UART0,
 	// which is the hardware serial on arduino
 	ser_init(&ser, SER_UART0);
-	ser_setbaudrate(&ser, 115200);
+	ser_setbaudrate(&ser, 9600);
 
 	// For some reason BertOS sets the serial
 	// to 7 bit characters by default. We set
@@ -99,50 +106,82 @@ int main(void)
 		mp1Poll(&mp1);
 
 		
-		// We then read a byte from the serial port.
-		// Notice that we use "_nowait" since we can't
-		// have this blocking execution until a byte
-		// comes in.
-		sbyte = ser_getchar_nowait(&ser);
 		// If there was actually some data waiting for us
 		// there, let's se what it tastes like :)
-		if (sbyte != EOF) {
-			// If we have not yet surpassed the maximum frame length
-			// and the byte is not a "transmit" (newline) character,
-			// we should store it for transmission.
-			if ((serialLen < MP1_MAX_FRAME_LENGTH) && (sbyte != 10)) {
-				// Put the read byte into the buffer;
-				serialBuffer[serialLen] = sbyte;
-				// Increment the read length counter
-				serialLen++;
+		if (ser_available(&ser)) {
+			// We then read a byte from the serial port.
+			// Notice that we use "_nowait" since we can't
+			// have this blocking execution until a byte
+			// comes in.
+			sbyte = ser_getchar_nowait(&ser);
+
+			// If SERIAL_DEBUG is specified we'll handle
+			// serial data as direct human input and only
+			// transmit when we get a LF character
+			if (SERIAL_DEBUG) {
+				// If we have not yet surpassed the maximum frame length
+				// and the byte is not a "transmit" (newline) character,
+				// we should store it for transmission.
+				if ((serialLen < MP1_MAX_DATA_SIZE) && (sbyte != 10)) {
+					// Put the read byte into the buffer;
+					serialBuffer[serialLen] = sbyte;
+					// Increment the read length counter
+					serialLen++;
+				} else {
+					// If one of the above conditions were actually the
+					// case, it means we have to transmit, se we set
+					// transmission flag to true.
+					sertx = true;
+				}
 			} else {
-				// If one of the above conditions were actually the
-				// case, it means we have to transmit, se we set
-				// transmission flag to true.
+				// Otherwise we assume the modem is running
+				// in automated mode, and we push out data
+				// as it becomes available. We either transmit
+				// immediately when the max frame length has
+				// been reached, or when we get no input for
+				// a certain amount of time.
+
+				if (serialLen < MP1_MAX_DATA_SIZE-1) {
+					// Put the read byte into the buffer;
+					serialBuffer[serialLen] = sbyte;
+					// Increment the read length counter
+					serialLen++;
+				} else {
+					// If max frame length has been reached
+					// we need to transmit.
+					serialBuffer[serialLen] = sbyte;
+					serialLen++;
+					sertx = true;
+				}
+
+				start = timer_clock();
+			}
+		} else {
+			if (!SERIAL_DEBUG && serialLen > 0 && timer_clock() - start > ms_to_ticks(TX_MAXWAIT)) {
 				sertx = true;
 			}
 		}
 
 		// Check whether we should send data in our serial buffer
-		if (sertx) {
-			// If we should, pass the buffer to the protocol's
-			// send function.
-			
-			mp1Send(&mp1, serialBuffer, serialLen);
-			
-			// Reset the transmission flag and length counter
-			sertx = false;
-			serialLen = 0;
+		if (sertx) {	
+			// Wait until incoming packets are done
+			if (!mp1CarrierSense(&mp1)) {
+				// And then send the data
+				mp1Send(&mp1, serialBuffer, serialLen);
+				
+				// Reset the transmission flag and length counter
+				sertx = false;
+				serialLen = 0;
+			}
 		}
 
 		// Periodically send test data if we should do so
-		if (TEST_TX && timer_clock() - start > ms_to_ticks(TEST_TX_INTERVAL)) {
+		if (SERIAL_DEBUG && TEST_TX && timer_clock() - start > ms_to_ticks(TEST_TX_INTERVAL)) {
 			// Reset the timer counter;
 			start = timer_clock();
 			// And send a test packet!
 			uint8_t output[sizeof(TEST_PACKET)] = TEST_PACKET;
 			mp1Send(&mp1, output, sizeof(TEST_PACKET));
-			kprintf("TX done\n");
 		}
 	}
 	return 0;

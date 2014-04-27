@@ -189,6 +189,14 @@ int ser_getchar_nowait(struct Serial *fd)
 	return (int)(unsigned char)fifo_pop_locked(&fd->rxfifo);
 }
 
+bool ser_available(struct Serial *fd) {
+	if (fifo_isempty_locked(&fd->rxfifo)) {
+		return false;
+	} else {
+		return true;
+	}
+}
+
 
 
 /**

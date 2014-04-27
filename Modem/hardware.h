@@ -53,4 +53,7 @@ void hw_afsk_dacInit(int ch, struct Afsk *_ctx);
 #define AFSK_DAC_IRQ_START()   do { extern bool hw_afsk_dac_isr; PORTD |= BV(3); hw_afsk_dac_isr = true; } while (0)
 #define AFSK_DAC_IRQ_STOP()    do { extern bool hw_afsk_dac_isr; PORTD &= ~BV(3); hw_afsk_dac_isr = false; } while (0)
 
+#define AFSK_HW_PTT_ON()     do { extern bool hw_ptt_on; hw_ptt_on = true; } while (0)
+#define AFSK_HW_PTT_OFF()    do { extern bool hw_ptt_on; hw_ptt_on = false; } while (0)
+
 #endif

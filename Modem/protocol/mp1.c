@@ -1,8 +1,10 @@
 #include "mp1.h"
 #include "hardware.h"
 #include "config.h"
+#include <stdlib.h>			// Used for random
 #include <string.h>
 #include <drv/ser.h>
+#include <drv/timer.h>		// Timer driver from BertOS
 
 #include "compression/heatshrink_encoder.h"
 #include "compression/heatshrink_decoder.h"
@@ -51,7 +53,7 @@ static uint8_t mp1ParityBlock(uint8_t first, uint8_t other) {
 	return parity;
 }
 
-// This deode function retrieves the buffer of
+// This decode function retrieves the buffer of
 // received, deinterleaved and error-corrected
 // bytes, inspects the header and determines
 // whether there is padding to be removed, and
@@ -79,7 +81,7 @@ static void mp1Decode(MP1 *mp1) {
 
 	// Set the payload length of the packet to the counted
 	// length minus 1, so we remove the checksum
-	packet.dataLength = mp1->packetLength - 2 - (header & 0x01)*padding;
+	packet.dataLength = mp1->packetLength - 2 - (header & MP1_HEADER_PADDED)*padding;
 
 	// Check if we have received a compressed packet
 	if (header & MP1_HEADER_COMPRESSION) {
@@ -89,11 +91,20 @@ static void mp1Decode(MP1 *mp1) {
 		size_t decompressedSize = decompress(buffer, packet.dataLength);
 		if (SERIAL_DEBUG) kprintf("[DS=%d]", decompressedSize);
 		packet.dataLength = decompressedSize;
-		memcpy(buffer, compressionBuffer, decompressedSize);
+		memcpy(mp1->buffer, compressionBuffer, decompressedSize);
+	} else {
+		// If the packet was not compressed, we shift
+		// the data in our buffer back down to the actual
+		// beginning of the buffer array, since we incremented
+		// the pointer address for removing the header and
+		// padding.
+		for (unsigned long i = 0; i < packet.dataLength; i++) {
+			mp1->buffer[i] = buffer[i];
+		}
 	}
 
 	// Set the data field of the packet to our buffer
-	packet.data = buffer;
+	packet.data = mp1->buffer;
 
 	// If a callback have been specified, let's
 	// call it and pass the decoded packet
@@ -112,7 +123,9 @@ void mp1Poll(MP1 *mp1) {
 
 	// Read bytes from the modem until we reach EOF
 	while ((byte = kfile_getc(mp1->modem)) != EOF) {
-		// We have a byte, increment our read counter
+		// We read something from the modem, so we
+		// set the settleTimer
+		mp1->settleTimer = timer_clock();
 
 		/////////////////////////////////////////////
 		// This following block handles forward    //
@@ -127,6 +140,7 @@ void mp1Poll(MP1 *mp1) {
 		
 
 		if ((mp1->reading && (byte != AX25_ESC )) || (mp1->reading && (mp1->escape && (byte == AX25_ESC || byte == HDLC_FLAG || byte == HDLC_RESET)))) {
+			// We have a byte, increment our read counter
 			mp1->readLength++;
 
 			// Check if we have read three bytes. If we
@@ -269,6 +283,10 @@ void mp1Poll(MP1 *mp1) {
 				// frame length, which means the flag signifies
 				// the end of the packet. Pass control to the
 				// decoder.
+				//
+				// We also set the settle timer to indicate
+				// the time the frame completed reading.
+				mp1->settleTimer = timer_clock();
 				if ((mp1->checksum_in & 0xff) == 0x00) {
 					if (SERIAL_DEBUG) kprintf("[CHK-OK] [C=%d] ", mp1->correctionsMade);
 					mp1Decode(mp1);
@@ -322,7 +340,6 @@ void mp1Poll(MP1 *mp1) {
 				// byte in the buffer. When we have collected 3
 				// bytes, they will be processed by the error
 				// correction part above.
-
 				mp1->buffer[mp1->packetLength++] = byte;
 			} else {
 				// If not, we have a problem: The buffer has overrun
@@ -381,6 +398,13 @@ static void mp1Putbyte(MP1 *mp1, uint8_t byte) {
 // to be transmitted, and structures it into
 // a valid packet.
 void mp1Send(MP1 *mp1, void *_buffer, size_t length) {
+	// Open transmitter and wait for MP1_TXDELAY msecs
+	AFSK_HW_PTT_ON();
+	ticks_t start = timer_clock();
+	while (timer_clock() - start < ms_to_ticks(MP1_TXDELAY)) {
+		cpu_relax();
+	}
+
 	// Get the transmit data buffer
 	uint8_t *buffer = (uint8_t *)_buffer;
 
@@ -493,6 +517,9 @@ void mp1Send(MP1 *mp1, void *_buffer, size_t length) {
 	// And transmit a HDLC_FLAG to signify
 	// end of the transmission.
 	kfile_putc(HDLC_FLAG, mp1->modem);
+
+	// Turn off manual PTT
+	AFSK_HW_PTT_OFF();
 }
 
 // This function will simply initialize
@@ -505,6 +532,34 @@ void mp1Init(MP1 *mp1, KFile *modem, mp1_callback_t callback) {
 	// a callback for when a packet has been decoded
 	mp1->modem = modem;
 	mp1->callback = callback;
+	mp1->settleTimer = timer_clock();
+	mp1->randomSeed = 0;
+}
+
+// A simple form of P-persistent CSMA.
+// Everytime we have heard activity
+// on the channel, we wait at least
+// MP1_SETTLE_TIME milliseconds after the
+// activity has ceased. We then pick a random
+// number, and if it is less than
+// MP1_P_PERSISTENCE, we transmit.
+bool mp1CarrierSense(MP1 *mp1) {
+	if (mp1->randomSeed == 0) {
+		mp1->randomSeed = timer_clock();
+		srand(mp1->randomSeed);
+	}
+
+	if (timer_clock() - mp1->settleTimer > ms_to_ticks(MP1_SETTLE_TIME)) {
+		uint8_t r = rand() % 255;
+		if (r < MP1_P_PERSISTENCE) {
+			return false;
+		} else {
+			mp1->settleTimer = timer_clock();
+			return true;
+		}
+	} else {
+		return true;
+	}
 }
 
 // A handy debug function that can determine

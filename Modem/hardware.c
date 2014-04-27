@@ -111,8 +111,10 @@ void hw_afsk_adcInit(int ch, Afsk *_modem)
 // "ADC_vect". This lets the processor know what to do
 // when all the timing and configuration we just set up
 // finally* ends up triggering the interrupt.
+bool hw_ptt_on;
 bool hw_afsk_dac_isr;
 DECLARE_ISR(ADC_vect) {
+
 	TIFR1 = BV(ICF1);
 
 	// Call the routine for analysing the captured sample
@@ -131,7 +133,7 @@ DECLARE_ISR(ADC_vect) {
 
 	// We also need to check if we're supposed to spit
 	// out some modulated data to the DAC.
-	if (hw_afsk_dac_isr)
+	if (hw_afsk_dac_isr) {
 		// If there is, it's easy to actually do so. We
 		// calculate what the sample should be in the
 		// DAC ISR, and apply the bitmask 11110000. This
@@ -143,12 +145,18 @@ DECLARE_ISR(ADC_vect) {
 		// by the PORTD register. This is the PTT pin
 		// which tells the radio to open it transmitter.
 		PORTD = (afsk_dac_isr(modem) & 0xF0) | BV(3); 
-	else
+	} else {
 		// If we're not supposed to transmit anything, we
 		// keep quiet by continously sending 128, which
 		// when converted to an AC waveform by the DAC,
 		// equates to a steady, unchanging 0 volts.
-		PORTD = 128;
+		if (hw_ptt_on) {
+			PORTD = 136;
+		} else {
+			PORTD = 128;
+		}
+	}
+		
 }
 
 
