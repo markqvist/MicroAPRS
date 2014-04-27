@@ -96,7 +96,7 @@ int main(void)
 		
 		// If there was actually some data waiting for us
 		// there, let's se what it tastes like :)
-		if (ser_available(&ser)) {
+		if (!sertx && ser_available(&ser)) {
 			// We then read a byte from the serial port.
 			// Notice that we use "_nowait" since we can't
 			// have this blocking execution until a byte
