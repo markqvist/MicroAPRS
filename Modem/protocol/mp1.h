@@ -5,7 +5,10 @@
 #include <io/kfile.h>
 
 // Options
-#define MP1_ENABLE_COMPRESSION false
+#define MP1_ENABLE_TCP_COMPATIBILITY true
+#if MP1_ENABLE_TCP_COMPATIBILITY
+	#define MP1_ENABLE_COMPRESSION false
+#endif
 #define MP1_ENABLE_CSMA true
 
 // Frame sizing & checksum
@@ -13,7 +16,10 @@
 #if MP1_ENABLE_COMPRESSION
 	#define MP1_MAX_FRAME_LENGTH 22 * MP1_INTERLEAVE_SIZE
 #else
-	#define MP1_MAX_FRAME_LENGTH 56 * MP1_INTERLEAVE_SIZE
+	#define MP1_MAX_FRAME_LENGTH 25 * MP1_INTERLEAVE_SIZE
+	#define MP1_USE_TX_QUEUE true
+	#define MP1_TX_QUEUE_LENGTH 2
+	#define MP1_QUEUE_TX_WAIT 16UL
 #endif
 #define MP1_HEADER_SIZE 1
 #define MP1_CHECKSUM_SIZE 1
@@ -24,9 +30,10 @@
 
 // These two parameters are used for 
 // P-persistent CSMA
-#define MP1_SETTLE_TIME 250UL		// The minimum wait time before considering sending
-#define MP1_P_PERSISTENCE 64UL		// The probability (between 0 and 255) for sending
-#define MP1_TXDELAY 0UL				// Delay between turning on the transmitter and sending
+#define MP1_SETTLE_TIME 175UL		// The minimum wait time before considering sending
+#define MP1_SLOT_TIME 100UL			// The time to wait if deciding not to send
+#define MP1_P_PERSISTENCE 85UL		// The probability (between 0 and 255) for sending
+#define MP1_TXDELAY 0UL			// Delay between turning on the transmitter and sending
 
 // We need to know some basic HDLC flag bytes
 #define HDLC_FLAG  0x7E
@@ -50,23 +57,29 @@ typedef void (*mp1_callback_t)(struct MP1Packet *packet);
 
 // Struct for a protocol context
 typedef struct MP1 {
-	uint8_t buffer[MP1_MAX_FRAME_LENGTH];		// A buffer for incoming packets
-	uint8_t fecBuffer[3];						// Forward Error Correction buffer
-	KFile *modem;								// KFile access to the modem
-	size_t packetLength;						// Counter for received packet length
-	size_t readLength;							// This is the full read length, including parity bytes
-	uint8_t calculatedParity;					// Calculated parity for incoming data block
-	mp1_callback_t callback;					// The function to call when a packet has been received
-	uint8_t checksum_in;						// Rolling checksum for incoming packets
-	uint8_t checksum_out;						// Rolling checksum for outgoing packets
-	bool reading;								// True when we have seen a HDLC flag
-	bool escape;								// We need to know if we are in an escape sequence
-	ticks_t settleTimer;						// Timer used for carrier sense settling
-	long correctionsMade;						// A counter for how many corrections were made to a packet
-	uint8_t interleaveCounter;					// Keeps track of when we have received an entire interleaved block
-	uint8_t interleaveOut[MP1_INTERLEAVE_SIZE]; // A buffer for interleaving bytes before they are sent
-	uint8_t interleaveIn[MP1_INTERLEAVE_SIZE];	// A buffer for storing interleaved bytes before they are deinterleaved
-	uint8_t randomSeed;							// A seed for the pseudo-random number generator
+	uint8_t buffer[MP1_MAX_FRAME_LENGTH+MP1_INTERLEAVE_SIZE];			// A buffer for incoming packets
+	KFile *modem;									// KFile access to the modem
+	size_t packetLength;							// Counter for received packet length
+	size_t readLength;								// This is the full read length, including parity bytes
+	uint8_t calculatedParity;						// Calculated parity for incoming data block
+	mp1_callback_t callback;						// The function to call when a packet has been received
+	uint8_t checksum_in;							// Rolling checksum for incoming packets
+	uint8_t checksum_out;							// Rolling checksum for outgoing packets
+	bool reading;									// True when we have seen a HDLC flag
+	bool escape;									// We need to know if we are in an escape sequence
+	ticks_t settleTimer;							// Timer used for carrier sense settling
+	long correctionsMade;							// A counter for how many corrections were made to a packet
+	uint8_t interleaveCounter;						// Keeps track of when we have received an entire interleaved block
+	uint8_t interleaveOut[MP1_INTERLEAVE_SIZE]; 	// A buffer for interleaving bytes before they are sent
+	uint8_t interleaveIn[MP1_INTERLEAVE_SIZE];		// A buffer for storing interleaved bytes before they are deinterleaved
+	uint8_t randomSeed;								// A seed for the pseudo-random number generator
+	#if MP1_USE_TX_QUEUE
+		bool queueProcessing;						// For sending queued frames without preamble after first one
+		size_t queueLength;							// The length of the transmission queue
+		size_t frameLengths[MP1_TX_QUEUE_LENGTH];	// The lengths of the frames in the queue
+	    uint8_t frameQueue[MP1_TX_QUEUE_LENGTH]		// A buffer for a queued frame
+	  						[MP1_MAX_DATA_SIZE];
+	#endif
 } MP1;
 
 // A struct encapsulating a network packet
@@ -80,6 +93,8 @@ void mp1Init(MP1 *mp1, KFile *modem, mp1_callback_t callback);
 void mp1Read(MP1 *mp1, int byte);
 void mp1Poll(MP1 *mp1);
 void mp1Send(MP1 *mp1, void *_buffer, size_t length);
+void mp1QueueFrame(MP1 *mp1, void *_buffer, size_t length);
+void mp1ProcessQueue(MP1 *mp1);
 bool mp1CarrierSense(MP1 *mp1);
 
 int freeRam(void);

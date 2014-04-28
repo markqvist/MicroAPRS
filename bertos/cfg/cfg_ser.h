@@ -113,7 +113,7 @@
  * $WIZ$ min = 2
  * $WIZ$ supports = "avr"
  */
-#define CONFIG_SPI_TXBUFSIZE    32
+#define CONFIG_SPI_TXBUFSIZE    0
 
 /**
  * Size of the inbound FIFO buffer for SPI port [bytes].
@@ -121,7 +121,7 @@
  * $WIZ$ min = 2
  * $WIZ$ supports = "avr"
  */
-#define CONFIG_SPI_RXBUFSIZE    32
+#define CONFIG_SPI_RXBUFSIZE    0
 
 /**
  * Size of the outbound FIFO buffer for SPI port 0 [bytes].
@@ -129,7 +129,7 @@
  * $WIZ$ min = 2
  * $WIZ$ supports = "at91"
  */
-#define CONFIG_SPI0_TXBUFSIZE	32
+#define CONFIG_SPI0_TXBUFSIZE	0
 
 /**
  * Size of the inbound FIFO buffer for SPI port 0 [bytes].
@@ -137,7 +137,7 @@
  * $WIZ$ min = 2
  * $WIZ$ supports = "at91"
  */
-#define CONFIG_SPI0_RXBUFSIZE	32
+#define CONFIG_SPI0_RXBUFSIZE	0
 
 /**
  * Size of the outbound FIFO buffer for SPI port 1 [bytes].

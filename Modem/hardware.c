@@ -114,7 +114,6 @@ void hw_afsk_adcInit(int ch, Afsk *_modem)
 bool hw_ptt_on;
 bool hw_afsk_dac_isr;
 DECLARE_ISR(ADC_vect) {
-
 	TIFR1 = BV(ICF1);
 
 	// Call the routine for analysing the captured sample

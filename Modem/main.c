@@ -4,7 +4,6 @@
 //////////////////////////////////////////////////////
 
 #include <cpu/irq.h>		// Interrupt functionality from BertOS
-#include "cfg/debug.h"		// Debug configuration from BertOS
 
 #include <drv/ser.h>		// Serial driver from BertOS
 #include <drv/timer.h>		// Timer driver from BertOS
@@ -14,6 +13,10 @@
 
 #include "afsk.h"			// Header for AFSK modem
 #include "protocol/mp1.h"	// Header for MP.1 protocol
+
+#if SERIAL_DEBUG
+	#include "cfg/debug.h"		// Debug configuration from BertOS
+#endif
 
 
 //////////////////////////////////////////////////////
@@ -34,6 +37,7 @@ static int sbyte;									// For holding byte read from serial port
 static size_t serialLen = 0;						// Counter for counting length of data from serial
 static bool sertx = false;							// Flag signifying whether it's time to send data
 													// Received on the serial port.
+#define SER_BUFFER_FULL (serialLen < MP1_MAX_DATA_SIZE-1)
 
 //////////////////////////////////////////////////////
 // And here comes the actual program :)             //
@@ -85,6 +89,7 @@ int main(void)
 	init();
 	// Record the current tick count for time-keeping
 	ticks_t start = timer_clock();
+	ticks_t frameQueued = 0;
 	
 	// Go into ye good ol' infinite loop
 	while (1)
@@ -106,7 +111,7 @@ int main(void)
 			// If SERIAL_DEBUG is specified we'll handle
 			// serial data as direct human input and only
 			// transmit when we get a LF character
-			if (SERIAL_DEBUG) {
+			#if SERIAL_DEBUG
 				// If we have not yet surpassed the maximum frame length
 				// and the byte is not a "transmit" (newline) character,
 				// we should store it for transmission.
@@ -121,7 +126,7 @@ int main(void)
 					// transmission flag to true.
 					sertx = true;
 				}
-			} else {
+			#else
 				// Otherwise we assume the modem is running
 				// in automated mode, and we push out data
 				// as it becomes available. We either transmit
@@ -143,7 +148,7 @@ int main(void)
 				}
 
 				start = timer_clock();
-			}
+			#endif
 		} else {
 			if (!SERIAL_DEBUG && serialLen > 0 && timer_clock() - start > ms_to_ticks(TX_MAXWAIT)) {
 				sertx = true;
@@ -151,17 +156,36 @@ int main(void)
 		}
 
 		// Check whether we should send data in our serial buffer
-		if (sertx) {	
-			// Wait until incoming packets are done
-			if (!mp1CarrierSense(&mp1)) {
-				// And then send the data
-				mp1Send(&mp1, serialBuffer, serialLen);
-				
-				// Reset the transmission flag and length counter
+		if (sertx) {
+			#if MP1_USE_TX_QUEUE
+				mp1QueueFrame(&mp1, serialBuffer, serialLen);
+				frameQueued = timer_clock();
 				sertx = false;
 				serialLen = 0;
-			}
+			#else
+				// Wait until incoming packets are done
+				if (!mp1CarrierSense(&mp1)) {
+					// And then send the data
+					mp1Send(&mp1, serialBuffer, serialLen);
+					
+					// Reset the transmission flag and length counter
+					sertx = false;
+					serialLen = 0;
+				}
+			#endif
 		}
+
+		#if MP1_USE_TX_QUEUE
+			// We first wait a little to see if more
+			// frames are coming in.
+			if (timer_clock() - frameQueued > ms_to_ticks(MP1_QUEUE_TX_WAIT)) {
+				if (!ser_available(&ser) && !mp1CarrierSense(&mp1)) {
+					// And if not, we send process the frame
+					// queue if possible.
+					mp1ProcessQueue(&mp1);
+				}
+			}
+		#endif
 	}
 	return 0;
 }

@@ -125,7 +125,6 @@ static void mp1Decode(MP1 *mp1) {
 ////////////////////////////////////////////////////////////
 void mp1Poll(MP1 *mp1) {
 	int byte; // A place to store our read byte
-	sendParityBlock = false; // Reset our parity tx indicator
 
 	// Read bytes from the modem until we reach EOF
 	while ((byte = kfile_getc(mp1->modem)) != EOF) {
@@ -263,7 +262,9 @@ void mp1Poll(MP1 *mp1) {
 					// corrected bytes.
 					mp1->checksum_in ^= a;
 					mp1->checksum_in ^= b;
+					// DEL kprintf("wt %d %c\n", mp1->packetLength-(MP1_DATA_BLOCK_SIZE)+((i/3)*2), a);
 					mp1->buffer[mp1->packetLength-(MP1_DATA_BLOCK_SIZE)+((i/3)*2)] = a;
+					// DEL kprintf("wt %d %c\n", mp1->packetLength-(MP1_DATA_BLOCK_SIZE-1)+((i/3)*2), b);
 					mp1->buffer[mp1->packetLength-(MP1_DATA_BLOCK_SIZE-1)+((i/3)*2)] = b;
 				}
 
@@ -340,7 +341,7 @@ void mp1Poll(MP1 *mp1) {
 
 		// Now let's get to the actual reading of the data
 		if (mp1->reading) {
-			if (mp1->packetLength < MP1_MAX_FRAME_LENGTH) {
+			if (mp1->packetLength < MP1_MAX_FRAME_LENGTH + MP1_INTERLEAVE_SIZE) {
 				// If the length of the current incoming frame is
 				// still less than our max length, put the incoming
 				// byte in the buffer. When we have collected 3
@@ -389,6 +390,7 @@ static void mp1WriteByte(MP1 *mp1, uint8_t byte) {
 // be 3 bytes long due to the added parity
 // byte.
 static void mp1Putbyte(MP1 *mp1, uint8_t byte) {
+	// DEL kprintf("wb %c\n", byte);
 	mp1Interleave(mp1, byte);
 
 	if (sendParityBlock) {
@@ -404,11 +406,16 @@ static void mp1Putbyte(MP1 *mp1, uint8_t byte) {
 // to be transmitted, and structures it into
 // a valid packet.
 void mp1Send(MP1 *mp1, void *_buffer, size_t length) {
+	// Reset our parity tx indicator
+	sendParityBlock = false;
+
 	// Open transmitter and wait for MP1_TXDELAY msecs
 	AFSK_HW_PTT_ON();
 	ticks_t start = timer_clock();
-	while (timer_clock() - start < ms_to_ticks(MP1_TXDELAY)) {
-		cpu_relax();
+	if (!mp1->queueProcessing) {
+		while (timer_clock() - start < ms_to_ticks(MP1_TXDELAY)) {
+			cpu_relax();
+		}
 	}
 
 	// Get the transmit data buffer
@@ -527,21 +534,29 @@ void mp1Send(MP1 *mp1, void *_buffer, size_t length) {
 	kfile_putc(HDLC_FLAG, mp1->modem);
 
 	// Turn off manual PTT
-	AFSK_HW_PTT_OFF();
+	if (!mp1->queueProcessing) AFSK_HW_PTT_OFF();
 }
 
-// This function will simply initialize
-// the protocol context and allocate the
-// needed memory.
-void mp1Init(MP1 *mp1, KFile *modem, mp1_callback_t callback) {
-	// Allocate memory for our protocol "object"
-	memset(mp1, 0, sizeof(*mp1));
-	// Set references to our modem "object" and
-	// a callback for when a packet has been decoded
-	mp1->modem = modem;
-	mp1->callback = callback;
-	mp1->settleTimer = timer_clock();
-	mp1->randomSeed = 0;
+// This function accepts a frame and stores
+// it in the transmission queue
+void mp1QueueFrame(MP1 *mp1, void *_buffer, size_t length) {
+	if (mp1->queueLength < MP1_TX_QUEUE_LENGTH) {
+		uint8_t *buffer = (uint8_t *)_buffer;
+		mp1->frameLengths[mp1->queueLength] = length;
+		memcpy(mp1->frameQueue[mp1->queueLength++], buffer, length);
+	}
+}
+
+// This function processes the transmission
+// queue.
+void mp1ProcessQueue(MP1 *mp1) {
+	int i = 0;
+	while (mp1->queueLength) {
+		mp1Send(mp1, mp1->frameQueue[i], mp1->frameLengths[i]);
+		i++;
+		mp1->queueLength--;
+	}
+	AFSK_HW_PTT_OFF();
 }
 
 // A simple form of P-persistent CSMA.
@@ -563,7 +578,7 @@ bool mp1CarrierSense(MP1 *mp1) {
 			if (r < MP1_P_PERSISTENCE) {
 				return false;
 			} else {
-				mp1->settleTimer = timer_clock();
+				mp1->settleTimer = timer_clock() - MP1_SETTLE_TIME + MP1_SLOT_TIME;
 				return true;
 			}
 		} else {
@@ -572,6 +587,24 @@ bool mp1CarrierSense(MP1 *mp1) {
 	} else {
 		return false;
 	}
+}
+
+// This function will simply initialize
+// the protocol context and allocate the
+// needed memory.
+void mp1Init(MP1 *mp1, KFile *modem, mp1_callback_t callback) {
+	// Allocate memory for our protocol "object"
+	memset(mp1, 0, sizeof(*mp1));
+	// Set references to our modem "object" and
+	// a callback for when a packet has been decoded
+	mp1->modem = modem;
+	mp1->callback = callback;
+	mp1->settleTimer = timer_clock();
+	mp1->randomSeed = 0;
+	#if MP1_USE_TX_QUEUE
+		mp1->queueLength = 0;
+		mp1->queueProcessing = false;
+	#endif
 }
 
 // A handy debug function that can determine
