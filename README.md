@@ -5,7 +5,9 @@ MicroModem is an educational implementation of a 1200-baud AFSK modem. This impl
 
 I am currently writing an illustrated tutorial to go along with the source-code, but even now, the source code is extremely well documented, and all the concepts are explained in great detail in the comments.
 
-By default MicroModem uses a very simple protocol dubbed MP1. The protocol enables end-to-end transport with forward error-correction and compression. Compression is courtesy of the excellent Heatshrink library. MP1 can also encapsulte TCP/IP traffic over SLIP.
+By default MicroModem uses a very simple protocol dubbed MP1. The protocol enables end-to-end transport with forward error-correction and compression. Compression is courtesy of the excellent Heatshrink library. MP1 can also encapsulate TCP/IP traffic from a host computer with SLIP.
+
+MicroModem was created as an easy to build, low-cost and very flexible radio-modem. It also supports the AX.25 implementation in BertOS, so it can be used with that for APRS and the likes very easily.
 
 While this project is based on Arduino hardware, it does not use the Arduino IDE. The project has been implemented in a normal C with makefile style, and uses some libraries from the open source BertOS.
 
