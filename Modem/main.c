@@ -89,7 +89,9 @@ int main(void)
 	init();
 	// Record the current tick count for time-keeping
 	ticks_t start = timer_clock();
-	ticks_t frameQueued = 0;
+	#if MP1_USE_TX_QUEUE
+		ticks_t frameQueued = 0;
+	#endif
 	
 	// Go into ye good ol' infinite loop
 	while (1)

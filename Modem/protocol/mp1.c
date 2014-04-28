@@ -412,11 +412,18 @@ void mp1Send(MP1 *mp1, void *_buffer, size_t length) {
 	// Open transmitter and wait for MP1_TXDELAY msecs
 	AFSK_HW_PTT_ON();
 	ticks_t start = timer_clock();
+	#if MP1_USE_TX_QUEUE
 	if (!mp1->queueProcessing) {
 		while (timer_clock() - start < ms_to_ticks(MP1_TXDELAY)) {
 			cpu_relax();
 		}
 	}
+	#else
+		while (timer_clock() - start < ms_to_ticks(MP1_TXDELAY)) {
+			cpu_relax();
+		}
+	#endif
+
 
 	// Get the transmit data buffer
 	uint8_t *buffer = (uint8_t *)_buffer;
@@ -534,30 +541,38 @@ void mp1Send(MP1 *mp1, void *_buffer, size_t length) {
 	kfile_putc(HDLC_FLAG, mp1->modem);
 
 	// Turn off manual PTT
-	if (!mp1->queueProcessing) AFSK_HW_PTT_OFF();
+	#if MP1_USE_TX_QUEUE
+		if (!mp1->queueProcessing) AFSK_HW_PTT_OFF();
+	#else
+		AFSK_HW_PTT_OFF();
+	#endif
 }
 
 // This function accepts a frame and stores
 // it in the transmission queue
-void mp1QueueFrame(MP1 *mp1, void *_buffer, size_t length) {
-	if (mp1->queueLength < MP1_TX_QUEUE_LENGTH) {
-		uint8_t *buffer = (uint8_t *)_buffer;
-		mp1->frameLengths[mp1->queueLength] = length;
-		memcpy(mp1->frameQueue[mp1->queueLength++], buffer, length);
+#if MP1_USE_TX_QUEUE
+	void mp1QueueFrame(MP1 *mp1, void *_buffer, size_t length) {
+		if (mp1->queueLength < MP1_TX_QUEUE_LENGTH) {
+			uint8_t *buffer = (uint8_t *)_buffer;
+			mp1->frameLengths[mp1->queueLength] = length;
+			memcpy(mp1->frameQueue[mp1->queueLength++], buffer, length);
+		}
 	}
-}
+#endif
 
 // This function processes the transmission
 // queue.
-void mp1ProcessQueue(MP1 *mp1) {
-	int i = 0;
-	while (mp1->queueLength) {
-		mp1Send(mp1, mp1->frameQueue[i], mp1->frameLengths[i]);
-		i++;
-		mp1->queueLength--;
+#if MP1_USE_TX_QUEUE
+	void mp1ProcessQueue(MP1 *mp1) {
+		int i = 0;
+		while (mp1->queueLength) {
+			mp1Send(mp1, mp1->frameQueue[i], mp1->frameLengths[i]);
+			i++;
+			mp1->queueLength--;
+		}
+		AFSK_HW_PTT_OFF();
 	}
-	AFSK_HW_PTT_OFF();
-}
+#endif
 
 // A simple form of P-persistent CSMA.
 // Everytime we have heard activity
