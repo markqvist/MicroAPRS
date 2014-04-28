@@ -24,9 +24,9 @@
 
 // These two parameters are used for 
 // P-persistent CSMA
-#define MP1_SETTLE_TIME 100UL		// The minimum wait time before considering sending
-#define MP1_P_PERSISTENCE 85UL		// The probability (between 0 and 255) for sending
-#define MP1_TXDELAY 150UL			// Delay between turning on the transmitter and sending
+#define MP1_SETTLE_TIME 250UL		// The minimum wait time before considering sending
+#define MP1_P_PERSISTENCE 64UL		// The probability (between 0 and 255) for sending
+#define MP1_TXDELAY 0UL				// Delay between turning on the transmitter and sending
 
 // We need to know some basic HDLC flag bytes
 #define HDLC_FLAG  0x7E
