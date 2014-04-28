@@ -5,7 +5,7 @@
 #include <io/kfile.h>
 
 // Options
-#define MP1_ENABLE_TCP_COMPATIBILITY true
+#define MP1_ENABLE_TCP_COMPATIBILITY false
 #if MP1_ENABLE_TCP_COMPATIBILITY
 	#define MP1_ENABLE_COMPRESSION false
 #endif
