@@ -1,7 +1,7 @@
 MicroModem
 ==========
 
-MicroModem is an educational implementation of a 1200-baud AFSK modem. This implementation is targeted at the Atmega 328p microprocessor used in many Arduino boards and spinoffs. It can be build very easily with an Arduino board based on the Atmega 328p, and around 15 common electronics components. I will add a Fritzing schematic as soon as I have time to draw it up.
+MicroModem is an educational implementation of a 1200-baud AFSK modem. This implementation is targeted at the Atmega 328p microprocessor used in many Arduino boards and spinoffs. It can be build very easily with an Arduino board based on the Atmega 328p, and around 15 common electronics components. The repository contains schematics and PCB layouts for both an Arduino shield, and a PCB suitable for stacking on the Microduino (which I am using for this project myself). The PCBs are currently untested, so don't trust them too much ;) I have just ordered a few samples and will assemble and test them as they come in. The schematics should be rather sound, they were drawn from the current working perfboard prototypes I have, but if you find an error, please let me know.
 
 I am currently writing an illustrated tutorial to go along with the source-code, but even now, the source code is extremely well documented, and all the concepts are explained in great detail in the comments.
 
