@@ -10,5 +10,3 @@ By default MicroModem uses a very simple protocol dubbed MP1. The protocol enabl
 MicroModem was created as an easy to build, low-cost and very flexible radio-modem. It also supports the AX.25 implementation in BertOS, so it can be used with that for APRS and the likes very easily.
 
 While this project is based on Arduino hardware, it does not use the Arduino IDE. The project has been implemented in a normal C with makefile style, and uses some libraries from the open source BertOS.
-
-Stay tuned for more :)
