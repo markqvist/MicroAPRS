@@ -262,9 +262,7 @@ void mp1Poll(MP1 *mp1) {
 					// corrected bytes.
 					mp1->checksum_in ^= a;
 					mp1->checksum_in ^= b;
-					// DEL kprintf("wt %d %c\n", mp1->packetLength-(MP1_DATA_BLOCK_SIZE)+((i/3)*2), a);
 					mp1->buffer[mp1->packetLength-(MP1_DATA_BLOCK_SIZE)+((i/3)*2)] = a;
-					// DEL kprintf("wt %d %c\n", mp1->packetLength-(MP1_DATA_BLOCK_SIZE-1)+((i/3)*2), b);
 					mp1->buffer[mp1->packetLength-(MP1_DATA_BLOCK_SIZE-1)+((i/3)*2)] = b;
 				}
 
@@ -390,7 +388,6 @@ static void mp1WriteByte(MP1 *mp1, uint8_t byte) {
 // be 3 bytes long due to the added parity
 // byte.
 static void mp1Putbyte(MP1 *mp1, uint8_t byte) {
-	// DEL kprintf("wb %c\n", byte);
 	mp1Interleave(mp1, byte);
 
 	if (sendParityBlock) {
