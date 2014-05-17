@@ -1,3 +1,5 @@
+-= Compiling with make =-
+
 To compile you need a the gcc-avr toolchain and standard make utilities.
 On Ubuntu/Debian this can be installed with:
 
@@ -10,3 +12,17 @@ You can use avrdude to flash to an Arduino compatible board. Have a look at the 
 ./flash USB0
 
 And avrdude should upload the firmware to the board.
+
+
+-= Eclipse =-
+
+If you want to use the Eclipse IDE, follow these steps:
+
+- Install the AVR-eclipse plugin from http://avr-eclipse.sourceforge.net/wiki/index.php/Plugin_Download
+- In eclipse, create a new project (File -> New -> Project…)
+- In the new project box, select C/C++ -> “Makefile Project with Existing Code”
+- Select a name, and locate the MicroModem folder for “Existing Code Location”
+- Select “AVR-GCC Toolchain” in “Toolchain for indexer settings”
+- Click “Finish”
+
+
