@@ -1,0 +1,12 @@
+To compile you need a the gcc-avr toolchain and standard make utilities.
+On Ubuntu/Debian this can be installed with:
+
+apt-get install build-essential gcc-avr avr-libc binutils-avr avrdude
+
+After that execute "make" in the main directory, and the modem firmware should compile.
+
+You can use avrdude to flash to an Arduino compatible board. Have a look at the "flash" script, it makes this easy. If your board is connected to /dev/ttyUSB0, simply run:
+
+./flash USB0
+
+And avrdude should upload the firmware to the board.
