@@ -5,9 +5,9 @@
 #ifndef FSK_MODEM_HW
 #define FSK_MODEM_HW
 
-#include "cfg/cfg_arch.h"	// Architecture configuration
+#include "cfg/cfg_arch.h"    // Architecture configuration
 
-#include <avr/io.h>			// AVR IO functions from BertOS
+#include <avr/io.h>          // AVR IO functions from BertOS
 
 //////////////////////////////////////////////////////
 // Definitions and some useful macros               //
