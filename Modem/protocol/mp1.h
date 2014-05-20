@@ -8,10 +8,11 @@
 #define MP1_ENABLE_TCP_COMPATIBILITY false
 #if MP1_ENABLE_TCP_COMPATIBILITY
 	#define MP1_ENABLE_COMPRESSION false
+	#define MP1_ENABLE_CSMA true
 #else
 	#define MP1_ENABLE_COMPRESSION true
+	#define MP1_ENABLE_CSMA false
 #endif
-#define MP1_ENABLE_CSMA true
 
 // Frame sizing & checksum
 #define MP1_INTERLEAVE_SIZE 12
@@ -33,10 +34,10 @@
 
 // These two parameters are used for 
 // P-persistent CSMA
-#define MP1_SETTLE_TIME 175UL		// The minimum wait time before considering sending
+#define MP1_SETTLE_TIME 100UL		// The minimum wait time before considering sending
 #define MP1_SLOT_TIME 100UL			// The time to wait if deciding not to send
 #define MP1_P_PERSISTENCE 85UL		// The probability (between 0 and 255) for sending
-#define MP1_TXDELAY 0UL			// Delay between turning on the transmitter and sending
+#define MP1_TXDELAY 0UL				// Delay between turning on the transmitter and sending
 
 // We need to know some basic HDLC flag bytes
 #define HDLC_FLAG  0x7E

@@ -60,20 +60,12 @@ Archive member included because of file (symbol)
                               /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_muluhisi3.o) (__umulhisi3)
 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(malloc.o)
                               obj/Modem/Modem/compression/heatshrink_decoder.o (malloc)
-/usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(rand.o)
-                              obj/Modem/Modem/protocol/mp1.o (rand)
 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(memcpy.o)
                               obj/Modem/Modem/protocol/mp1.o (memcpy)
 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(memmove.o)
                               obj/Modem/Modem/compression/heatshrink_encoder.o (memmove)
 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(memset.o)
                               obj/Modem/bertos/struct/heap.o (memset)
-/usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_mulshisi3.o)
-                              /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(rand.o) (__mulohisi3)
-/usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_divmodsi4.o)
-                              /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(rand.o) (__divmodsi4)
-/usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_negsi2.o)
-                              /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_divmodsi4.o) (__negsi2)
 
 Allocating common symbols
 Common symbol       size              file
@@ -461,53 +453,12 @@ Discarded input sections
                 0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_umulhisi3.o)
  .text          0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(malloc.o)
  .bss           0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(malloc.o)
- .text          0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(rand.o)
- .bss           0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(rand.o)
  .text          0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(memcpy.o)
  .bss           0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(memcpy.o)
  .text          0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(memmove.o)
  .bss           0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(memmove.o)
  .text          0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(memset.o)
  .bss           0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(memset.o)
- .text          0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_mulshisi3.o)
- .bss           0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_mulshisi3.o)
- .text.libgcc.div
-                0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_mulshisi3.o)
- .text.libgcc   0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_mulshisi3.o)
- .text.libgcc.prologue
-                0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_mulshisi3.o)
- .text.libgcc.builtins
-                0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_mulshisi3.o)
- .text.libgcc.fmul
-                0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_mulshisi3.o)
- .text.libgcc.fixed
-                0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_mulshisi3.o)
- .text          0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_divmodsi4.o)
- .bss           0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_divmodsi4.o)
- .text.libgcc.mul
-                0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_divmodsi4.o)
- .text.libgcc   0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_divmodsi4.o)
- .text.libgcc.prologue
-                0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_divmodsi4.o)
- .text.libgcc.builtins
-                0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_divmodsi4.o)
- .text.libgcc.fmul
-                0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_divmodsi4.o)
- .text.libgcc.fixed
-                0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_divmodsi4.o)
- .text          0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_negsi2.o)
- .bss           0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_negsi2.o)
- .text.libgcc.mul
-                0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_negsi2.o)
- .text.libgcc   0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_negsi2.o)
- .text.libgcc.prologue
-                0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_negsi2.o)
- .text.libgcc.builtins
-                0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_negsi2.o)
- .text.libgcc.fmul
-                0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_negsi2.o)
- .text.libgcc.fixed
-                0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_negsi2.o)
 
 Memory Configuration
 
@@ -641,7 +592,7 @@ END GROUP
 .rela.plt
  *(.rela.plt)
 
-.text           0x0000000000000000     0x5d04
+.text           0x0000000000000000     0x5b50
  *(.vectors)
  .vectors       0x0000000000000000       0x68 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/crtm328p.o
                 0x0000000000000000                __vectors
@@ -934,218 +885,203 @@ END GROUP
  .text.mp1WriteByte.isra.0
                 0x0000000000001e1c       0x34 obj/Modem/Modem/protocol/mp1.o
  .text.mp1CarrierSense
-                0x0000000000001e50       0xae obj/Modem/Modem/protocol/mp1.o
+                0x0000000000001e50        0x4 obj/Modem/Modem/protocol/mp1.o
                 0x0000000000001e50                mp1CarrierSense
- .text.mp1Init  0x0000000000001efe       0x50 obj/Modem/Modem/protocol/mp1.o
-                0x0000000000001efe                mp1Init
+ .text.mp1Init  0x0000000000001e54       0x50 obj/Modem/Modem/protocol/mp1.o
+                0x0000000000001e54                mp1Init
  .text.compress
-                0x0000000000001f4e       0x9a obj/Modem/Modem/protocol/mp1.o
-                0x0000000000001f4e                compress
+                0x0000000000001ea4       0x9a obj/Modem/Modem/protocol/mp1.o
+                0x0000000000001ea4                compress
  .text.decompress
-                0x0000000000001fe8       0x9e obj/Modem/Modem/protocol/mp1.o
-                0x0000000000001fe8                decompress
+                0x0000000000001f3e       0x9e obj/Modem/Modem/protocol/mp1.o
+                0x0000000000001f3e                decompress
  .text.mp1Interleave
-                0x0000000000002086      0x8c0 obj/Modem/Modem/protocol/mp1.o
-                0x0000000000002086                mp1Interleave
+                0x0000000000001fdc      0x8c0 obj/Modem/Modem/protocol/mp1.o
+                0x0000000000001fdc                mp1Interleave
  .text.mp1Putbyte
-                0x0000000000002946       0x40 obj/Modem/Modem/protocol/mp1.o
- .text.mp1Send  0x0000000000002986      0x18a obj/Modem/Modem/protocol/mp1.o
-                0x0000000000002986                mp1Send
+                0x000000000000289c       0x40 obj/Modem/Modem/protocol/mp1.o
+ .text.mp1Send  0x00000000000028dc      0x18a obj/Modem/Modem/protocol/mp1.o
+                0x00000000000028dc                mp1Send
  .text.mp1Deinterleave
-                0x0000000000002b10      0x738 obj/Modem/Modem/protocol/mp1.o
-                0x0000000000002b10                mp1Deinterleave
- .text.mp1Poll  0x0000000000003248      0x46e obj/Modem/Modem/protocol/mp1.o
-                0x0000000000003248                mp1Poll
+                0x0000000000002a66      0x738 obj/Modem/Modem/protocol/mp1.o
+                0x0000000000002a66                mp1Deinterleave
+ .text.mp1Poll  0x000000000000319e      0x46e obj/Modem/Modem/protocol/mp1.o
+                0x000000000000319e                mp1Poll
  .text.get_bits
-                0x00000000000036b6       0xb0 obj/Modem/Modem/compression/heatshrink_decoder.o
+                0x000000000000360c       0xb0 obj/Modem/Modem/compression/heatshrink_decoder.o
  .text.heatshrink_decoder_free
-                0x0000000000003766        0x4 obj/Modem/Modem/compression/heatshrink_decoder.o
-                0x0000000000003766                heatshrink_decoder_free
+                0x00000000000036bc        0x4 obj/Modem/Modem/compression/heatshrink_decoder.o
+                0x00000000000036bc                heatshrink_decoder_free
  .text.heatshrink_decoder_reset
-                0x000000000000376a       0x4e obj/Modem/Modem/compression/heatshrink_decoder.o
-                0x000000000000376a                heatshrink_decoder_reset
+                0x00000000000036c0       0x4e obj/Modem/Modem/compression/heatshrink_decoder.o
+                0x00000000000036c0                heatshrink_decoder_reset
  .text.heatshrink_decoder_alloc
-                0x00000000000037b8       0x7e obj/Modem/Modem/compression/heatshrink_decoder.o
-                0x00000000000037b8                heatshrink_decoder_alloc
+                0x000000000000370e       0x7e obj/Modem/Modem/compression/heatshrink_decoder.o
+                0x000000000000370e                heatshrink_decoder_alloc
  .text.heatshrink_decoder_sink
-                0x0000000000003836       0x88 obj/Modem/Modem/compression/heatshrink_decoder.o
-                0x0000000000003836                heatshrink_decoder_sink
+                0x000000000000378c       0x88 obj/Modem/Modem/compression/heatshrink_decoder.o
+                0x000000000000378c                heatshrink_decoder_sink
  .text.heatshrink_decoder_poll
-                0x00000000000038be      0x2a6 obj/Modem/Modem/compression/heatshrink_decoder.o
-                0x00000000000038be                heatshrink_decoder_poll
+                0x0000000000003814      0x2a6 obj/Modem/Modem/compression/heatshrink_decoder.o
+                0x0000000000003814                heatshrink_decoder_poll
  .text.heatshrink_decoder_finish
-                0x0000000000003b64       0x34 obj/Modem/Modem/compression/heatshrink_decoder.o
-                0x0000000000003b64                heatshrink_decoder_finish
+                0x0000000000003aba       0x34 obj/Modem/Modem/compression/heatshrink_decoder.o
+                0x0000000000003aba                heatshrink_decoder_finish
  .text.push_bits
-                0x0000000000003b98      0x100 obj/Modem/Modem/compression/heatshrink_encoder.o
+                0x0000000000003aee      0x100 obj/Modem/Modem/compression/heatshrink_encoder.o
  .text.push_outgoing_bits
-                0x0000000000003c98       0x42 obj/Modem/Modem/compression/heatshrink_encoder.o
+                0x0000000000003bee       0x42 obj/Modem/Modem/compression/heatshrink_encoder.o
  .text.heatshrink_encoder_free
-                0x0000000000003cda        0x4 obj/Modem/Modem/compression/heatshrink_encoder.o
-                0x0000000000003cda                heatshrink_encoder_free
+                0x0000000000003c30        0x4 obj/Modem/Modem/compression/heatshrink_encoder.o
+                0x0000000000003c30                heatshrink_encoder_free
  .text.heatshrink_encoder_reset
-                0x0000000000003cde       0x42 obj/Modem/Modem/compression/heatshrink_encoder.o
-                0x0000000000003cde                heatshrink_encoder_reset
+                0x0000000000003c34       0x42 obj/Modem/Modem/compression/heatshrink_encoder.o
+                0x0000000000003c34                heatshrink_encoder_reset
  .text.heatshrink_encoder_alloc
-                0x0000000000003d20       0x62 obj/Modem/Modem/compression/heatshrink_encoder.o
-                0x0000000000003d20                heatshrink_encoder_alloc
+                0x0000000000003c76       0x62 obj/Modem/Modem/compression/heatshrink_encoder.o
+                0x0000000000003c76                heatshrink_encoder_alloc
  .text.heatshrink_encoder_sink
-                0x0000000000003d82       0xa4 obj/Modem/Modem/compression/heatshrink_encoder.o
-                0x0000000000003d82                heatshrink_encoder_sink
+                0x0000000000003cd8       0xa4 obj/Modem/Modem/compression/heatshrink_encoder.o
+                0x0000000000003cd8                heatshrink_encoder_sink
  .text.heatshrink_encoder_poll
-                0x0000000000003e26      0x44c obj/Modem/Modem/compression/heatshrink_encoder.o
-                0x0000000000003e26                heatshrink_encoder_poll
+                0x0000000000003d7c      0x44c obj/Modem/Modem/compression/heatshrink_encoder.o
+                0x0000000000003d7c                heatshrink_encoder_poll
  .text.heatshrink_encoder_finish
-                0x0000000000004272       0x2a obj/Modem/Modem/compression/heatshrink_encoder.o
-                0x0000000000004272                heatshrink_encoder_finish
+                0x00000000000041c8       0x2a obj/Modem/Modem/compression/heatshrink_encoder.o
+                0x00000000000041c8                heatshrink_encoder_finish
  .text._formatted_write_P
-                0x000000000000429c      0xf84 obj/Modem/bertos/mware/formatwr_P.o
-                0x000000000000429c                _formatted_write_P
+                0x00000000000041f2      0xf84 obj/Modem/bertos/mware/formatwr_P.o
+                0x00000000000041f2                _formatted_write_P
  .text.__kputchar
-                0x0000000000005220       0x36 obj/Modem/bertos/drv/kdebug_P.o
+                0x0000000000005176       0x36 obj/Modem/bertos/drv/kdebug_P.o
  .text.kvprintf_P
-                0x0000000000005256       0x38 obj/Modem/bertos/drv/kdebug_P.o
+                0x00000000000051ac       0x38 obj/Modem/bertos/drv/kdebug_P.o
  .text.kputchar
-                0x000000000000528e       0x32 obj/Modem/bertos/drv/kdebug_P.o
-                0x000000000000528e                kputchar
+                0x00000000000051e4       0x32 obj/Modem/bertos/drv/kdebug_P.o
+                0x00000000000051e4                kputchar
  .text.kprintf_P
-                0x00000000000052c0       0x1c obj/Modem/bertos/drv/kdebug_P.o
-                0x00000000000052c0                kprintf_P
- .text.kputs_P  0x00000000000052dc       0x4a obj/Modem/bertos/drv/kdebug_P.o
-                0x00000000000052dc                kputs_P
- .text.kputnum  0x0000000000005326       0x7c obj/Modem/bertos/drv/kdebug_P.o
-                0x0000000000005326                kputnum
+                0x0000000000005216       0x1c obj/Modem/bertos/drv/kdebug_P.o
+                0x0000000000005216                kprintf_P
+ .text.kputs_P  0x0000000000005232       0x4a obj/Modem/bertos/drv/kdebug_P.o
+                0x0000000000005232                kputs_P
+ .text.kputnum  0x000000000000527c       0x7c obj/Modem/bertos/drv/kdebug_P.o
+                0x000000000000527c                kputnum
  .text.klocation
-                0x00000000000053a2       0x22 obj/Modem/bertos/drv/kdebug_P.o
+                0x00000000000052f8       0x22 obj/Modem/bertos/drv/kdebug_P.o
  .text.__bassert_P
-                0x00000000000053c4       0x2c obj/Modem/bertos/drv/kdebug_P.o
-                0x00000000000053c4                __bassert_P
+                0x000000000000531a       0x2c obj/Modem/bertos/drv/kdebug_P.o
+                0x000000000000531a                __bassert_P
  .text.__invalid_ptr_P
-                0x00000000000053f0       0x4a obj/Modem/bertos/drv/kdebug_P.o
-                0x00000000000053f0                __invalid_ptr_P
+                0x0000000000005346       0x4a obj/Modem/bertos/drv/kdebug_P.o
+                0x0000000000005346                __invalid_ptr_P
  .text.avr-libc.fplib
-                0x000000000000543a        0xa /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(addsf3.o)
-                0x000000000000543a                __subsf3
-                0x000000000000543c                __addsf3
+                0x0000000000005390        0xa /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(addsf3.o)
+                0x0000000000005390                __subsf3
+                0x0000000000005392                __addsf3
  .text.avr-libc.fplib
-                0x0000000000005444       0xc0 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(addsf3x.o)
-                0x000000000000545e                __addsf3x
+                0x000000000000539a       0xc0 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(addsf3x.o)
+                0x00000000000053b4                __addsf3x
  .text.avr-libc.fplib
-                0x0000000000005504        0x8 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(cmpsf2.o)
-                0x0000000000005504                __lesf2
-                0x0000000000005504                __nesf2
-                0x0000000000005504                __eqsf2
-                0x0000000000005504                __cmpsf2
-                0x0000000000005504                __ltsf2
+                0x000000000000545a        0x8 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(cmpsf2.o)
+                0x000000000000545a                __lesf2
+                0x000000000000545a                __nesf2
+                0x000000000000545a                __eqsf2
+                0x000000000000545a                __cmpsf2
+                0x000000000000545a                __ltsf2
  .text.avr-libc.fplib
-                0x000000000000550c        0x4 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(divsf3.o)
-                0x000000000000550c                __divsf3
+                0x0000000000005462        0x4 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(divsf3.o)
+                0x0000000000005462                __divsf3
  .text.avr-libc.fplib
-                0x0000000000005510       0xcc /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(divsf3x.o)
-                0x0000000000005526                __divsf3x
-                0x000000000000552a                __divsf3_pse
+                0x0000000000005466       0xcc /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(divsf3x.o)
+                0x000000000000547c                __divsf3x
+                0x0000000000005480                __divsf3_pse
  .text.avr-libc.fplib
-                0x00000000000055dc        0xa /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(fixsfsi.o)
-                0x00000000000055dc                __fixsfsi
+                0x0000000000005532        0xa /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(fixsfsi.o)
+                0x0000000000005532                __fixsfsi
  .text.avr-libc.fplib
-                0x00000000000055e6       0x58 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(fixunssfsi.o)
-                0x00000000000055e6                __fixunssfsi
+                0x000000000000553c       0x58 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(fixunssfsi.o)
+                0x000000000000553c                __fixunssfsi
  .text.avr-libc.fplib
-                0x000000000000563e       0x7a /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(floatsisf.o)
-                0x000000000000563e                __floatunsisf
-                0x0000000000005642                __floatsisf
+                0x0000000000005594       0x7a /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(floatsisf.o)
+                0x0000000000005594                __floatunsisf
+                0x0000000000005598                __floatsisf
  .text.avr-libc.fplib
-                0x00000000000056b8       0x48 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(fp_cmp.o)
-                0x00000000000056b8                __fp_cmp
+                0x000000000000560e       0x48 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(fp_cmp.o)
+                0x000000000000560e                __fp_cmp
  .text.avr-libc.fplib
-                0x0000000000005700        0xc /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(fp_inf.o)
-                0x0000000000005700                __fp_inf
+                0x0000000000005656        0xc /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(fp_inf.o)
+                0x0000000000005656                __fp_inf
  .text.avr-libc.fplib
-                0x000000000000570c        0x6 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(fp_nan.o)
-                0x000000000000570c                __fp_nan
+                0x0000000000005662        0x6 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(fp_nan.o)
+                0x0000000000005662                __fp_nan
  .text.avr-libc.fplib
-                0x0000000000005712        0xe /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(fp_pscA.o)
-                0x0000000000005712                __fp_pscA
+                0x0000000000005668        0xe /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(fp_pscA.o)
+                0x0000000000005668                __fp_pscA
  .text.avr-libc.fplib
-                0x0000000000005720        0xe /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(fp_pscB.o)
-                0x0000000000005720                __fp_pscB
+                0x0000000000005676        0xe /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(fp_pscB.o)
+                0x0000000000005676                __fp_pscB
  .text.avr-libc.fplib
-                0x000000000000572e       0x22 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(fp_round.o)
-                0x000000000000572e                __fp_round
+                0x0000000000005684       0x22 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(fp_round.o)
+                0x0000000000005684                __fp_round
  .text.avr-libc.fplib
-                0x0000000000005750       0x44 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(fp_split3.o)
-                0x0000000000005750                __fp_split3
-                0x0000000000005760                __fp_splitA
+                0x00000000000056a6       0x44 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(fp_split3.o)
+                0x00000000000056a6                __fp_split3
+                0x00000000000056b6                __fp_splitA
  .text.avr-libc.fplib
-                0x0000000000005794        0xe /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(fp_zero.o)
-                0x0000000000005794                __fp_zero
-                0x0000000000005796                __fp_szero
+                0x00000000000056ea        0xe /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(fp_zero.o)
+                0x00000000000056ea                __fp_zero
+                0x00000000000056ec                __fp_szero
  .text.avr-libc.fplib
-                0x00000000000057a2        0x8 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(gesf2.o)
-                0x00000000000057a2                __gtsf2
-                0x00000000000057a2                __gesf2
+                0x00000000000056f8        0x8 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(gesf2.o)
+                0x00000000000056f8                __gtsf2
+                0x00000000000056f8                __gesf2
  .text.avr-libc.fplib
-                0x00000000000057aa        0x4 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(mulsf3.o)
-                0x00000000000057aa                __mulsf3
+                0x0000000000005700        0x4 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(mulsf3.o)
+                0x0000000000005700                __mulsf3
  .text.avr-libc.fplib
-                0x00000000000057ae       0xc2 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(mulsf3x.o)
-                0x00000000000057c2                __mulsf3x
-                0x00000000000057c6                __mulsf3_pse
+                0x0000000000005704       0xc2 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(mulsf3x.o)
+                0x0000000000005718                __mulsf3x
+                0x000000000000571c                __mulsf3_pse
  .text.libgcc.mul
-                0x0000000000005870       0x20 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_mulsi3.o)
-                0x0000000000005870                __mulsi3
+                0x00000000000057c6       0x20 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_mulsi3.o)
+                0x00000000000057c6                __mulsi3
  .text.libgcc.div
-                0x0000000000005890       0x28 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_udivmodhi4.o)
-                0x0000000000005890                __udivmodhi4
+                0x00000000000057e6       0x28 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_udivmodhi4.o)
+                0x00000000000057e6                __udivmodhi4
  .text.libgcc.div
-                0x00000000000058b8       0x28 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_divmodhi4.o)
-                0x00000000000058b8                __divmodhi4
-                0x00000000000058b8                _div
+                0x000000000000580e       0x28 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_divmodhi4.o)
+                0x000000000000580e                __divmodhi4
+                0x000000000000580e                _div
  .text.libgcc.div
-                0x00000000000058e0       0x44 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_udivmodsi4.o)
-                0x00000000000058e0                __udivmodsi4
- .text.libgcc   0x0000000000005924        0xc /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_tablejump.o)
-                0x0000000000005924                __tablejump2__
-                0x0000000000005928                __tablejump__
+                0x0000000000005836       0x44 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_udivmodsi4.o)
+                0x0000000000005836                __udivmodsi4
+ .text.libgcc   0x000000000000587a        0xc /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_tablejump.o)
+                0x000000000000587a                __tablejump2__
+                0x000000000000587e                __tablejump__
  .text.libgcc.mul
-                0x0000000000005930       0x16 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_muluhisi3.o)
-                0x0000000000005930                __muluhisi3
+                0x0000000000005886       0x16 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_muluhisi3.o)
+                0x0000000000005886                __muluhisi3
  .text.libgcc.mul
-                0x0000000000005946       0x1e /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_umulhisi3.o)
-                0x0000000000005946                __umulhisi3
+                0x000000000000589c       0x1e /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_umulhisi3.o)
+                0x000000000000589c                __umulhisi3
  .text.avr-libc
-                0x0000000000005964      0x24e /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(malloc.o)
-                0x0000000000005964                malloc
-                0x0000000000005a94                free
+                0x00000000000058ba      0x24e /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(malloc.o)
+                0x00000000000058ba                malloc
+                0x00000000000059ea                free
  .text.avr-libc
-                0x0000000000005bb2       0xbc /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(rand.o)
-                0x0000000000005c48                rand_r
-                0x0000000000005c4e                rand
-                0x0000000000005c58                srand
+                0x0000000000005b08       0x12 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(memcpy.o)
+                0x0000000000005b08                memcpy
  .text.avr-libc
-                0x0000000000005c6e       0x12 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(memcpy.o)
-                0x0000000000005c6e                memcpy
+                0x0000000000005b1a       0x24 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(memmove.o)
+                0x0000000000005b1a                memmove
  .text.avr-libc
-                0x0000000000005c80       0x24 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(memmove.o)
-                0x0000000000005c80                memmove
- .text.avr-libc
-                0x0000000000005ca4        0xe /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(memset.o)
-                0x0000000000005ca4                memset
- .text.libgcc.mul
-                0x0000000000005cb2       0x10 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_mulshisi3.o)
-                0x0000000000005cb2                __mulshisi3
-                0x0000000000005cb8                __mulohisi3
- .text.libgcc.div
-                0x0000000000005cc2       0x2e /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_divmodsi4.o)
-                0x0000000000005cc2                __divmodsi4
- .text.libgcc.div
-                0x0000000000005cf0       0x10 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_negsi2.o)
-                0x0000000000005cf0                __negsi2
-                0x0000000000005d00                . = ALIGN (0x2)
+                0x0000000000005b3e        0xe /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(memset.o)
+                0x0000000000005b3e                memset
+                0x0000000000005b4c                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x0000000000005d00        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_exit.o)
-                0x0000000000005d00                exit
-                0x0000000000005d00                _exit
+ .fini9         0x0000000000005b4c        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_exit.o)
+                0x0000000000005b4c                exit
+                0x0000000000005b4c                _exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -1164,11 +1100,11 @@ END GROUP
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x0000000000005d00        0x4 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_exit.o)
+ .fini0         0x0000000000005b4c        0x4 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_exit.o)
  *(.fini0)
-                0x0000000000005d04                _etext = .
+                0x0000000000005b50                _etext = .
 
-.data           0x0000000000800100       0x64 load address 0x0000000000005d04
+.data           0x0000000000800100       0x60 load address 0x0000000000005b50
                 0x0000000000800100                PROVIDE (__data_start, .)
  *(.data)
  .data          0x0000000000800100        0x0 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/crtm328p.o
@@ -1224,89 +1160,85 @@ END GROUP
                 0x0000000000800100                __malloc_heap_end
                 0x0000000000800102                __malloc_heap_start
                 0x0000000000800104                __malloc_margin
- .data          0x0000000000800106        0x4 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(rand.o)
- .data          0x000000000080010a        0x0 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(memcpy.o)
- .data          0x000000000080010a        0x0 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(memmove.o)
- .data          0x000000000080010a        0x0 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(memset.o)
- .data          0x000000000080010a        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_mulshisi3.o)
- .data          0x000000000080010a        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_divmodsi4.o)
- .data          0x000000000080010a        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_negsi2.o)
+ .data          0x0000000000800106        0x0 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(memcpy.o)
+ .data          0x0000000000800106        0x0 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(memmove.o)
+ .data          0x0000000000800106        0x0 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(memset.o)
  *(.data*)
  .data.UARTDescs
-                0x000000000080010a       0x16 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
+                0x0000000000800106       0x16 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
  .data.bad_conversion.1651
-                0x0000000000800120        0x4 obj/Modem/bertos/mware/formatwr_P.o
+                0x000000000080011c        0x4 obj/Modem/bertos/mware/formatwr_P.o
  .data.null_pointer.1652
-                0x0000000000800124        0x7 obj/Modem/bertos/mware/formatwr_P.o
+                0x0000000000800120        0x7 obj/Modem/bertos/mware/formatwr_P.o
  *(.rodata)
  *(.rodata*)
  .rodata.SPI_VT
-                0x000000000080012b        0xc obj/Modem/bertos/cpu/avr/drv/ser_mega.o
+                0x0000000000800127        0xc obj/Modem/bertos/cpu/avr/drv/ser_mega.o
  .rodata.UART0_VT
-                0x0000000000800137        0xc obj/Modem/bertos/cpu/avr/drv/ser_mega.o
+                0x0000000000800133        0xc obj/Modem/bertos/cpu/avr/drv/ser_mega.o
  .rodata.HEX_tab
-                0x0000000000800143       0x10 obj/Modem/bertos/mware/hex.o
-                0x0000000000800143                HEX_tab
+                0x000000000080013f       0x10 obj/Modem/bertos/mware/hex.o
+                0x000000000080013f                HEX_tab
  .rodata.hex_tab
-                0x0000000000800153       0x10 obj/Modem/bertos/mware/hex.o
-                0x0000000000800153                hex_tab
+                0x000000000080014f       0x10 obj/Modem/bertos/mware/hex.o
+                0x000000000080014f                hex_tab
  *(.gnu.linkonce.d*)
-                0x0000000000800164                . = ALIGN (0x2)
- *fill*         0x0000000000800163        0x1 
-                0x0000000000800164                _edata = .
-                0x0000000000800164                PROVIDE (__data_end, .)
+                0x0000000000800160                . = ALIGN (0x2)
+ *fill*         0x000000000080015f        0x1 
+                0x0000000000800160                _edata = .
+                0x0000000000800160                PROVIDE (__data_end, .)
 
-.bss            0x0000000000800164      0x4bb
-                0x0000000000800164                PROVIDE (__bss_start, .)
+.bss            0x0000000000800160      0x4bb
+                0x0000000000800160                PROVIDE (__bss_start, .)
  *(.bss)
  *(.bss*)
  .bss.spi_rxbuffer
-                0x0000000000800164        0x0 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
+                0x0000000000800160        0x0 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
  .bss.spi_txbuffer
-                0x0000000000800164        0x0 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
+                0x0000000000800160        0x0 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
  .bss.uart0_rxbuffer
-                0x0000000000800164       0x20 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
+                0x0000000000800160       0x20 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
  .bss.uart0_txbuffer
-                0x0000000000800184       0x20 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
+                0x0000000000800180       0x20 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
  .bss.timers_queue
-                0x00000000008001a4        0x8 obj/Modem/bertos/drv/timer.o
- .bss.sertx     0x00000000008001ac        0x1 obj/Modem/Modem/main.o
+                0x00000000008001a0        0x8 obj/Modem/bertos/drv/timer.o
+ .bss.sertx     0x00000000008001a8        0x1 obj/Modem/Modem/main.o
  .bss.serialLen
-                0x00000000008001ad        0x2 obj/Modem/Modem/main.o
- .bss.sbyte     0x00000000008001af        0x2 obj/Modem/Modem/main.o
+                0x00000000008001a9        0x2 obj/Modem/Modem/main.o
+ .bss.sbyte     0x00000000008001ab        0x2 obj/Modem/Modem/main.o
  .bss.serialBuffer
-                0x00000000008001b1      0x106 obj/Modem/Modem/main.o
- .bss.ser       0x00000000008002b7       0x32 obj/Modem/Modem/main.o
- .bss.mp1       0x00000000008002e9      0x143 obj/Modem/Modem/main.o
- .bss.afsk      0x000000000080042c       0xda obj/Modem/Modem/main.o
- .bss.modem     0x0000000000800506        0x2 obj/Modem/Modem/hardware.o
+                0x00000000008001ad      0x106 obj/Modem/Modem/main.o
+ .bss.ser       0x00000000008002b3       0x32 obj/Modem/Modem/main.o
+ .bss.mp1       0x00000000008002e5      0x143 obj/Modem/Modem/main.o
+ .bss.afsk      0x0000000000800428       0xda obj/Modem/Modem/main.o
+ .bss.modem     0x0000000000800502        0x2 obj/Modem/Modem/hardware.o
  .bss.compressionBuffer
-                0x0000000000800508      0x106 obj/Modem/Modem/protocol/mp1.o
- .bss.lastByte  0x000000000080060e        0x1 obj/Modem/Modem/protocol/mp1.o
+                0x0000000000800504      0x106 obj/Modem/Modem/protocol/mp1.o
+ .bss.lastByte  0x000000000080060a        0x1 obj/Modem/Modem/protocol/mp1.o
  .bss.sendParityBlock
-                0x000000000080060f        0x1 obj/Modem/Modem/protocol/mp1.o
+                0x000000000080060b        0x1 obj/Modem/Modem/protocol/mp1.o
  *(COMMON)
- COMMON         0x0000000000800610        0x4 obj/Modem/bertos/drv/ser.o
-                0x0000000000800610                ser_handles
- COMMON         0x0000000000800614        0x5 obj/Modem/bertos/drv/timer.o
-                0x0000000000800614                _clock
-                0x0000000000800618                timer_initialized
- COMMON         0x0000000000800619        0x2 obj/Modem/Modem/hardware.o
-                0x0000000000800619                hw_ptt_on
-                0x000000000080061a                hw_afsk_dac_isr
- COMMON         0x000000000080061b        0x4 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(malloc.o)
-                0x000000000080061b                __brkval
-                0x000000000080061d                __flp
-                0x000000000080061f                PROVIDE (__bss_end, .)
-                0x0000000000005d04                __data_load_start = LOADADDR (.data)
-                0x0000000000005d68                __data_load_end = (__data_load_start + SIZEOF (.data))
+ COMMON         0x000000000080060c        0x4 obj/Modem/bertos/drv/ser.o
+                0x000000000080060c                ser_handles
+ COMMON         0x0000000000800610        0x5 obj/Modem/bertos/drv/timer.o
+                0x0000000000800610                _clock
+                0x0000000000800614                timer_initialized
+ COMMON         0x0000000000800615        0x2 obj/Modem/Modem/hardware.o
+                0x0000000000800615                hw_ptt_on
+                0x0000000000800616                hw_afsk_dac_isr
+ COMMON         0x0000000000800617        0x4 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(malloc.o)
+                0x0000000000800617                __brkval
+                0x0000000000800619                __flp
+                0x000000000080061b                PROVIDE (__bss_end, .)
+                0x0000000000005b50                __data_load_start = LOADADDR (.data)
+                0x0000000000005bb0                __data_load_end = (__data_load_start + SIZEOF (.data))
 
-.noinit         0x000000000080061f        0x0
-                0x000000000080061f                PROVIDE (__noinit_start, .)
+.noinit         0x000000000080061b        0x0
+                0x000000000080061b                PROVIDE (__noinit_start, .)
  *(.noinit*)
-                0x000000000080061f                PROVIDE (__noinit_end, .)
-                0x000000000080061f                _end = .
-                0x000000000080061f                PROVIDE (__heap_start, .)
+                0x000000000080061b                PROVIDE (__noinit_end, .)
+                0x000000000080061b                _end = .
+                0x000000000080061b                PROVIDE (__heap_start, .)
 
 .eeprom         0x0000000000810000        0x0
  *(.eeprom*)
@@ -1327,7 +1259,7 @@ END GROUP
 .user_signatures
  *(.user_signatures*)
 
-.stab           0x0000000000000000     0x333c
+.stab           0x0000000000000000     0x2ef8
  *(.stab)
  .stab          0x0000000000000000      0x6cc /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/crtm328p.o
  .stab          0x00000000000006cc       0x78 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(addsf3.o)
@@ -1370,18 +1302,16 @@ END GROUP
                                         0x4e0 (size before relaxing)
  .stab          0x0000000000002448      0x8dc /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(malloc.o)
                                         0x8e8 (size before relaxing)
- .stab          0x0000000000002d24      0x444 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(rand.o)
-                                        0x4a4 (size before relaxing)
- .stab          0x0000000000003168       0x84 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(memcpy.o)
+ .stab          0x0000000000002d24       0x84 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(memcpy.o)
                                          0x90 (size before relaxing)
- .stab          0x00000000000031ec       0xe4 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(memmove.o)
+ .stab          0x0000000000002da8       0xe4 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(memmove.o)
                                          0xf0 (size before relaxing)
- .stab          0x00000000000032d0       0x6c /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(memset.o)
+ .stab          0x0000000000002e8c       0x6c /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(memset.o)
                                          0x78 (size before relaxing)
 
-.stabstr        0x0000000000000000     0x11e5
+.stabstr        0x0000000000000000     0x115b
  *(.stabstr)
- .stabstr       0x0000000000000000     0x11e5 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/crtm328p.o
+ .stabstr       0x0000000000000000     0x115b /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/crtm328p.o
 
 .stab.excl
  *(.stab.excl)
@@ -1418,7 +1348,6 @@ END GROUP
  .comment       0x0000000000000000       0x12 obj/Modem/bertos/mware/formatwr_P.o
  .comment       0x0000000000000000       0x12 obj/Modem/bertos/drv/kdebug_P.o
  .comment       0x0000000000000000       0x12 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(malloc.o)
- .comment       0x0000000000000000       0x12 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(rand.o)
 
 .debug
  *(.debug)
@@ -1472,7 +1401,7 @@ END GROUP
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x0000000000000000     0xdbfb
+.debug_info     0x0000000000000000     0xdb05
  *(.debug_info)
  .debug_info    0x0000000000000000      0xd24 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
  .debug_info    0x0000000000000d24      0x19f obj/Modem/bertos/cpu/avr/drv/timer_mega.o
@@ -1486,14 +1415,14 @@ END GROUP
  .debug_info    0x0000000000005333      0xc2e obj/Modem/Modem/main.o
  .debug_info    0x0000000000005f61      0x6c4 obj/Modem/Modem/hardware.o
  .debug_info    0x0000000000006625     0x13c2 obj/Modem/Modem/afsk.o
- .debug_info    0x00000000000079e7     0x367e obj/Modem/Modem/protocol/mp1.o
- .debug_info    0x000000000000b065      0xae8 obj/Modem/Modem/compression/heatshrink_decoder.o
- .debug_info    0x000000000000bb4d     0x1074 obj/Modem/Modem/compression/heatshrink_encoder.o
- .debug_info    0x000000000000cbc1      0x863 obj/Modem/bertos/mware/formatwr_P.o
- .debug_info    0x000000000000d424      0x7d7 obj/Modem/bertos/drv/kdebug_P.o
+ .debug_info    0x00000000000079e7     0x3588 obj/Modem/Modem/protocol/mp1.o
+ .debug_info    0x000000000000af6f      0xae8 obj/Modem/Modem/compression/heatshrink_decoder.o
+ .debug_info    0x000000000000ba57     0x1074 obj/Modem/Modem/compression/heatshrink_encoder.o
+ .debug_info    0x000000000000cacb      0x863 obj/Modem/bertos/mware/formatwr_P.o
+ .debug_info    0x000000000000d32e      0x7d7 obj/Modem/bertos/drv/kdebug_P.o
  *(.gnu.linkonce.wi.*)
 
-.debug_abbrev   0x0000000000000000     0x2dd1
+.debug_abbrev   0x0000000000000000     0x2dab
  *(.debug_abbrev)
  .debug_abbrev  0x0000000000000000      0x32d obj/Modem/bertos/cpu/avr/drv/ser_mega.o
  .debug_abbrev  0x000000000000032d       0xd2 obj/Modem/bertos/cpu/avr/drv/timer_mega.o
@@ -1507,13 +1436,13 @@ END GROUP
  .debug_abbrev  0x00000000000015ab      0x2b3 obj/Modem/Modem/main.o
  .debug_abbrev  0x000000000000185e      0x1a6 obj/Modem/Modem/hardware.o
  .debug_abbrev  0x0000000000001a04      0x3dc obj/Modem/Modem/afsk.o
- .debug_abbrev  0x0000000000001de0      0x514 obj/Modem/Modem/protocol/mp1.o
- .debug_abbrev  0x00000000000022f4      0x2d8 obj/Modem/Modem/compression/heatshrink_decoder.o
- .debug_abbrev  0x00000000000025cc      0x36c obj/Modem/Modem/compression/heatshrink_encoder.o
- .debug_abbrev  0x0000000000002938      0x233 obj/Modem/bertos/mware/formatwr_P.o
- .debug_abbrev  0x0000000000002b6b      0x266 obj/Modem/bertos/drv/kdebug_P.o
+ .debug_abbrev  0x0000000000001de0      0x4ee obj/Modem/Modem/protocol/mp1.o
+ .debug_abbrev  0x00000000000022ce      0x2d8 obj/Modem/Modem/compression/heatshrink_decoder.o
+ .debug_abbrev  0x00000000000025a6      0x36c obj/Modem/Modem/compression/heatshrink_encoder.o
+ .debug_abbrev  0x0000000000002912      0x233 obj/Modem/bertos/mware/formatwr_P.o
+ .debug_abbrev  0x0000000000002b45      0x266 obj/Modem/bertos/drv/kdebug_P.o
 
-.debug_line     0x0000000000000000     0x3112
+.debug_line     0x0000000000000000     0x30da
  *(.debug_line)
  .debug_line    0x0000000000000000        0x0 obj/Modem/bertos/cpu/avr/drv/ser_avr.o
  .debug_line    0x0000000000000000      0x31b obj/Modem/bertos/cpu/avr/drv/ser_mega.o
@@ -1529,13 +1458,13 @@ END GROUP
  .debug_line    0x0000000000001426      0x1d8 obj/Modem/Modem/main.o
  .debug_line    0x00000000000015fe      0x15d obj/Modem/Modem/hardware.o
  .debug_line    0x000000000000175b      0x49a obj/Modem/Modem/afsk.o
- .debug_line    0x0000000000001bf5      0xaa4 obj/Modem/Modem/protocol/mp1.o
- .debug_line    0x0000000000002699      0x1fc obj/Modem/Modem/compression/heatshrink_decoder.o
- .debug_line    0x0000000000002895      0x309 obj/Modem/Modem/compression/heatshrink_encoder.o
- .debug_line    0x0000000000002b9e      0x2f0 obj/Modem/bertos/mware/formatwr_P.o
- .debug_line    0x0000000000002e8e      0x284 obj/Modem/bertos/drv/kdebug_P.o
+ .debug_line    0x0000000000001bf5      0xa6c obj/Modem/Modem/protocol/mp1.o
+ .debug_line    0x0000000000002661      0x1fc obj/Modem/Modem/compression/heatshrink_decoder.o
+ .debug_line    0x000000000000285d      0x309 obj/Modem/Modem/compression/heatshrink_encoder.o
+ .debug_line    0x0000000000002b66      0x2f0 obj/Modem/bertos/mware/formatwr_P.o
+ .debug_line    0x0000000000002e56      0x284 obj/Modem/bertos/drv/kdebug_P.o
 
-.debug_frame    0x0000000000000000     0x178c
+.debug_frame    0x0000000000000000     0x1774
  *(.debug_frame)
  .debug_frame   0x0000000000000000      0x244 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
  .debug_frame   0x0000000000000244       0x24 obj/Modem/bertos/cpu/avr/drv/timer_mega.o
@@ -1548,13 +1477,13 @@ END GROUP
  .debug_frame   0x0000000000000b58       0x58 obj/Modem/Modem/main.o
  .debug_frame   0x0000000000000bb0       0x94 obj/Modem/Modem/hardware.o
  .debug_frame   0x0000000000000c44      0x178 obj/Modem/Modem/afsk.o
- .debug_frame   0x0000000000000dbc      0x3a0 obj/Modem/Modem/protocol/mp1.o
- .debug_frame   0x000000000000115c      0x148 obj/Modem/Modem/compression/heatshrink_decoder.o
- .debug_frame   0x00000000000012a4      0x1c0 obj/Modem/Modem/compression/heatshrink_encoder.o
- .debug_frame   0x0000000000001464       0x98 obj/Modem/bertos/mware/formatwr_P.o
- .debug_frame   0x00000000000014fc      0x290 obj/Modem/bertos/drv/kdebug_P.o
+ .debug_frame   0x0000000000000dbc      0x388 obj/Modem/Modem/protocol/mp1.o
+ .debug_frame   0x0000000000001144      0x148 obj/Modem/Modem/compression/heatshrink_decoder.o
+ .debug_frame   0x000000000000128c      0x1c0 obj/Modem/Modem/compression/heatshrink_encoder.o
+ .debug_frame   0x000000000000144c       0x98 obj/Modem/bertos/mware/formatwr_P.o
+ .debug_frame   0x00000000000014e4      0x290 obj/Modem/bertos/drv/kdebug_P.o
 
-.debug_str      0x0000000000000000     0x1c30
+.debug_str      0x0000000000000000     0x1c2a
  *(.debug_str)
  .debug_str     0x0000000000000000        0x0 obj/Modem/bertos/cpu/avr/drv/ser_avr.o
  .debug_str     0x0000000000000000      0x4c2 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
@@ -1582,18 +1511,18 @@ END GROUP
                                         0x470 (size before relaxing)
  .debug_str     0x0000000000001034       0xca obj/Modem/Modem/afsk.o
                                         0x636 (size before relaxing)
- .debug_str     0x00000000000010fe      0x4cf obj/Modem/Modem/protocol/mp1.o
-                                        0x9bd (size before relaxing)
- .debug_str     0x00000000000015cd      0x220 obj/Modem/Modem/compression/heatshrink_decoder.o
+ .debug_str     0x00000000000010fe      0x4c9 obj/Modem/Modem/protocol/mp1.o
+                                        0x9b2 (size before relaxing)
+ .debug_str     0x00000000000015c7      0x220 obj/Modem/Modem/compression/heatshrink_decoder.o
                                         0x597 (size before relaxing)
- .debug_str     0x00000000000017ed      0x34d obj/Modem/Modem/compression/heatshrink_encoder.o
+ .debug_str     0x00000000000017e7      0x34d obj/Modem/Modem/compression/heatshrink_encoder.o
                                         0x760 (size before relaxing)
- .debug_str     0x0000000000001b3a       0x13 obj/Modem/bertos/mware/formatwr_P.o
+ .debug_str     0x0000000000001b34       0x13 obj/Modem/bertos/mware/formatwr_P.o
                                         0x3a5 (size before relaxing)
- .debug_str     0x0000000000001b4d       0xe3 obj/Modem/bertos/drv/kdebug_P.o
+ .debug_str     0x0000000000001b47       0xe3 obj/Modem/bertos/drv/kdebug_P.o
                                         0x2ba (size before relaxing)
 
-.debug_loc      0x0000000000000000     0xb2fd
+.debug_loc      0x0000000000000000     0xb279
  *(.debug_loc)
  .debug_loc     0x0000000000000000      0x3c9 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
  .debug_loc     0x00000000000003c9      0xe66 obj/Modem/bertos/drv/ser.o
@@ -1605,11 +1534,11 @@ END GROUP
  .debug_loc     0x0000000000003c35       0xee obj/Modem/Modem/main.o
  .debug_loc     0x0000000000003d23       0x6b obj/Modem/Modem/hardware.o
  .debug_loc     0x0000000000003d8e      0xd9f obj/Modem/Modem/afsk.o
- .debug_loc     0x0000000000004b2d     0x31be obj/Modem/Modem/protocol/mp1.o
- .debug_loc     0x0000000000007ceb      0x904 obj/Modem/Modem/compression/heatshrink_decoder.o
- .debug_loc     0x00000000000085ef      0xcb8 obj/Modem/Modem/compression/heatshrink_encoder.o
- .debug_loc     0x00000000000092a7     0x1b36 obj/Modem/bertos/mware/formatwr_P.o
- .debug_loc     0x000000000000addd      0x520 obj/Modem/bertos/drv/kdebug_P.o
+ .debug_loc     0x0000000000004b2d     0x313a obj/Modem/Modem/protocol/mp1.o
+ .debug_loc     0x0000000000007c67      0x904 obj/Modem/Modem/compression/heatshrink_decoder.o
+ .debug_loc     0x000000000000856b      0xcb8 obj/Modem/Modem/compression/heatshrink_encoder.o
+ .debug_loc     0x0000000000009223     0x1b36 obj/Modem/bertos/mware/formatwr_P.o
+ .debug_loc     0x000000000000ad59      0x520 obj/Modem/bertos/drv/kdebug_P.o
 
 .debug_macinfo
  *(.debug_macinfo)
@@ -1617,7 +1546,7 @@ END GROUP
 .debug_pubtypes
  *(.debug_pubtypes)
 
-.debug_ranges   0x0000000000000000      0x7d0
+.debug_ranges   0x0000000000000000      0x7b8
  *(.debug_ranges)
  .debug_ranges  0x0000000000000000       0x80 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
  .debug_ranges  0x0000000000000080       0x10 obj/Modem/bertos/cpu/avr/drv/timer_mega.o
@@ -1630,11 +1559,11 @@ END GROUP
  .debug_ranges  0x0000000000000358       0x18 obj/Modem/Modem/main.o
  .debug_ranges  0x0000000000000370       0x18 obj/Modem/Modem/hardware.o
  .debug_ranges  0x0000000000000388       0xf0 obj/Modem/Modem/afsk.o
- .debug_ranges  0x0000000000000478       0xf0 obj/Modem/Modem/protocol/mp1.o
- .debug_ranges  0x0000000000000568       0x88 obj/Modem/Modem/compression/heatshrink_decoder.o
- .debug_ranges  0x00000000000005f0      0x120 obj/Modem/Modem/compression/heatshrink_encoder.o
- .debug_ranges  0x0000000000000710       0x40 obj/Modem/bertos/mware/formatwr_P.o
- .debug_ranges  0x0000000000000750       0x80 obj/Modem/bertos/drv/kdebug_P.o
+ .debug_ranges  0x0000000000000478       0xd8 obj/Modem/Modem/protocol/mp1.o
+ .debug_ranges  0x0000000000000550       0x88 obj/Modem/Modem/compression/heatshrink_decoder.o
+ .debug_ranges  0x00000000000005d8      0x120 obj/Modem/Modem/compression/heatshrink_encoder.o
+ .debug_ranges  0x00000000000006f8       0x40 obj/Modem/bertos/mware/formatwr_P.o
+ .debug_ranges  0x0000000000000738       0x80 obj/Modem/bertos/drv/kdebug_P.o
 
 .debug_macro
  *(.debug_macro)
@@ -1676,8 +1605,6 @@ __divmodhi4                                       /usr/lib/gcc/avr/4.8.2/avr5/li
                                                   obj/Modem/bertos/mware/formatwr_P.o
                                                   obj/Modem/Modem/protocol/mp1.o
                                                   obj/Modem/bertos/mware/formatwr.o
-__divmodsi4                                       /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_divmodsi4.o)
-                                                  /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(rand.o)
 __divsf3                                          /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(divsf3.o)
                                                   obj/Modem/bertos/mware/formatwr_P.o
                                                   obj/Modem/bertos/mware/formatwr.o
@@ -1693,7 +1620,6 @@ __do_clear_bss                                    /usr/lib/gcc/avr/4.8.2/avr5/li
                                                   obj/Modem/bertos/drv/ser.o
                                                   obj/Modem/bertos/cpu/avr/drv/ser_mega.o
 __do_copy_data                                    /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_copy_data.o)
-                                                  /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(rand.o)
                                                   /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(malloc.o)
                                                   obj/Modem/bertos/mware/formatwr_P.o
                                                   obj/Modem/bertos/mware/hex.o
@@ -1766,23 +1692,16 @@ __ltsf2                                           /usr/lib/gcc/avr/4.8.2/../../.
 __malloc_heap_end                                 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(malloc.o)
 __malloc_heap_start                               /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(malloc.o)
 __malloc_margin                                   /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(malloc.o)
-__mulohisi3                                       /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_mulshisi3.o)
-                                                  /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(rand.o)
 __mulsf3                                          /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(mulsf3.o)
                                                   obj/Modem/bertos/mware/formatwr_P.o
                                                   obj/Modem/bertos/mware/formatwr.o
 __mulsf3_pse                                      /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(mulsf3x.o)
 __mulsf3x                                         /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(mulsf3x.o)
                                                   /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(mulsf3.o)
-__mulshisi3                                       /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_mulshisi3.o)
 __mulsi3                                          /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_mulsi3.o)
                                                   obj/Modem/bertos/cpu/avr/drv/ser_mega.o
 __muluhisi3                                       /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_muluhisi3.o)
-                                                  /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_mulshisi3.o)
-                                                  /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(rand.o)
                                                   /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_mulsi3.o)
-__negsi2                                          /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_negsi2.o)
-                                                  /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_divmodsi4.o)
 __nesf2                                           /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(cmpsf2.o)
                                                   obj/Modem/bertos/mware/formatwr_P.o
                                                   obj/Modem/bertos/mware/formatwr.o
@@ -1800,7 +1719,6 @@ __udivmodhi4                                      /usr/lib/gcc/avr/4.8.2/avr5/li
                                                   /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_divmodhi4.o)
                                                   obj/Modem/Modem/protocol/mp1.o
 __udivmodsi4                                      /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_udivmodsi4.o)
-                                                  /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_divmodsi4.o)
                                                   obj/Modem/bertos/mware/formatwr_P.o
                                                   obj/Modem/bertos/mware/formatwr.o
                                                   obj/Modem/bertos/cpu/avr/drv/ser_mega.o
@@ -1952,9 +1870,6 @@ mp1Poll                                           obj/Modem/Modem/protocol/mp1.o
                                                   obj/Modem/Modem/main.o
 mp1Send                                           obj/Modem/Modem/protocol/mp1.o
                                                   obj/Modem/Modem/main.o
-rand                                              /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(rand.o)
-                                                  obj/Modem/Modem/protocol/mp1.o
-rand_r                                            /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(rand.o)
 ser_available                                     obj/Modem/bertos/drv/ser.o
                                                   obj/Modem/Modem/main.o
 ser_getchar_nowait                                obj/Modem/bertos/drv/ser.o
@@ -1972,8 +1887,6 @@ ser_setbaudrate                                   obj/Modem/bertos/drv/ser.o
                                                   obj/Modem/Modem/main.o
 ser_setparity                                     obj/Modem/bertos/drv/ser.o
 spimaster_init                                    obj/Modem/bertos/drv/ser.o
-srand                                             /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(rand.o)
-                                                  obj/Modem/Modem/protocol/mp1.o
 synctimer_add                                     obj/Modem/bertos/drv/timer.o
 synctimer_poll                                    obj/Modem/bertos/drv/timer.o
 timer_abort                                       obj/Modem/bertos/drv/timer.o
