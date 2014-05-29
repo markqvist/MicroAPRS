@@ -1442,7 +1442,7 @@ END GROUP
  .debug_abbrev  0x0000000000002912      0x233 obj/Modem/bertos/mware/formatwr_P.o
  .debug_abbrev  0x0000000000002b45      0x266 obj/Modem/bertos/drv/kdebug_P.o
 
-.debug_line     0x0000000000000000     0x30da
+.debug_line     0x0000000000000000     0x30ef
  *(.debug_line)
  .debug_line    0x0000000000000000        0x0 obj/Modem/bertos/cpu/avr/drv/ser_avr.o
  .debug_line    0x0000000000000000      0x31b obj/Modem/bertos/cpu/avr/drv/ser_mega.o
@@ -1455,14 +1455,14 @@ END GROUP
  .debug_line    0x0000000000000f58      0x2e2 obj/Modem/bertos/mware/formatwr.o
  .debug_line    0x000000000000123a       0x30 obj/Modem/bertos/mware/hex.o
  .debug_line    0x000000000000126a      0x1bc obj/Modem/bertos/struct/heap.o
- .debug_line    0x0000000000001426      0x1d8 obj/Modem/Modem/main.o
- .debug_line    0x00000000000015fe      0x15d obj/Modem/Modem/hardware.o
- .debug_line    0x000000000000175b      0x49a obj/Modem/Modem/afsk.o
- .debug_line    0x0000000000001bf5      0xa6c obj/Modem/Modem/protocol/mp1.o
- .debug_line    0x0000000000002661      0x1fc obj/Modem/Modem/compression/heatshrink_decoder.o
- .debug_line    0x000000000000285d      0x309 obj/Modem/Modem/compression/heatshrink_encoder.o
- .debug_line    0x0000000000002b66      0x2f0 obj/Modem/bertos/mware/formatwr_P.o
- .debug_line    0x0000000000002e56      0x284 obj/Modem/bertos/drv/kdebug_P.o
+ .debug_line    0x0000000000001426      0x1ed obj/Modem/Modem/main.o
+ .debug_line    0x0000000000001613      0x15d obj/Modem/Modem/hardware.o
+ .debug_line    0x0000000000001770      0x49a obj/Modem/Modem/afsk.o
+ .debug_line    0x0000000000001c0a      0xa6c obj/Modem/Modem/protocol/mp1.o
+ .debug_line    0x0000000000002676      0x1fc obj/Modem/Modem/compression/heatshrink_decoder.o
+ .debug_line    0x0000000000002872      0x309 obj/Modem/Modem/compression/heatshrink_encoder.o
+ .debug_line    0x0000000000002b7b      0x2f0 obj/Modem/bertos/mware/formatwr_P.o
+ .debug_line    0x0000000000002e6b      0x284 obj/Modem/bertos/drv/kdebug_P.o
 
 .debug_frame    0x0000000000000000     0x1774
  *(.debug_frame)

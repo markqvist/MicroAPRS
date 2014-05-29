@@ -11,6 +11,8 @@
 #include <stdio.h>          // Standard input/output
 #include <string.h>         // String operations
 
+#include <net/ax25.h>
+
 #include "afsk.h"           // Header for AFSK modem
 #include "protocol/mp1.h"   // Header for MP.1 protocol
 
