@@ -14,7 +14,6 @@
 #include <net/ax25.h>
 
 #include "afsk.h"           // Header for AFSK modem
-#include "protocol/mp1.h"   // Header for MP.1 protocol
 
 #if SERIAL_DEBUG
     #include "cfg/debug.h"  // Debug configuration from BertOS
@@ -26,19 +25,21 @@
 //////////////////////////////////////////////////////
 
 static Afsk afsk;           // Declare a AFSK modem struct
-static MP1 mp1;             // Declare a protocol struct
+static AX25Ctx ax25;        // Declare a protocol struct
 static Serial ser;          // Declare a serial interface struct
 
 #define ADC_CH 0            // Define which channel (pin) we want
                             // for the ADC (this is A0 on arduino)
 
+#define YOUR_CALLSIGN "nocall"
+#define TO_CALL "apzmdm"
+static AX25Call path[] = AX25_PATH(AX25_CALL(TO_CALL, 0), AX25_CALL(YOUR_CALLSIGN, 0), AX25_CALL("wide1", 1), AX25_CALL("wide2", 2));
+#define SEND_TEST_PACKETS true
+#define TEST_INTERVAL 15000L
+#define APRS_MSG    "Test APRS packet"
 
-static uint8_t serialBuffer[MP1_MAX_DATA_SIZE];	// This is a buffer for incoming serial data
 
-static int sbyte;                               // For holding byte read from serial port
-static size_t serialLen = 0;                    // Counter for counting length of data from serial
-static bool sertx = false;                      // Flag signifying whether it's time to send data
-                                                // received on the serial port.
+
 #define SER_BUFFER_FULL (serialLen < MP1_MAX_DATA_SIZE-1)
 
 //////////////////////////////////////////////////////
@@ -48,14 +49,14 @@ static bool sertx = false;                      // Flag signifying whether it's 
 // This is a callback we register with the protocol,
 // so we can process each packet as they are decoded.
 // Right now it just prints the packet to the serial port.
-static void mp1Callback(struct MP1Packet *packet) {
-    if (SERIAL_DEBUG) {
-        kfile_printf(&ser.fd, "%.*s\n", packet->dataLength, packet->data);
-    } else {
-        for (unsigned long i = 0; i < packet->dataLength; i++) {
-            kfile_putc(packet->data[i], &ser.fd);
-        }
-    }
+static void message_callback(struct AX25Msg *msg)
+{
+    kfile_printf(&ser.fd, "\n\nSRC[%.6s-%d], DST[%.6s-%d]\r\n", msg->src.call, msg->src.ssid, msg->dst.call, msg->dst.ssid);
+
+    for (int i = 0; i < msg->rpt_cnt; i++)
+        kfile_printf(&ser.fd, "via: [%.6s-%d]\r\n", msg->rpt_lst[i].call, msg->rpt_lst[i].ssid);
+
+    kfile_printf(&ser.fd, "DATA: %.*s\r\n", msg->len, msg->info);
 }
 
 // Simple initialization function.
@@ -80,7 +81,7 @@ static void init(void)
     // Create a modem context
     afsk_init(&afsk, ADC_CH);
     // ... and a protocol context with the modem
-    mp1Init(&mp1, &afsk.fd, mp1Callback);
+    ax25_init(&ax25, &afsk.fd, message_callback);
 
     // That's all!
 }
@@ -91,105 +92,21 @@ int main(void)
     init();
     // Record the current tick count for time-keeping
     ticks_t start = timer_clock();
-    #if MP1_USE_TX_QUEUE
-        ticks_t frameQueued = 0;
-    #endif
     
     // Go into ye good ol' infinite loop
     while (1)
     {    
         // First we instruct the protocol to check for
         // incoming data
-        mp1Poll(&mp1);
+        ax25_poll(&ax25);    
 
-        
-        // If there was actually some data waiting for us
-        // there, let's se what it tastes like :)
-        if (!sertx && ser_available(&ser)) {
-            // We then read a byte from the serial port.
-            // Notice that we use "_nowait" since we can't
-            // have this blocking execution until a byte
-            // comes in.
-            sbyte = ser_getchar_nowait(&ser);
-
-            // If SERIAL_DEBUG is specified we'll handle
-            // serial data as direct human input and only
-            // transmit when we get a LF character
-            #if SERIAL_DEBUG
-                // If we have not yet surpassed the maximum frame length
-                // and the byte is not a "transmit" (newline) character,
-                // we should store it for transmission.
-                if ((serialLen < MP1_MAX_DATA_SIZE) && (sbyte != 10)) {
-                    // Put the read byte into the buffer;
-                    serialBuffer[serialLen] = sbyte;
-                    // Increment the read length counter
-                    serialLen++;
-                } else {
-                    // If one of the above conditions were actually the
-                    // case, it means we have to transmit, se we set
-                    // transmission flag to true.
-                    sertx = true;
-                }
-            #else
-                // Otherwise we assume the modem is running
-                // in automated mode, and we push out data
-                // as it becomes available. We either transmit
-                // immediately when the max frame length has
-                // been reached, or when we get no input for
-                // a certain amount of time.
-
-                if (serialLen < MP1_MAX_DATA_SIZE-1) {
-                    // Put the read byte into the buffer;
-                    serialBuffer[serialLen] = sbyte;
-                    // Increment the read length counter
-                    serialLen++;
-                } else {
-                    // If max frame length has been reached
-                    // we need to transmit.
-                    serialBuffer[serialLen] = sbyte;
-                    serialLen++;
-                    sertx = true;
-                }
-
-                start = timer_clock();
-            #endif
-        } else {
-            if (!SERIAL_DEBUG && serialLen > 0 && timer_clock() - start > ms_to_ticks(TX_MAXWAIT)) {
-                sertx = true;
-            }
+        // Use AX.25 to send test data
+        if (SEND_TEST_PACKETS && timer_clock() - start > ms_to_ticks(TEST_INTERVAL))
+        {
+            start = timer_clock();
+            ax25_sendVia(&ax25, path, countof(path), APRS_MSG, sizeof(APRS_MSG));
         }
 
-        // Check whether we should send data in our serial buffer
-        if (sertx) {
-            #if MP1_USE_TX_QUEUE
-                mp1QueueFrame(&mp1, serialBuffer, serialLen);
-                frameQueued = timer_clock();
-                sertx = false;
-                serialLen = 0;
-            #else
-                // Wait until incoming packets are done
-                if (!mp1CarrierSense(&mp1)) {
-                    // And then send the data
-                    mp1Send(&mp1, serialBuffer, serialLen);
-                    
-                    // Reset the transmission flag and length counter
-                    sertx = false;
-                    serialLen = 0;
-                }
-            #endif
-        }
-
-        #if MP1_USE_TX_QUEUE
-            // We first wait a little to see if more
-            // frames are coming in.
-            if (timer_clock() - frameQueued > ms_to_ticks(MP1_QUEUE_TX_WAIT)) {
-                if (!ser_available(&ser) && !mp1CarrierSense(&mp1)) {
-                    // And if not, we send process the frame
-                    // queue if possible.
-                    mp1ProcessQueue(&mp1);
-                }
-            }
-        #endif
     }
     return 0;
 }
