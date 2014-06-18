@@ -51,6 +51,7 @@ pi\<1/0\>         = turn on/off printing info
 
 #### To set your callsign to XX1YYY-5, send these two commands:
 cXX1YYY
+
 sc5
 
 #### To send an APRS message to ZZ5ABC-0 with the content "Hi there!", send this command:
