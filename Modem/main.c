@@ -15,6 +15,8 @@
 
 #include "afsk.h"           // Header for AFSK modem
 
+#include "protocol/KISS.h"           // KISS TNC protocol
+
 #if SERIAL_DEBUG
     #include "cfg/debug.h"  // Debug configuration from BertOS
 #endif
@@ -31,16 +33,23 @@ static Serial ser;          // Declare a serial interface struct
 #define ADC_CH 0            // Define which channel (pin) we want
                             // for the ADC (this is A0 on arduino)
 
+#define SERIAL_PROTOCOL PROTOCOL_SIMPLE_SERIAL
 #define YOUR_CALLSIGN "nocall"
 #define TO_CALL "apzmdm"
 static AX25Call path[] = AX25_PATH(AX25_CALL(TO_CALL, 0), AX25_CALL(YOUR_CALLSIGN, 0), AX25_CALL("wide1", 1), AX25_CALL("wide2", 2));
-#define SEND_TEST_PACKETS true
+#define SEND_TEST_PACKETS false
 #define TEST_INTERVAL 15000L
 #define APRS_MSG    "Test APRS packet"
 
-
+static uint8_t serialBuffer[CONFIG_AX25_FRAME_BUF_LEN+1]; // Buffer for holding incoming serial data
+static int sbyte;                               // For holding byte read from serial port
+static size_t serialLen = 0;                    // Counter for counting length of data from serial
+static bool sertx = false;                      // Flag signifying whether it's time to send data
+                                                // received on the serial port.
 
 #define SER_BUFFER_FULL (serialLen < MP1_MAX_DATA_SIZE-1)
+
+#include "protocol/SimpleSerial.h"   // Simple serial control protocol
 
 //////////////////////////////////////////////////////
 // And here comes the actual program :)             //
@@ -51,12 +60,12 @@ static AX25Call path[] = AX25_PATH(AX25_CALL(TO_CALL, 0), AX25_CALL(YOUR_CALLSIG
 // Right now it just prints the packet to the serial port.
 static void message_callback(struct AX25Msg *msg)
 {
-    kfile_printf(&ser.fd, "\n\nSRC[%.6s-%d], DST[%.6s-%d]\r\n", msg->src.call, msg->src.ssid, msg->dst.call, msg->dst.ssid);
-
-    for (int i = 0; i < msg->rpt_cnt; i++)
-        kfile_printf(&ser.fd, "via: [%.6s-%d]\r\n", msg->rpt_lst[i].call, msg->rpt_lst[i].ssid);
-
-    kfile_printf(&ser.fd, "DATA: %.*s\r\n", msg->len, msg->info);
+    if (SERIAL_PROTOCOL == PROTOCOL_SIMPLE_SERIAL) {
+        ss_messageCallback(msg, &ser);
+    }
+    if (SERIAL_PROTOCOL == PROTOCOL_KISS) {
+        // Not implemented yet
+    }
 }
 
 // Simple initialization function.
@@ -98,7 +107,68 @@ int main(void)
     {    
         // First we instruct the protocol to check for
         // incoming data
-        ax25_poll(&ax25);    
+        ax25_poll(&ax25);
+
+        // Poll for incoming serial data
+        if (!sertx && ser_available(&ser)) {
+            // We then read a byte from the serial port.
+            // Notice that we use "_nowait" since we can't
+            // have this blocking execution until a byte
+            // comes in.
+            sbyte = ser_getchar_nowait(&ser);
+
+            // If SERIAL_DEBUG is specified we'll handle
+            // serial data as direct human input and only
+            // transmit when we get a LF character
+            #if SERIAL_DEBUG
+                // If we have not yet surpassed the maximum frame length
+                // and the byte is not a "transmit" (newline) character,
+                // we should store it for transmission.
+                if ((serialLen < MP1_MAX_DATA_SIZE) && (sbyte != 10)) {
+                    // Put the read byte into the buffer;
+                    serialBuffer[serialLen] = sbyte;
+                    // Increment the read length counter
+                    serialLen++;
+                } else {
+                    // If one of the above conditions were actually the
+                    // case, it means we have to transmit, se we set
+                    // transmission flag to true.
+                    sertx = true;
+                }
+            #else
+                // Otherwise we assume the modem is running
+                // in automated mode, and we push out data
+                // as it becomes available. We either transmit
+                // immediately when the max frame length has
+                // been reached, or when we get no input for
+                // a certain amount of time.
+
+                if (serialLen < CONFIG_AX25_FRAME_BUF_LEN-1) {
+                    // Put the read byte into the buffer;
+                    serialBuffer[serialLen] = sbyte;
+                    // Increment the read length counter
+                    serialLen++;
+                } else {
+                    // If max frame length has been reached
+                    // we need to transmit.
+                    serialBuffer[serialLen] = sbyte;
+                    serialLen++;
+                    sertx = true;
+                }
+
+                start = timer_clock();
+            #endif
+        } else {
+            if (!SERIAL_DEBUG && serialLen > 0 && timer_clock() - start > ms_to_ticks(TX_MAXWAIT)) {
+                sertx = true;
+            }
+        }
+
+        if (sertx) {
+            ss_serialCallback(serialBuffer, serialLen, &ser, &ax25);
+            sertx = false;
+            serialLen = 0;
+        }
 
         // Use AX.25 to send test data
         if (SEND_TEST_PACKETS && timer_clock() - start > ms_to_ticks(TEST_INTERVAL))
