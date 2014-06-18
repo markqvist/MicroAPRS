@@ -26,25 +26,25 @@ d\<callsign\>     = set destination callsign (default APZMDM)
 2\<callsign\>     = set second path via (default WIDE2)
 
 
-sc<\SSID\>        = set your ssid (default 0)
+sc\<SSID\>        = set your ssid (default 0)
 
-sd<\SSID\>        = set destination ssid (default 0)
+sd\<SSID\>        = set destination ssid (default 0)
 
-s1<\SSID\>        = set first path via ssid (default 1)
+s1\<SSID\>        = set first path via ssid (default 1)
 
-s2<\SSID\>        = set second path via ssid (default 2)
+s2\<SSID\>        = set second path via ssid (default 2)
 
 
 ### Setting serial output options
-ps<1/0>         = turn on/off printing SRC (example "ps0" to turn off, "ps1" to turn on)
+ps\<1/0\>         = turn on/off printing SRC (example "ps0" to turn off, "ps1" to turn on)
 
-pd<1/0>         = turn on/off printing DST
+pd\<1/0\>         = turn on/off printing DST
 
-pp<1/0>         = turn on/off printing path
+pp\<1/0\>         = turn on/off printing path
 
-pm<1/0>         = turn on/off printing data
+pm\<1/0\>         = turn on/off printing data
 
-pi<1/0>         = turn on/off printing info
+pi\<1/0\>         = turn on/off printing info
 
 
 ### Examples
