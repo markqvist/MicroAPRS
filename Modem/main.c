@@ -15,12 +15,15 @@
 
 #include "afsk.h"           // Header for AFSK modem
 
+
+#include "protocol/SimpleSerial.h"   // Simple serial control protocol
 #include "protocol/KISS.h"           // KISS TNC protocol
 
 #if SERIAL_DEBUG
     #include "cfg/debug.h"  // Debug configuration from BertOS
 #endif
 
+#define SERIAL_PROTOCOL PROTOCOL_SIMPLE_SERIAL
 
 //////////////////////////////////////////////////////
 // A few definitions                                //
@@ -33,13 +36,13 @@ static Serial ser;          // Declare a serial interface struct
 #define ADC_CH 0            // Define which channel (pin) we want
                             // for the ADC (this is A0 on arduino)
 
-#define SERIAL_PROTOCOL PROTOCOL_SIMPLE_SERIAL
-#define YOUR_CALLSIGN "nocall"
-#define TO_CALL "apzmdm"
+
+/* Removed for now, use serial to send packets instead
 static AX25Call path[] = AX25_PATH(AX25_CALL(TO_CALL, 0), AX25_CALL(YOUR_CALLSIGN, 0), AX25_CALL("wide1", 1), AX25_CALL("wide2", 2));
 #define SEND_TEST_PACKETS false
 #define TEST_INTERVAL 15000L
 #define APRS_MSG    "Test APRS packet"
+*/
 
 static uint8_t serialBuffer[CONFIG_AX25_FRAME_BUF_LEN+1]; // Buffer for holding incoming serial data
 static int sbyte;                               // For holding byte read from serial port
@@ -49,7 +52,7 @@ static bool sertx = false;                      // Flag signifying whether it's 
 
 #define SER_BUFFER_FULL (serialLen < MP1_MAX_DATA_SIZE-1)
 
-#include "protocol/SimpleSerial.h"   // Simple serial control protocol
+
 
 //////////////////////////////////////////////////////
 // And here comes the actual program :)             //
@@ -170,12 +173,15 @@ int main(void)
             serialLen = 0;
         }
 
+        // Removing this for now
+        /*
         // Use AX.25 to send test data
         if (SEND_TEST_PACKETS && timer_clock() - start > ms_to_ticks(TEST_INTERVAL))
         {
             start = timer_clock();
             ax25_sendVia(&ax25, path, countof(path), APRS_MSG, sizeof(APRS_MSG));
         }
+        */
 
     }
     return 0;

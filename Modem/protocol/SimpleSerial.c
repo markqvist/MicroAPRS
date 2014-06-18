@@ -14,9 +14,9 @@ AX25Call dst;
 AX25Call path1;
 AX25Call path2;
 
-char CALL[6] = "NOCALL";
+char CALL[6] = DEFAULT_CALLSIGN;
 int CALL_SSID = 0;
-char DST[6] = "APZMDM";
+char DST[6] = DEFAULT_DESTINATION_CALL;
 int DST_SSID = 0;
 char PATH1[6] = "WIDE1";
 int PATH1_SSID = 1;

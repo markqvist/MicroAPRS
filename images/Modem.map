@@ -1570,7 +1570,7 @@ END GROUP
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x0000000000000000     0xf7f4
+.debug_info     0x0000000000000000     0xf7d9
  *(.debug_info)
  .debug_info    0x0000000000000000      0xd24 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
  .debug_info    0x0000000000000d24      0x19f obj/Modem/bertos/cpu/avr/drv/timer_mega.o
@@ -1583,15 +1583,15 @@ END GROUP
  .debug_info    0x0000000000004db4      0x57f obj/Modem/bertos/struct/heap.o
  .debug_info    0x0000000000005333     0x1073 obj/Modem/bertos/net/ax25.o
  .debug_info    0x00000000000063a6      0x1b8 obj/Modem/bertos/algo/crc_ccitt.o
- .debug_info    0x000000000000655e      0xc4c obj/Modem/Modem/main.o
- .debug_info    0x00000000000071aa      0x6c4 obj/Modem/Modem/hardware.o
- .debug_info    0x000000000000786e     0x13c2 obj/Modem/Modem/afsk.o
- .debug_info    0x0000000000008c30     0x3588 obj/Modem/Modem/protocol/mp1.o
- .debug_info    0x000000000000c1b8      0xaa6 obj/Modem/Modem/protocol/SimpleSerial.o
- .debug_info    0x000000000000cc5e      0xae8 obj/Modem/Modem/compression/heatshrink_decoder.o
- .debug_info    0x000000000000d746     0x1074 obj/Modem/Modem/compression/heatshrink_encoder.o
- .debug_info    0x000000000000e7ba      0x863 obj/Modem/bertos/mware/formatwr_P.o
- .debug_info    0x000000000000f01d      0x7d7 obj/Modem/bertos/drv/kdebug_P.o
+ .debug_info    0x000000000000655e      0xc31 obj/Modem/Modem/main.o
+ .debug_info    0x000000000000718f      0x6c4 obj/Modem/Modem/hardware.o
+ .debug_info    0x0000000000007853     0x13c2 obj/Modem/Modem/afsk.o
+ .debug_info    0x0000000000008c15     0x3588 obj/Modem/Modem/protocol/mp1.o
+ .debug_info    0x000000000000c19d      0xaa6 obj/Modem/Modem/protocol/SimpleSerial.o
+ .debug_info    0x000000000000cc43      0xae8 obj/Modem/Modem/compression/heatshrink_decoder.o
+ .debug_info    0x000000000000d72b     0x1074 obj/Modem/Modem/compression/heatshrink_encoder.o
+ .debug_info    0x000000000000e79f      0x863 obj/Modem/bertos/mware/formatwr_P.o
+ .debug_info    0x000000000000f002      0x7d7 obj/Modem/bertos/drv/kdebug_P.o
  *(.gnu.linkonce.wi.*)
 
 .debug_abbrev   0x0000000000000000     0x34ba
@@ -1617,7 +1617,7 @@ END GROUP
  .debug_abbrev  0x0000000000003021      0x233 obj/Modem/bertos/mware/formatwr_P.o
  .debug_abbrev  0x0000000000003254      0x266 obj/Modem/bertos/drv/kdebug_P.o
 
-.debug_line     0x0000000000000000     0x3750
+.debug_line     0x0000000000000000     0x3751
  *(.debug_line)
  .debug_line    0x0000000000000000        0x0 obj/Modem/bertos/cpu/avr/drv/ser_avr.o
  .debug_line    0x0000000000000000      0x31b obj/Modem/bertos/cpu/avr/drv/ser_mega.o
@@ -1632,16 +1632,16 @@ END GROUP
  .debug_line    0x000000000000126a      0x1bc obj/Modem/bertos/struct/heap.o
  .debug_line    0x0000000000001426      0x265 obj/Modem/bertos/net/ax25.o
  .debug_line    0x000000000000168b       0xc6 obj/Modem/bertos/algo/crc_ccitt.o
- .debug_line    0x0000000000001751      0x1e3 obj/Modem/Modem/main.o
- .debug_line    0x0000000000001934      0x15d obj/Modem/Modem/hardware.o
- .debug_line    0x0000000000001a91      0x49a obj/Modem/Modem/afsk.o
- .debug_line    0x0000000000001f2b      0xa6c obj/Modem/Modem/protocol/mp1.o
- .debug_line    0x0000000000002997      0x340 obj/Modem/Modem/protocol/SimpleSerial.o
- .debug_line    0x0000000000002cd7        0x0 obj/Modem/Modem/protocol/KISS.o
- .debug_line    0x0000000000002cd7      0x1fc obj/Modem/Modem/compression/heatshrink_decoder.o
- .debug_line    0x0000000000002ed3      0x309 obj/Modem/Modem/compression/heatshrink_encoder.o
- .debug_line    0x00000000000031dc      0x2f0 obj/Modem/bertos/mware/formatwr_P.o
- .debug_line    0x00000000000034cc      0x284 obj/Modem/bertos/drv/kdebug_P.o
+ .debug_line    0x0000000000001751      0x1e4 obj/Modem/Modem/main.o
+ .debug_line    0x0000000000001935      0x15d obj/Modem/Modem/hardware.o
+ .debug_line    0x0000000000001a92      0x49a obj/Modem/Modem/afsk.o
+ .debug_line    0x0000000000001f2c      0xa6c obj/Modem/Modem/protocol/mp1.o
+ .debug_line    0x0000000000002998      0x340 obj/Modem/Modem/protocol/SimpleSerial.o
+ .debug_line    0x0000000000002cd8        0x0 obj/Modem/Modem/protocol/KISS.o
+ .debug_line    0x0000000000002cd8      0x1fc obj/Modem/Modem/compression/heatshrink_decoder.o
+ .debug_line    0x0000000000002ed4      0x309 obj/Modem/Modem/compression/heatshrink_encoder.o
+ .debug_line    0x00000000000031dd      0x2f0 obj/Modem/bertos/mware/formatwr_P.o
+ .debug_line    0x00000000000034cd      0x284 obj/Modem/bertos/drv/kdebug_P.o
 
 .debug_frame    0x0000000000000000     0x1b6c
  *(.debug_frame)
@@ -1692,7 +1692,7 @@ END GROUP
  .debug_str     0x0000000000000f5e       0x18 obj/Modem/bertos/algo/crc_ccitt.o
                                         0x19b (size before relaxing)
  .debug_str     0x0000000000000f76      0x17f obj/Modem/Modem/main.o
-                                        0x5fe (size before relaxing)
+                                        0x5f9 (size before relaxing)
  .debug_str     0x00000000000010f5       0x5b obj/Modem/Modem/hardware.o
                                         0x470 (size before relaxing)
  .debug_str     0x0000000000001150       0xca obj/Modem/Modem/afsk.o
