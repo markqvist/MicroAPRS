@@ -14,18 +14,18 @@ Currently a simple serial control protocol is implemented, while full KISS TNC f
 Here's how to control the APRS modem over a serial connection. The modem accepts a variety of commands for setting options and sending packets. Generally a command starts with one or more characters defining the command, and then whatever data is needed to set the options for that command. Here's a list of the currently available commands:
 
 ### Sending data
-!<message>      = send text packet
+!\<message\>      = send text packet
 
 ### Setting callsigns
-c<callsign>     = set your callsign (default NOCALL)
-d<callsign>     = set destination callsign (default APZMDM)
-1<callsign>     = set first path via (default WIDE1)
-2<callsign>     = set second path via (default WIDE2)
+c\<callsign\>     = set your callsign (default NOCALL)
+d\<callsign\>     = set destination callsign (default APZMDM)
+1\<callsign\>     = set first path via (default WIDE1)
+2\<callsign\>     = set second path via (default WIDE2)
 
-sc<SSID>        = set your ssid (default 0)
-sd<SSID>        = set destination ssid (default 0)
-s1<SSID>        = set first path via ssid (default 1)
-s2<SSID>        = set second path via ssid (default 2)
+sc<\SSID\>        = set your ssid (default 0)
+sd<\SSID\>        = set destination ssid (default 0)
+s1<\SSID\>        = set first path via ssid (default 1)
+s2<\SSID\>        = set second path via ssid (default 2)
 
 ### Setting serial output options
 ps<1/0>         = turn on/off printing SRC (example "ps0" to turn off, "ps1" to turn on)
