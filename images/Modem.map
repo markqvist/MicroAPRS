@@ -1665,51 +1665,51 @@ END GROUP
  .debug_frame   0x0000000000001844       0x98 obj/Modem/bertos/mware/formatwr_P.o
  .debug_frame   0x00000000000018dc      0x290 obj/Modem/bertos/drv/kdebug_P.o
 
-.debug_str      0x0000000000000000     0x1f0c
+.debug_str      0x0000000000000000     0x1f10
  *(.debug_str)
  .debug_str     0x0000000000000000        0x0 obj/Modem/bertos/cpu/avr/drv/ser_avr.o
- .debug_str     0x0000000000000000      0x4c2 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
-                                        0x5a8 (size before relaxing)
- .debug_str     0x00000000000004c2        0x0 obj/Modem/bertos/cpu/avr/drv/timer_avr.o
- .debug_str     0x00000000000004c2       0x2e obj/Modem/bertos/cpu/avr/drv/timer_mega.o
-                                        0x1df (size before relaxing)
- .debug_str     0x00000000000004f0      0x1f7 obj/Modem/bertos/drv/ser.o
-                                        0x625 (size before relaxing)
- .debug_str     0x00000000000006e7      0x1c0 obj/Modem/bertos/drv/timer.o
-                                        0x3fa (size before relaxing)
- .debug_str     0x00000000000008a7      0x1a3 obj/Modem/bertos/io/kfile.o
-                                        0x4a7 (size before relaxing)
- .debug_str     0x0000000000000a4a       0x74 obj/Modem/bertos/mware/event.o
-                                        0x282 (size before relaxing)
- .debug_str     0x0000000000000abe      0x20d obj/Modem/bertos/mware/formatwr.o
-                                        0x3a3 (size before relaxing)
- .debug_str     0x0000000000000ccb       0x13 obj/Modem/bertos/mware/hex.o
-                                         0xc8 (size before relaxing)
- .debug_str     0x0000000000000cde       0xaa obj/Modem/bertos/struct/heap.o
-                                        0x203 (size before relaxing)
- .debug_str     0x0000000000000d88      0x1d6 obj/Modem/bertos/net/ax25.o
-                                        0x4b1 (size before relaxing)
- .debug_str     0x0000000000000f5e       0x18 obj/Modem/bertos/algo/crc_ccitt.o
-                                        0x19b (size before relaxing)
- .debug_str     0x0000000000000f76      0x17f obj/Modem/Modem/main.o
-                                        0x5f9 (size before relaxing)
- .debug_str     0x00000000000010f5       0x5b obj/Modem/Modem/hardware.o
-                                        0x470 (size before relaxing)
- .debug_str     0x0000000000001150       0xca obj/Modem/Modem/afsk.o
-                                        0x636 (size before relaxing)
- .debug_str     0x000000000000121a      0x5a4 obj/Modem/Modem/protocol/mp1.o
-                                        0x9b2 (size before relaxing)
- .debug_str     0x00000000000017be       0xeb obj/Modem/Modem/protocol/SimpleSerial.o
-                                        0x4e4 (size before relaxing)
- .debug_str     0x00000000000018a9        0x0 obj/Modem/Modem/protocol/KISS.o
- .debug_str     0x00000000000018a9      0x220 obj/Modem/Modem/compression/heatshrink_decoder.o
-                                        0x597 (size before relaxing)
- .debug_str     0x0000000000001ac9      0x34d obj/Modem/Modem/compression/heatshrink_encoder.o
-                                        0x760 (size before relaxing)
- .debug_str     0x0000000000001e16       0x13 obj/Modem/bertos/mware/formatwr_P.o
-                                        0x3a5 (size before relaxing)
- .debug_str     0x0000000000001e29       0xe3 obj/Modem/bertos/drv/kdebug_P.o
-                                        0x2ba (size before relaxing)
+ .debug_str     0x0000000000000000      0x4c6 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
+                                        0x5ac (size before relaxing)
+ .debug_str     0x00000000000004c6        0x0 obj/Modem/bertos/cpu/avr/drv/timer_avr.o
+ .debug_str     0x00000000000004c6       0x2e obj/Modem/bertos/cpu/avr/drv/timer_mega.o
+                                        0x1e3 (size before relaxing)
+ .debug_str     0x00000000000004f4      0x1f7 obj/Modem/bertos/drv/ser.o
+                                        0x629 (size before relaxing)
+ .debug_str     0x00000000000006eb      0x1c0 obj/Modem/bertos/drv/timer.o
+                                        0x3fe (size before relaxing)
+ .debug_str     0x00000000000008ab      0x1a3 obj/Modem/bertos/io/kfile.o
+                                        0x4ab (size before relaxing)
+ .debug_str     0x0000000000000a4e       0x74 obj/Modem/bertos/mware/event.o
+                                        0x286 (size before relaxing)
+ .debug_str     0x0000000000000ac2      0x20d obj/Modem/bertos/mware/formatwr.o
+                                        0x3a7 (size before relaxing)
+ .debug_str     0x0000000000000ccf       0x13 obj/Modem/bertos/mware/hex.o
+                                         0xcc (size before relaxing)
+ .debug_str     0x0000000000000ce2       0xaa obj/Modem/bertos/struct/heap.o
+                                        0x207 (size before relaxing)
+ .debug_str     0x0000000000000d8c      0x1d6 obj/Modem/bertos/net/ax25.o
+                                        0x4b5 (size before relaxing)
+ .debug_str     0x0000000000000f62       0x18 obj/Modem/bertos/algo/crc_ccitt.o
+                                        0x19f (size before relaxing)
+ .debug_str     0x0000000000000f7a      0x17f obj/Modem/Modem/main.o
+                                        0x5fd (size before relaxing)
+ .debug_str     0x00000000000010f9       0x5b obj/Modem/Modem/hardware.o
+                                        0x474 (size before relaxing)
+ .debug_str     0x0000000000001154       0xca obj/Modem/Modem/afsk.o
+                                        0x63a (size before relaxing)
+ .debug_str     0x000000000000121e      0x5a4 obj/Modem/Modem/protocol/mp1.o
+                                        0x9b6 (size before relaxing)
+ .debug_str     0x00000000000017c2       0xeb obj/Modem/Modem/protocol/SimpleSerial.o
+                                        0x4e8 (size before relaxing)
+ .debug_str     0x00000000000018ad        0x0 obj/Modem/Modem/protocol/KISS.o
+ .debug_str     0x00000000000018ad      0x220 obj/Modem/Modem/compression/heatshrink_decoder.o
+                                        0x59b (size before relaxing)
+ .debug_str     0x0000000000001acd      0x34d obj/Modem/Modem/compression/heatshrink_encoder.o
+                                        0x764 (size before relaxing)
+ .debug_str     0x0000000000001e1a       0x13 obj/Modem/bertos/mware/formatwr_P.o
+                                        0x3a9 (size before relaxing)
+ .debug_str     0x0000000000001e2d       0xe3 obj/Modem/bertos/drv/kdebug_P.o
+                                        0x2be (size before relaxing)
 
 .debug_loc      0x0000000000000000     0xc2fb
  *(.debug_loc)
