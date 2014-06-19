@@ -54,6 +54,7 @@ uint8_t EEMEM nvGAIN;
 uint8_t EEMEM nvDIRECTIVITY;
 uint8_t EEMEM nvSYMBOL_TABLE;
 uint8_t EEMEM nvSYMBOL;
+uint8_t EEMEM nvAUTOACK;
 
 // Location packet assembly fields
 char latitude[8];
@@ -74,6 +75,7 @@ int message_recip_ssid = -1;
 int message_seq = 0;
 char lastMessage[67];
 size_t lastMessageLen;
+bool message_autoAck = false;
 /////////////////////////
 
 void ss_init(void) {
@@ -123,6 +125,7 @@ void ss_loadSettings(void) {
         directivity = eeprom_read_byte((void*)&nvDIRECTIVITY);
         symbolTable = eeprom_read_byte((void*)&nvSYMBOL_TABLE);
         symbol = eeprom_read_byte((void*)&nvSYMBOL);
+        message_autoAck = eeprom_read_byte((void*)&nvAUTOACK);
 
         if (VERBOSE && SS_INIT) kprintf("Configuration loaded\n");
     } else {
@@ -157,6 +160,7 @@ void ss_saveSettings(void) {
     eeprom_update_byte((void*)&nvDIRECTIVITY, directivity);
     eeprom_update_byte((void*)&nvSYMBOL_TABLE, symbolTable);
     eeprom_update_byte((void*)&nvSYMBOL, symbol);
+    eeprom_update_byte((void*)&nvAUTOACK, message_autoAck);
 
 
     eeprom_update_byte((void*)&nvMagicByte, NV_MAGIC_BYTE);
@@ -186,6 +190,10 @@ void ss_messageCallback(struct AX25Msg *msg, Serial *ser) {
         kfile_printf(&ser->fd, "%.*s", msg->len, msg->info);
     }
     kfile_print(&ser->fd, "\r\n");
+
+    if (message_autoAck) {
+        // Inspect and ack message
+    }
 }
 
 void ss_serialCallback(void *_buffer, size_t length, Serial *ser, AX25Ctx *ctx) {
@@ -503,6 +511,16 @@ void ss_serialCallback(void *_buffer, size_t length, Serial *ser, AX25Ctx *ctx) 
                 ss_msgRetry(ctx);
                 if (VERBOSE) kprintf("Retried last message\n");
                 if (!VERBOSE && !SILENT) kprintf("1\n");
+            } else if (buffer[0] == 'a') {
+                if (buffer[1] == 49) {
+                    message_autoAck = true;
+                    if (VERBOSE) kprintf("Message auto-ack enabled\n");
+                    if (!VERBOSE && !SILENT) kprintf("1\n");
+                } else {
+                    message_autoAck = false;
+                    if (VERBOSE) kprintf("Message auto-ack disabled\n");
+                    if (!VERBOSE && !SILENT) kprintf("1\n");
+                }
             }
 
         } else {
@@ -660,6 +678,11 @@ void ss_printSettings(void) {
     kprintf("Destination: %.6s-%d\n", DST, DST_SSID);
     kprintf("Path1: %.6s-%d\n", PATH1, PATH1_SSID);
     kprintf("Path2: %.6s-%d\n", PATH2, PATH2_SSID);
+    if (message_autoAck) {
+        kprintf("Auto-ack messages: On\n");
+    } else {
+        kprintf("Auto-ack messages: Off\n");
+    }
     if (power != 10) kprintf("Power: %d\n", power);
     if (height != 10) kprintf("Height: %d\n", height);
     if (gain != 10) kprintf("Gain: %d\n", gain);
@@ -698,7 +721,7 @@ void ss_printHelp(void) {
     kprintf("mc<call>  Set message recipient callsign\n");
     kprintf("ms<ssid>  Set message recipient SSID\n");
     kprintf("mr<ssid>  Retry last message\n");
-    //kprintf("ma<1/0>   Automatic message ACK on/off\n\n")
+    kprintf("ma<1/0>   Automatic message ACK on/off\n\n");
 
     kprintf("ps<1/0>   Print SRC on/off\n");
     kprintf("pd<1/0>   Print DST on/off\n");
