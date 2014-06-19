@@ -55,10 +55,7 @@ uint8_t EEMEM nvDIRECTIVITY;
 uint8_t EEMEM nvSYMBOL_TABLE;
 uint8_t EEMEM nvSYMBOL;
 
-// Packet assembly fields
-char message_recip[6];
-int message_recip_ssid;
-
+// Location packet assembly fields
 char latitude[8];
 char longtitude[9];
 char symbolTable = '/';
@@ -68,7 +65,15 @@ uint8_t power = 10;
 uint8_t height = 10;
 uint8_t gain = 10;
 uint8_t directivity = 10;
+/////////////////////////
 
+// Message packet assembly fields
+char message_recip[6];
+int message_recip_ssid = -1;
+
+int message_seq = 0;
+char lastMessage[67];
+size_t lastMessageLen;
 /////////////////////////
 
 void ss_init(void) {
@@ -190,9 +195,18 @@ void ss_serialCallback(void *_buffer, size_t length, Serial *ser, AX25Ctx *ctx) 
         if (buffer[0] == '!' && length > 1) {
             buffer++; length--;
             ss_sendPkt(buffer, length, ctx);
+            if (VERBOSE) kprintf("Packet sent\n");
+            if (!VERBOSE && !SILENT) kprintf("1\n");
         } else if (buffer[0] == '@') {
             buffer++; length--;
             ss_sendLoc(buffer, length, ctx);
+            if (VERBOSE) kprintf("Location update sent\n");
+            if (!VERBOSE && !SILENT) kprintf("1\n");
+        } else if (buffer[0] == '#') {
+            buffer++; length--;
+            ss_sendMsg(buffer, length, ctx);
+            if (VERBOSE) kprintf("Message sent\n");
+            if (!VERBOSE && !SILENT) kprintf("1\n");
         } else if (buffer[0] == 'h') {
             ss_printHelp();
         } else if (buffer[0] == 'H') {
@@ -395,7 +409,7 @@ void ss_serialCallback(void *_buffer, size_t length, Serial *ser, AX25Ctx *ctx) 
                 SILENT = false;
                 kfile_printf(&ser->fd, "Silent mode disabled\n");
             }
-        } else if(buffer[0] == 'l' && length > 2) {
+        } else if (buffer[0] == 'l' && length > 2) {
             buffer++; length--;
             if (buffer[0] == 'l' && buffer[1] == 'a' && length >= 10) {
                 buffer += 2;
@@ -441,6 +455,55 @@ void ss_serialCallback(void *_buffer, size_t length, Serial *ser, AX25Ctx *ctx) 
                 if (!VERBOSE && !SILENT) kprintf("1\n");
             }
 
+
+        } else if (buffer[0] == 'm' && length > 1) {
+            buffer++; length--;
+            if (buffer[0] == 'c' && length > 1) {
+                buffer++; length--;
+                int count = 0;
+                while (length-- && count < 6) {
+                    char c = buffer[count];
+                    if (c != 0 && c != 10 && c != 13) {
+                        message_recip[count] = c;
+                    } else {
+                        message_recip[count] = 0x00;
+                    }
+                    count++;
+                }
+                while (count < 6) {
+                    message_recip[count] = 0x00;
+                    count++;
+                }
+                if (VERBOSE) {
+                    kprintf("Message recipient: %.6s", message_recip);
+                    if (message_recip_ssid != -1) { 
+                        kprintf("-%d\n", message_recip_ssid);
+                    } else {
+                        kprintf("\n");
+                    }
+                }
+                if (!VERBOSE && !SILENT) kprintf("1\n");
+            } else if (buffer[0] == 's' && length > 1) {
+                if (length > 2) {
+                    message_recip_ssid = 10+buffer[2]-48;
+                } else {
+                    message_recip_ssid = buffer[1]-48;
+                }
+                if (message_recip_ssid < 0 || message_recip_ssid > 15) message_recip_ssid = -1;
+                if (VERBOSE) {
+                    kprintf("Message recipient: %.6s", message_recip);
+                    if (message_recip_ssid != -1) { 
+                        kprintf("-%d\n", message_recip_ssid);
+                    } else {
+                        kprintf("\n");
+                    }
+                }
+                if (!VERBOSE && !SILENT) kprintf("1\n");
+            } else if (buffer[0] == 'r') {
+                ss_msgRetry(ctx);
+                if (VERBOSE) kprintf("Retried last message\n");
+                if (!VERBOSE && !SILENT) kprintf("1\n");
+            }
 
         } else {
             if (VERBOSE) kprintf("Error: Invalid command\n");
@@ -512,6 +575,65 @@ void ss_sendLoc(void *_buffer, size_t length, AX25Ctx *ax25) {
     free(packet);
 }
 
+void ss_sendMsg(void *_buffer, size_t length, AX25Ctx *ax25) {
+    if (length > 67) length = 67;
+    size_t payloadLength = 11+length+4;
+
+    uint8_t *packet = malloc(payloadLength);
+    uint8_t *ptr = packet;
+    packet[0] = ':';
+    int callSize = 6;
+    int count = 0;
+    while (callSize--) {
+        if (message_recip[count] != 0) {
+            packet[1+count] = message_recip[count];
+            count++;
+        }
+    }
+    if (message_recip_ssid != -1) {
+        packet[1+count] = '-'; count++;
+        if (message_recip_ssid < 10) {
+            packet[1+count] = message_recip_ssid+48; count++;
+        } else {
+            packet[1+count] = 49; count++;
+            packet[1+count] = message_recip_ssid-10+48; count++;
+        }
+    }
+    while (count < 9) {
+        packet[1+count] = ' '; count++;
+    }
+    packet[1+count] = ':';
+    ptr += 11;
+    if (length > 0) {
+        uint8_t *buffer = (uint8_t *)_buffer;
+        memcpy(ptr, buffer, length);
+        memcpy(lastMessage, buffer, length);
+        lastMessageLen = length;
+    }
+
+    message_seq++;
+    if (message_seq > 999) message_seq = 0;
+
+    packet[11+length] = '{';
+    int n = message_seq % 10;
+    int d = ((message_seq % 100) - n)/10;
+    int h = (message_seq - d - n) / 100;
+
+    packet[12+length] = h+48;
+    packet[13+length] = d+48;
+    packet[14+length] = n+48;
+    
+    //kprintf("Assembled packet:\n%.*s\n", payloadLength, packet);
+    ss_sendPkt(packet, payloadLength, ax25);
+
+    free(packet);
+}
+
+void ss_msgRetry(AX25Ctx *ax25) {
+    message_seq--;
+    ss_sendMsg(lastMessage, lastMessageLen, ax25);
+}
+
 void ss_printSrc(bool val) {
     PRINT_SRC = val;
 }
@@ -550,8 +672,9 @@ void ss_printSettings(void) {
 void ss_printHelp(void) {
     kprintf("----------------------------------\n");
     kprintf("Serial commands:\n");
-    kprintf("!<msg>    Send raw packet\n");
-    kprintf("@<cmt>    Send location update (cmt = optional comment)\n\n");
+    kprintf("!<data>   Send raw packet\n");
+    kprintf("@<cmt>    Send location update (cmt = optional comment)\n");
+    kprintf("#<msg>    Send APRS message\n\n");
 
     kprintf("c<call>   Set your callsign\n");
     kprintf("d<call>   Set destination callsign\n");
@@ -570,7 +693,12 @@ void ss_printHelp(void) {
     kprintf("lg<0-9>   Set antenna gain info\n");
     kprintf("ld<0-9>   Set antenna directivity info\n");
     kprintf("ls<sym>   Select symbol\n");
-    kprintf("lt<s/a>   Select symbol table (standard/alternate)\n");
+    kprintf("lt<s/a>   Select symbol table (standard/alternate)\n\n");
+
+    kprintf("mc<call>  Set message recipient callsign\n");
+    kprintf("ms<ssid>  Set message recipient SSID\n");
+    kprintf("mr<ssid>  Retry last message\n");
+    //kprintf("ma<1/0>   Automatic message ACK on/off\n\n")
 
     kprintf("ps<1/0>   Print SRC on/off\n");
     kprintf("pd<1/0>   Print DST on/off\n");
