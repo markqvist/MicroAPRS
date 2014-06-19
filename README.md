@@ -16,9 +16,9 @@ Here's how to control the APRS modem over a serial connection. The modem accepts
 
 ##Serial commands
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | &nbsp;
+Command | Description;
 --- | :---
-__\\<data>__  | Send raw packet
+__!\<data>__  | Send raw packet
 __@\<cmt>__ | Send location update (cmt = optional comment)
 __#\<msg>__ | Send APRS message
 &nbsp; | &nbsp;
