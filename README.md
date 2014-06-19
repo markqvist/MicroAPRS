@@ -64,13 +64,15 @@ __H__ | Print configuration
 ### Examples
 
 #### To set your callsign to XX1YYY-5, send these two commands:
+```
 cXX1YYY
-
 sc5
+```
 
-#### To send an APRS message to ZZ5ABC-0 with the content "Hi there!", send this command:
+#### To send an APRS message to ZZ5ABC-0 with the content "Hi there!", using a raw packet, send this command:
+```
 !:ZZ5ABC-0 :Hi there!{01}
-
+```
 #### Here's an example of how to send a location update with power, height and gain information:
 !=5530.70N/01143.70E-PHG2410Arduino MicroAPRS
 
