@@ -89,7 +89,9 @@ __To send an APRS message to ZZ5ABC-1 with the content "Hi there!", using a raw 
 !:ZZ5ABC-1 :Hi there!{01
 ```
 __Here's an example of how to send a location update with power, height and gain information, using a raw packet:__
+```
 !=5230.70N/01043.70E-PHG2410Arduino MicroAPRS
+```
 
 ### Serial connection
 
