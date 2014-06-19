@@ -70,12 +70,26 @@ sc5
 S
 ```
 
-__To send an APRS message to ZZ5ABC-0 with the content "Hi there!", using a raw packet, send this command:__
+__To send an APRS message to ZZ5ABC-1 with the content "Hi there!", send these commands:__
 ```
-!:ZZ5ABC-0 :Hi there!{01}
+mcZZ5ABC
+ms1
+#Hi there!
 ```
-__Here's an example of how to send a location update with power, height and gain information:__
-!=5530.70N/01143.70E-PHG2410Arduino MicroAPRS
+
+__To send a location update, with the comment "MicroAPRS", you can do something like this:__
+```
+lla5230.70N
+llo01043.70E
+@MicroAPRS
+```
+
+__To send an APRS message to ZZ5ABC-1 with the content "Hi there!", using a raw packet, send this command:__
+```
+!:ZZ5ABC-1 :Hi there!{01
+```
+__Here's an example of how to send a location update with power, height and gain information, using a raw packet:__
+!=5230.70N/01043.70E-PHG2410Arduino MicroAPRS
 
 ### Serial connection
 
