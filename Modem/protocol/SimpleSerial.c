@@ -10,6 +10,7 @@ bool PRINT_PATH = true;
 bool PRINT_DATA = true;
 bool PRINT_INFO = true;
 bool VERBOSE = true;
+bool SILENT = false;
 bool SS_INIT = false;
 bool SS_DEFAULT_CONF = false;
 
@@ -45,14 +46,29 @@ bool EEMEM nvPRINT_PATH;
 bool EEMEM nvPRINT_DATA;
 bool EEMEM nvPRINT_INFO;
 bool EEMEM nvVERBOSE;
+bool EEMEM nvSILENT;
+
+// Packet assembly fields
+char message_recip[6];
+int message_recip_ssid;
+
+char latitude[9];
+char longtitude[9];
+
+int power;
+int height;
+int gain;
+
+/////////////////////////
 
 void ss_init(void) {
     ss_loadSettings();
     SS_INIT = true;
     if (VERBOSE) {
-        _delay_ms(500);
-        kprintf("\n---------------\n");
-        kprintf("MicroAPRS v0.1a\n");
+        _delay_ms(300);
+        kprintf("---------------\n");
+        kprintf("MicroAPRS v0.2a\n");
+        kprintf("unsigned.io/microaprs\n");
         if (SS_DEFAULT_CONF) kprintf("Default configuration loaded!\n");
         kprintf("Modem ready\n");
         kprintf("---------------\n");
@@ -61,7 +77,8 @@ void ss_init(void) {
 
 void ss_clearSettings(void) {
     eeprom_update_byte((void*)&nvMagicByte, 0xFF);
-    if (VERBOSE) kprintf("Settings cleared\n");
+    if (VERBOSE) kprintf("Configuration cleared\n");
+    if (!VERBOSE && !SILENT) kprintf("1\n");
 }
 
 void ss_loadSettings(void) {
@@ -83,10 +100,12 @@ void ss_loadSettings(void) {
         PRINT_DATA = eeprom_read_byte((void*)&nvPRINT_DATA);
         PRINT_INFO = eeprom_read_byte((void*)&nvPRINT_INFO);
         VERBOSE = eeprom_read_byte((void*)&nvVERBOSE);
+        SILENT = eeprom_read_byte((void*)&nvSILENT);
 
-        if (VERBOSE && SS_INIT) kprintf("Settings loaded\n");
+        if (VERBOSE && SS_INIT) kprintf("Configuration loaded\n");
     } else {
-        if (SS_INIT) kprintf("Error: No stored settings to load!\n");
+        if (SS_INIT && !SILENT && VERBOSE) kprintf("Error: No stored configuration to load!\n");
+        if (SS_INIT && !SILENT && !VERBOSE) kprintf("0\n");
         SS_DEFAULT_CONF = true;
     }
 }
@@ -108,10 +127,12 @@ void ss_saveSettings(void) {
     eeprom_update_byte((void*)&nvPRINT_DATA, PRINT_DATA);
     eeprom_update_byte((void*)&nvPRINT_INFO, PRINT_INFO);
     eeprom_update_byte((void*)&nvVERBOSE, VERBOSE);
+    eeprom_update_byte((void*)&nvSILENT, SILENT);
 
     eeprom_update_byte((void*)&nvMagicByte, NV_MAGIC_BYTE);
 
-    if (VERBOSE) kprintf("Settings saved\n");
+    if (VERBOSE) kprintf("Configuration saved\n");
+    if (!VERBOSE && !SILENT) kprintf("1\n");
 }
 
 void ss_printSettings(void) {
@@ -153,17 +174,15 @@ void ss_serialCallback(void *_buffer, size_t length, Serial *ser, AX25Ctx *ctx) 
             buffer++; length--;
             ss_sendMsg(buffer, length, ctx);
         } else if (buffer[0] == 'h') {
+            ss_printHelp();
+        } else if (buffer[0] == 'H') {
             ss_printSettings();
-
-        } else if (buffer[0] == 'j') {
+        } else if (buffer[0] == 'S') {
             ss_saveSettings();
-
-        } else if (buffer[0] == 'k') {
+        } else if (buffer[0] == 'C') {
             ss_clearSettings();
-
-        } else if (buffer[0] == 'l') {
+        } else if (buffer[0] == 'L') {
             ss_loadSettings();
-
         } else if (buffer[0] == 'c' && length > 3) {
             buffer++; length--;
             int count = 0;
@@ -181,6 +200,7 @@ void ss_serialCallback(void *_buffer, size_t length, Serial *ser, AX25Ctx *ctx) 
                 count++;
             }
             if (VERBOSE) kprintf("Callsign: %.6s-%d\n", CALL, CALL_SSID);
+            if (!VERBOSE && !SILENT) kprintf("1\n");
 
         } else if (buffer[0] == 'd' && length > 3) {
             buffer++; length--;
@@ -199,6 +219,7 @@ void ss_serialCallback(void *_buffer, size_t length, Serial *ser, AX25Ctx *ctx) 
                 count++;
             }
             if (VERBOSE) kprintf("Destination: %.6s-%d\n", DST, DST_SSID);
+            if (!VERBOSE && !SILENT) kprintf("1\n");
 
 
         } else if (buffer[0] == '1' && length > 1) {
@@ -218,6 +239,7 @@ void ss_serialCallback(void *_buffer, size_t length, Serial *ser, AX25Ctx *ctx) 
                 count++;
             }
             if (VERBOSE) kprintf("Path1: %.6s-%d\n", PATH1, PATH1_SSID);
+            if (!VERBOSE && !SILENT) kprintf("1\n");
 
 
         } else if (buffer[0] == '2' && length > 1) {
@@ -237,43 +259,104 @@ void ss_serialCallback(void *_buffer, size_t length, Serial *ser, AX25Ctx *ctx) 
                 count++;
             }
             if (VERBOSE) kprintf("Path2: %.6s-%d\n", PATH2, PATH2_SSID);
+            if (!VERBOSE && !SILENT) kprintf("1\n");
 
 
         } else if (buffer[0] == 's' && length > 2) {
             buffer++; length--;
             if (buffer[0] == 'c') {
-                CALL_SSID = buffer[1]-48;
+                if (length > 2) {
+                    CALL_SSID = 10+buffer[2]-48;
+                } else {
+                    CALL_SSID = buffer[1]-48;
+                }
                 if (VERBOSE) kprintf("Callsign: %.6s-%d\n", CALL, CALL_SSID);
+                if (!VERBOSE && !SILENT) kprintf("1\n");
             }
             if (buffer[0] == 'd') {
-                DST_SSID = buffer[1]-48;
+                if (length > 2) {
+                    DST_SSID = 10+buffer[2]-48;
+                } else {
+                    DST_SSID = buffer[1]-48;
+                }
                 if (VERBOSE) kprintf("Destination: %.6s-%d\n", DST, DST_SSID);
+                if (!VERBOSE && !SILENT) kprintf("1\n");
             }
             if (buffer[0] == '1') {
-                PATH1_SSID = buffer[1]-48;
+                if (length > 2) {
+                    PATH1_SSID = 10+buffer[2]-48;
+                } else {
+                    PATH1_SSID = buffer[1]-48;
+                }
                 if (VERBOSE) kprintf("Path1: %.6s-%d\n", PATH1, PATH1_SSID);
+                if (!VERBOSE && !SILENT) kprintf("1\n");
             }
             if (buffer[0] == '2') {
-                PATH2_SSID = buffer[1]-48;
+                if (length > 2) {
+                    PATH2_SSID = 10+buffer[2]-48;
+                } else {
+                    PATH2_SSID = buffer[1]-48;
+                }
                 if (VERBOSE) kprintf("Path2: %.6s-%d\n", PATH2, PATH2_SSID);
+                if (!VERBOSE && !SILENT) kprintf("1\n");
             }
             
         } else if (buffer[0] == 'p' && length > 2) {
             buffer++; length--;
             if (buffer[0] == 's') {
-                if (buffer[1] == 49) { PRINT_SRC = true; } else { PRINT_SRC = false; }
+                if (buffer[1] == 49) {
+                    PRINT_SRC = true;
+                    if (VERBOSE) kprintf("Print SRC enabled\n");
+                    if (!VERBOSE && !SILENT) kprintf("1\n");
+                } else {
+                    PRINT_SRC = false;
+                    if (VERBOSE) kprintf("Print SRC disabled\n");
+                    if (!VERBOSE && !SILENT) kprintf("1\n");
+                }
             }
             if (buffer[0] == 'd') {
-                if (buffer[1] == 49) { PRINT_DST = true; } else { PRINT_DST = false; }
+                if (buffer[1] == 49) {
+                    PRINT_DST = true;
+                    if (VERBOSE) kprintf("Print DST enabled\n");
+                    if (!VERBOSE && !SILENT) kprintf("1\n");
+                } else {
+                    PRINT_DST = false;
+                    if (VERBOSE) kprintf("Print DST disabled\n");
+                    if (!VERBOSE && !SILENT) kprintf("1\n");
+                }
             }
             if (buffer[0] == 'p') {
-                if (buffer[1] == 49) { PRINT_PATH = true; } else { PRINT_PATH = false; }
+                if (buffer[1] == 49) {
+                    PRINT_PATH = true;
+                    if (VERBOSE) kprintf("Print PATH enabled\n");
+                    if (!VERBOSE && !SILENT) kprintf("1\n");
+                } else {
+                    PRINT_PATH = false;
+                    if (VERBOSE) kprintf("Print PATH disabled\n");
+                    if (!VERBOSE && !SILENT) kprintf("1\n");
+                }
             }
             if (buffer[0] == 'm') {
-                if (buffer[1] == 49) { PRINT_DATA = true; } else { PRINT_DATA = false; }
+                if (buffer[1] == 49) {
+                    PRINT_DATA = true;
+                    if (VERBOSE) kprintf("Print DATA enabled\n");
+                    if (!VERBOSE && !SILENT) kprintf("1\n");
+                } else {
+                    PRINT_DATA = false;
+                    if (VERBOSE) kprintf("Print DATA disabled\n");
+                    if (!VERBOSE && !SILENT) kprintf("1\n");
+                }
             }
             if (buffer[0] == 'i') {
-                if (buffer[1] == 49) { PRINT_INFO = true; } else { PRINT_INFO = false; }
+                if (buffer[1] == 49) {
+                    PRINT_INFO = true;
+                    if (VERBOSE) kprintf("Print INFO enabled\n");
+                    if (!VERBOSE && !SILENT) kprintf("1\n");
+                } else {
+                    PRINT_INFO = false;
+                    if (VERBOSE) kprintf("Print INFO disabled\n");
+                    if (!VERBOSE && !SILENT) kprintf("1\n");
+                }
             }
         } else if (buffer[0] == 'v') {
             if (buffer[1] == 49) {
@@ -283,6 +366,18 @@ void ss_serialCallback(void *_buffer, size_t length, Serial *ser, AX25Ctx *ctx) 
                 VERBOSE = false;
                 kfile_printf(&ser->fd, "Verbose mode disabled\n");
             }
+        } else if (buffer[0] == 'V') {
+            if (buffer[1] == 49) {
+                SILENT = true;
+                VERBOSE = false;
+                kfile_printf(&ser->fd, "Silent mode enabled\n");
+            } else {
+                SILENT = false;
+                kfile_printf(&ser->fd, "Silent mode disabled\n");
+            }
+        } else {
+            if (VERBOSE) kprintf("Error: Invalid command\n");
+            if (!VERBOSE && !SILENT) kprintf("0\n");
         }
 
     }
@@ -331,4 +426,30 @@ void ss_printData(bool val) {
 
 void ss_printInfo(bool val) {
     PRINT_INFO = val;
+}
+
+void ss_printHelp(void) {
+    kprintf("----------------------------------\n");
+    kprintf("Serial commands:\n");
+    kprintf("!<msg>    Send packet\n");
+    kprintf("c<call>   Set your callsign\n");
+    kprintf("d<call>   Set destination callsign\n");
+    kprintf("1<call>   Set PATH1 callsign\n");
+    kprintf("2<call>   Set PATH2 callsign\n");
+    kprintf("sc<ssid>  Set your SSID\n");
+    kprintf("sd<ssid>  Set destination SSID\n");
+    kprintf("s1<ssid>  Set PATH1 SSID\n");
+    kprintf("s2<ssid>  Set PATH2 SSID\n");
+    kprintf("ps<1/0>   Print SRC on/off\n");
+    kprintf("pd<1/0>   Print DST on/off\n");
+    kprintf("pp<1/0>   Print PATH on/off\n");
+    kprintf("pm<1/0>   Print DATA on/off\n");
+    kprintf("pi<1/0>   Print INFO on/off\n");
+    kprintf("v<1/0>    Verbose mode on/off\n");
+    kprintf("V<1/0>    Silent mode on/off\n");
+    kprintf("S         Save configuration\n");
+    kprintf("L         Load configuration\n");
+    kprintf("C         Clear configuration\n");
+    kprintf("H         Print configuration\n");
+    kprintf("----------------------------------\n");
 }

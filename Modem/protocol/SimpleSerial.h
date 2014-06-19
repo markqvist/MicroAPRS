@@ -24,4 +24,6 @@ void ss_loadSettings(void);
 void ss_saveSettings(void);
 void ss_printSettings(void);
 
+void ss_printHelp(void);
+
 #endif

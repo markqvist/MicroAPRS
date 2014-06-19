@@ -214,7 +214,7 @@
  * $WIZ$ type = "int"
  * $WIZ$ min = 0
  */
-#define CONFIG_SER_DEFBAUDRATE   0UL
+#define CONFIG_SER_DEFBAUDRATE   9600UL
 
 /// Enable strobe pin for debugging serial interrupt. $WIZ$ type = "boolean"
 #define CONFIG_SER_STROBE        0

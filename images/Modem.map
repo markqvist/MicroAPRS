@@ -38,8 +38,6 @@ Archive member included because of file (symbol)
                               obj/Modem/bertos/mware/formatwr.o (__mulsf3)
 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(mulsf3x.o)
                               /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(mulsf3.o) (__mulsf3x)
-/usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_mulsi3.o)
-                              obj/Modem/bertos/cpu/avr/drv/ser_mega.o (__mulsi3)
 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_udivmodhi4.o)
                               obj/Modem/Modem/protocol/mp1.o (__udivmodhi4)
 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_divmodhi4.o)
@@ -54,10 +52,6 @@ Archive member included because of file (symbol)
                               obj/Modem/bertos/cpu/avr/drv/ser_mega.o (__do_copy_data)
 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_clear_bss.o)
                               obj/Modem/bertos/cpu/avr/drv/ser_mega.o (__do_clear_bss)
-/usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_muluhisi3.o)
-                              /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_mulsi3.o) (__muluhisi3)
-/usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_umulhisi3.o)
-                              /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_muluhisi3.o) (__umulhisi3)
 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(malloc.o)
                               obj/Modem/Modem/compression/heatshrink_decoder.o (malloc)
 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(isalnum.o)
@@ -88,15 +82,22 @@ Common symbol       size              file
 
 ser_handles         0x4               obj/Modem/bertos/drv/ser.o
 path                0x1c              obj/Modem/Modem/protocol/SimpleSerial.o
+message_recip_ssid  0x2               obj/Modem/Modem/protocol/SimpleSerial.o
 _clock              0x4               obj/Modem/bertos/drv/timer.o
 timer_initialized   0x1               obj/Modem/bertos/drv/timer.o
+power               0x2               obj/Modem/Modem/protocol/SimpleSerial.o
 hw_ptt_on           0x1               obj/Modem/Modem/hardware.o
 dst                 0x7               obj/Modem/Modem/protocol/SimpleSerial.o
 __brkval            0x2               /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(malloc.o)
 path1               0x7               obj/Modem/Modem/protocol/SimpleSerial.o
+message_recip       0x6               obj/Modem/Modem/protocol/SimpleSerial.o
+gain                0x2               obj/Modem/Modem/protocol/SimpleSerial.o
+latitude            0x9               obj/Modem/Modem/protocol/SimpleSerial.o
 src                 0x7               obj/Modem/Modem/protocol/SimpleSerial.o
+longtitude          0x9               obj/Modem/Modem/protocol/SimpleSerial.o
 __flp               0x2               /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(malloc.o)
 path2               0x7               obj/Modem/Modem/protocol/SimpleSerial.o
+height              0x2               obj/Modem/Modem/protocol/SimpleSerial.o
 hw_afsk_dac_isr     0x1               obj/Modem/Modem/hardware.o
 
 Discarded input sections
@@ -415,19 +416,6 @@ Discarded input sections
  .bss           0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(mulsf3.o)
  .text          0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(mulsf3x.o)
  .bss           0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(mulsf3x.o)
- .text          0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_mulsi3.o)
- .bss           0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_mulsi3.o)
- .text.libgcc.div
-                0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_mulsi3.o)
- .text.libgcc   0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_mulsi3.o)
- .text.libgcc.prologue
-                0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_mulsi3.o)
- .text.libgcc.builtins
-                0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_mulsi3.o)
- .text.libgcc.fmul
-                0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_mulsi3.o)
- .text.libgcc.fixed
-                0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_mulsi3.o)
  .text          0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_udivmodhi4.o)
  .bss           0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_udivmodhi4.o)
  .text.libgcc.mul
@@ -527,32 +515,6 @@ Discarded input sections
                 0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_clear_bss.o)
  .text.libgcc.fixed
                 0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_clear_bss.o)
- .text          0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_muluhisi3.o)
- .bss           0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_muluhisi3.o)
- .text.libgcc.div
-                0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_muluhisi3.o)
- .text.libgcc   0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_muluhisi3.o)
- .text.libgcc.prologue
-                0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_muluhisi3.o)
- .text.libgcc.builtins
-                0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_muluhisi3.o)
- .text.libgcc.fmul
-                0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_muluhisi3.o)
- .text.libgcc.fixed
-                0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_muluhisi3.o)
- .text          0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_umulhisi3.o)
- .bss           0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_umulhisi3.o)
- .text.libgcc.div
-                0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_umulhisi3.o)
- .text.libgcc   0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_umulhisi3.o)
- .text.libgcc.prologue
-                0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_umulhisi3.o)
- .text.libgcc.builtins
-                0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_umulhisi3.o)
- .text.libgcc.fmul
-                0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_umulhisi3.o)
- .text.libgcc.fixed
-                0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_umulhisi3.o)
  .text          0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(malloc.o)
  .bss           0x0000000000000000        0x0 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(malloc.o)
  .text.avr-libc
@@ -723,7 +685,7 @@ END GROUP
 .rela.plt
  *(.rela.plt)
 
-.text           0x0000000000000000     0x58f2
+.text           0x0000000000000000     0x6184
  *(.vectors)
  .vectors       0x0000000000000000       0x68 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/crtm328p.o
                 0x0000000000000000                __vectors
@@ -731,201 +693,313 @@ END GROUP
  *(.vectors)
  *(.progmem.gcc*)
  *(.progmem*)
- .progmem.data.__c.2118
-                0x0000000000000068       0x18 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
- .progmem.data.__c.2174
-                0x0000000000000080        0xf obj/Modem/bertos/cpu/avr/drv/ser_mega.o
- .progmem.data.__c.2176
-                0x000000000000008f       0x1e obj/Modem/bertos/cpu/avr/drv/ser_mega.o
+ .progmem.data.__c.2170
+                0x0000000000000068        0xf obj/Modem/bertos/cpu/avr/drv/ser_mega.o
+ .progmem.data.__c.2172
+                0x0000000000000077       0x1e obj/Modem/bertos/cpu/avr/drv/ser_mega.o
  .progmem.data.__c.1875
-                0x00000000000000ad        0x9 obj/Modem/bertos/drv/ser.o
+                0x0000000000000095        0x9 obj/Modem/bertos/drv/ser.o
  .progmem.data.__c.1877
-                0x00000000000000b6       0x18 obj/Modem/bertos/drv/ser.o
+                0x000000000000009e       0x18 obj/Modem/bertos/drv/ser.o
  .progmem.data.__c.2349
-                0x00000000000000ce       0x11 obj/Modem/bertos/drv/ser.o
+                0x00000000000000b6       0x11 obj/Modem/bertos/drv/ser.o
  .progmem.data.__c.2351
-                0x00000000000000df       0x11 obj/Modem/bertos/drv/ser.o
+                0x00000000000000c7       0x11 obj/Modem/bertos/drv/ser.o
  .progmem.data.__c.2345
-                0x00000000000000f0       0x11 obj/Modem/bertos/drv/ser.o
+                0x00000000000000d8       0x11 obj/Modem/bertos/drv/ser.o
  .progmem.data.__c.2347
-                0x0000000000000101       0x11 obj/Modem/bertos/drv/ser.o
+                0x00000000000000e9       0x11 obj/Modem/bertos/drv/ser.o
  .progmem.data.__c.2341
-                0x0000000000000112        0xd obj/Modem/bertos/drv/ser.o
+                0x00000000000000fa        0xd obj/Modem/bertos/drv/ser.o
  .progmem.data.__c.2343
-                0x000000000000011f       0x11 obj/Modem/bertos/drv/ser.o
+                0x0000000000000107       0x11 obj/Modem/bertos/drv/ser.o
  .progmem.data.__c.2337
-                0x0000000000000130       0x1c obj/Modem/bertos/drv/ser.o
+                0x0000000000000118       0x1c obj/Modem/bertos/drv/ser.o
  .progmem.data.__c.2339
-                0x000000000000014c       0x11 obj/Modem/bertos/drv/ser.o
+                0x0000000000000134       0x11 obj/Modem/bertos/drv/ser.o
  .progmem.data.__c.2358
-                0x000000000000015d        0xe obj/Modem/bertos/drv/ser.o
+                0x0000000000000145        0xe obj/Modem/bertos/drv/ser.o
  .progmem.data.__c.2360
-                0x000000000000016b       0x11 obj/Modem/bertos/drv/ser.o
+                0x0000000000000153       0x11 obj/Modem/bertos/drv/ser.o
  .progmem.data.__c.1901
-                0x000000000000017c       0x18 obj/Modem/bertos/drv/ser.o
+                0x0000000000000164       0x18 obj/Modem/bertos/drv/ser.o
  .progmem.data.__c.1903
-                0x0000000000000194       0x11 obj/Modem/bertos/drv/ser.o
+                0x000000000000017c       0x11 obj/Modem/bertos/drv/ser.o
  .progmem.data.__c.2002
-                0x00000000000001a5       0x13 obj/Modem/bertos/drv/timer.o
+                0x000000000000018d       0x13 obj/Modem/bertos/drv/timer.o
  .progmem.data.__c.2004
-                0x00000000000001b8       0x13 obj/Modem/bertos/drv/timer.o
+                0x00000000000001a0       0x13 obj/Modem/bertos/drv/timer.o
  .progmem.data.__c.1955
-                0x00000000000001cb        0xd obj/Modem/bertos/drv/timer.o
+                0x00000000000001b3        0xd obj/Modem/bertos/drv/timer.o
  .progmem.data.__c.1957
-                0x00000000000001d8       0x13 obj/Modem/bertos/drv/timer.o
+                0x00000000000001c0       0x13 obj/Modem/bertos/drv/timer.o
  .progmem.data.__c.1628
-                0x00000000000001eb        0x9 obj/Modem/bertos/io/kfile.o
+                0x00000000000001d3        0x9 obj/Modem/bertos/io/kfile.o
  .progmem.data.__c.1630
-                0x00000000000001f4       0x12 obj/Modem/bertos/io/kfile.o
+                0x00000000000001dc       0x12 obj/Modem/bertos/io/kfile.o
  .progmem.data.__c.1650
-                0x0000000000000206        0xa obj/Modem/bertos/io/kfile.o
+                0x00000000000001ee        0xa obj/Modem/bertos/io/kfile.o
  .progmem.data.__c.1652
-                0x0000000000000210       0x12 obj/Modem/bertos/io/kfile.o
+                0x00000000000001f8       0x12 obj/Modem/bertos/io/kfile.o
  .progmem.data.__c.1736
-                0x0000000000000222       0x13 obj/Modem/bertos/mware/formatwr.o
+                0x000000000000020a       0x13 obj/Modem/bertos/mware/formatwr.o
  .progmem.data.__c.1738
-                0x0000000000000235       0x18 obj/Modem/bertos/mware/formatwr.o
+                0x000000000000021d       0x18 obj/Modem/bertos/mware/formatwr.o
  .progmem.data.__c.2062
-                0x000000000000024d        0x8 obj/Modem/bertos/net/ax25.o
+                0x0000000000000235        0x8 obj/Modem/bertos/net/ax25.o
  .progmem.data.__c.2064
-                0x0000000000000255       0x12 obj/Modem/bertos/net/ax25.o
+                0x000000000000023d       0x12 obj/Modem/bertos/net/ax25.o
  .progmem.data.__c.2058
-                0x0000000000000267        0x4 obj/Modem/bertos/net/ax25.o
+                0x000000000000024f        0x4 obj/Modem/bertos/net/ax25.o
  .progmem.data.__c.2060
-                0x000000000000026b       0x12 obj/Modem/bertos/net/ax25.o
+                0x0000000000000253       0x12 obj/Modem/bertos/net/ax25.o
  .progmem.data.__c.2000
-                0x000000000000027d       0x17 obj/Modem/bertos/net/ax25.o
+                0x0000000000000265       0x17 obj/Modem/bertos/net/ax25.o
  .progmem.data.__c.2002
-                0x0000000000000294       0x12 obj/Modem/bertos/net/ax25.o
+                0x000000000000027c       0x12 obj/Modem/bertos/net/ax25.o
  .progmem.data.__c.2037
-                0x00000000000002a6       0x21 obj/Modem/bertos/net/ax25.o
+                0x000000000000028e       0x21 obj/Modem/bertos/net/ax25.o
  .progmem.data.__c.2039
-                0x00000000000002c7       0x12 obj/Modem/bertos/net/ax25.o
+                0x00000000000002af       0x12 obj/Modem/bertos/net/ax25.o
  .progmem.data.__c.2024
-                0x00000000000002d9        0xe obj/Modem/bertos/net/ax25.o
+                0x00000000000002c1        0xe obj/Modem/bertos/net/ax25.o
  .progmem.data.__c.2026
-                0x00000000000002e7       0x12 obj/Modem/bertos/net/ax25.o
+                0x00000000000002cf       0x12 obj/Modem/bertos/net/ax25.o
  .progmem.data.__c.2020
-                0x00000000000002f9        0x5 obj/Modem/bertos/net/ax25.o
+                0x00000000000002e1        0x5 obj/Modem/bertos/net/ax25.o
  .progmem.data.__c.2022
-                0x00000000000002fe       0x12 obj/Modem/bertos/net/ax25.o
+                0x00000000000002e6       0x12 obj/Modem/bertos/net/ax25.o
  .progmem.data.__c.1700
-                0x0000000000000310        0xd obj/Modem/bertos/net/ax25.o
+                0x00000000000002f8        0xd obj/Modem/bertos/net/ax25.o
  .progmem.data.__c.1702
-                0x000000000000031d       0x12 obj/Modem/bertos/net/ax25.o
+                0x0000000000000305       0x12 obj/Modem/bertos/net/ax25.o
  .progmem.data.__c.1693
-                0x000000000000032f        0xa obj/Modem/bertos/net/ax25.o
+                0x0000000000000317        0xa obj/Modem/bertos/net/ax25.o
  .progmem.data.__c.1695
-                0x0000000000000339       0x12 obj/Modem/bertos/net/ax25.o
+                0x0000000000000321       0x12 obj/Modem/bertos/net/ax25.o
  .progmem.data.__c.1972
-                0x000000000000034b       0x41 obj/Modem/bertos/net/ax25.o
+                0x0000000000000333       0x41 obj/Modem/bertos/net/ax25.o
  .progmem.data.__c.1970
-                0x000000000000038c       0x2c obj/Modem/bertos/net/ax25.o
+                0x0000000000000374       0x2c obj/Modem/bertos/net/ax25.o
  .progmem.data.__c.1981
-                0x00000000000003b8       0x1a obj/Modem/bertos/net/ax25.o
+                0x00000000000003a0       0x1a obj/Modem/bertos/net/ax25.o
  .progmem.data.crc_ccitt_tab
-                0x00000000000003d2      0x200 obj/Modem/bertos/algo/crc_ccitt.o
-                0x00000000000003d2                crc_ccitt_tab
+                0x00000000000003ba      0x200 obj/Modem/bertos/algo/crc_ccitt.o
+                0x00000000000003ba                crc_ccitt_tab
  .progmem.data.__c.1948
-                0x00000000000005d2        0x8 obj/Modem/Modem/hardware.o
+                0x00000000000005ba        0x8 obj/Modem/Modem/hardware.o
  .progmem.data.__c.1950
-                0x00000000000005da       0x11 obj/Modem/Modem/hardware.o
+                0x00000000000005c2       0x11 obj/Modem/Modem/hardware.o
  .progmem.data.__c.1931
-                0x00000000000005eb       0x16 obj/Modem/Modem/afsk.o
+                0x00000000000005d3       0x16 obj/Modem/Modem/afsk.o
  .progmem.data.__c.1933
-                0x0000000000000601        0xd obj/Modem/Modem/afsk.o
+                0x00000000000005e9        0xd obj/Modem/Modem/afsk.o
  .progmem.data.sin_table
-                0x000000000000060e       0x80 obj/Modem/Modem/afsk.o
- .progmem.data.__c.2457
-                0x000000000000068e       0x10 obj/Modem/Modem/protocol/SimpleSerial.o
- .progmem.data.__c.2455
-                0x000000000000069e       0x10 obj/Modem/Modem/protocol/SimpleSerial.o
- .progmem.data.__c.2453
-                0x00000000000006ae       0x16 obj/Modem/Modem/protocol/SimpleSerial.o
- .progmem.data.__c.2451
-                0x00000000000006c4       0x13 obj/Modem/Modem/protocol/SimpleSerial.o
- .progmem.data.__c.2449
-                0x00000000000006d7       0x10 obj/Modem/Modem/protocol/SimpleSerial.o
- .progmem.data.__c.2439
-                0x00000000000006e7       0x10 obj/Modem/Modem/protocol/SimpleSerial.o
- .progmem.data.__c.2429
-                0x00000000000006f7       0x16 obj/Modem/Modem/protocol/SimpleSerial.o
- .progmem.data.__c.2419
-                0x000000000000070d       0x13 obj/Modem/Modem/protocol/SimpleSerial.o
- .progmem.data.__c.2394
-                0x0000000000000720       0x10 obj/Modem/Modem/protocol/SimpleSerial.o
- .progmem.data.__c.2392
-                0x0000000000000730       0x10 obj/Modem/Modem/protocol/SimpleSerial.o
- .progmem.data.__c.2390
-                0x0000000000000740       0x16 obj/Modem/Modem/protocol/SimpleSerial.o
- .progmem.data.__c.2388
-                0x0000000000000756       0x13 obj/Modem/Modem/protocol/SimpleSerial.o
- .progmem.data.__c.2386
-                0x0000000000000769       0x10 obj/Modem/Modem/protocol/SimpleSerial.o
+                0x00000000000005f6       0x80 obj/Modem/Modem/afsk.o
+ .progmem.data.__c.2609
+                0x0000000000000676       0x24 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2607
+                0x000000000000069a       0x1f obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2605
+                0x00000000000006b9       0x1f obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2603
+                0x00000000000006d8       0x1e obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2601
+                0x00000000000006f6       0x1e obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2599
+                0x0000000000000714       0x1e obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2597
+                0x0000000000000732       0x1f obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2595
+                0x0000000000000751       0x1d obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2593
+                0x000000000000076e       0x1d obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2591
+                0x000000000000078b       0x1d obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2589
+                0x00000000000007a8       0x1c obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2587
+                0x00000000000007c4       0x1c obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2585
+                0x00000000000007e0       0x1a obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2583
+                0x00000000000007fa       0x1a obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2581
+                0x0000000000000814       0x20 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2579
+                0x0000000000000834       0x19 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2577
+                0x000000000000084d       0x1e obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2575
+                0x000000000000086b       0x1e obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2573
+                0x0000000000000889       0x24 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2571
+                0x00000000000008ad       0x1d obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2569
+                0x00000000000008ca       0x17 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2567
+                0x00000000000008e1       0x12 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2565
+                0x00000000000008f3       0x24 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2536
+                0x0000000000000917        0x3 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2534
+                0x000000000000091a       0x18 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2532
+                0x0000000000000932        0x3 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2530
+                0x0000000000000935       0x15 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2528
+                0x000000000000094a        0x3 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2526
+                0x000000000000094d       0x14 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2524
+                0x0000000000000961        0x3 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2522
+                0x0000000000000964       0x15 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2520
+                0x0000000000000979        0x3 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2518
+                0x000000000000097c       0x14 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2516
+                0x0000000000000990        0x3 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2514
+                0x0000000000000993       0x15 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2512
+                0x00000000000009a8        0x3 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2510
+                0x00000000000009ab       0x14 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2508
+                0x00000000000009bf        0x3 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2506
+                0x00000000000009c2       0x14 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2504
+                0x00000000000009d6        0x3 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2502
+                0x00000000000009d9       0x13 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2500
+                0x00000000000009ec        0x3 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2498
+                0x00000000000009ef       0x14 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2496
+                0x0000000000000a03        0x3 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2494
+                0x0000000000000a06       0x13 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2492
+                0x0000000000000a19        0x3 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2490
+                0x0000000000000a1c       0x10 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2488
+                0x0000000000000a2c        0x3 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2486
+                0x0000000000000a2f       0x10 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2484
+                0x0000000000000a3f        0x3 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2482
+                0x0000000000000a42       0x16 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2480
+                0x0000000000000a58        0x3 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2478
+                0x0000000000000a5b       0x13 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2476
+                0x0000000000000a6e        0x3 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2474
+                0x0000000000000a71       0x10 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2464
+                0x0000000000000a81        0x3 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2462
+                0x0000000000000a84       0x10 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2452
+                0x0000000000000a94        0x3 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2450
+                0x0000000000000a97       0x16 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2440
+                0x0000000000000aad        0x3 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2438
+                0x0000000000000ab0       0x13 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2413
+                0x0000000000000ac3       0x10 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2411
+                0x0000000000000ad3       0x10 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2409
+                0x0000000000000ae3       0x16 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2407
+                0x0000000000000af9       0x13 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2405
+                0x0000000000000b0c       0x10 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2400
+                0x0000000000000b1c        0x3 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2398
+                0x0000000000000b1f       0x15 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2393
+                0x0000000000000b34        0x3 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2391
+                0x0000000000000b37       0x29 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2389
+                0x0000000000000b60       0x16 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2383
+                0x0000000000000b76        0x3 obj/Modem/Modem/protocol/SimpleSerial.o
  .progmem.data.__c.2381
-                0x0000000000000779       0x10 obj/Modem/Modem/protocol/SimpleSerial.o
+                0x0000000000000b79       0x17 obj/Modem/Modem/protocol/SimpleSerial.o
  .progmem.data.__c.2376
-                0x0000000000000789       0x24 obj/Modem/Modem/protocol/SimpleSerial.o
+                0x0000000000000b90       0x11 obj/Modem/Modem/protocol/SimpleSerial.o
  .progmem.data.__c.2374
-                0x00000000000007ad       0x11 obj/Modem/Modem/protocol/SimpleSerial.o
+                0x0000000000000ba1        0xd obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2372
+                0x0000000000000bae       0x1f obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2370
+                0x0000000000000bcd       0x17 obj/Modem/Modem/protocol/SimpleSerial.o
  .progmem.data.__c.2368
-                0x00000000000007be       0x12 obj/Modem/Modem/protocol/SimpleSerial.o
- .progmem.data.__c.2363
-                0x00000000000007d0       0x11 obj/Modem/Modem/protocol/SimpleSerial.o
- .progmem.data.__c.2361
-                0x00000000000007e1        0xd obj/Modem/Modem/protocol/SimpleSerial.o
- .progmem.data.__c.2359
-                0x00000000000007ee       0x1f obj/Modem/Modem/protocol/SimpleSerial.o
- .progmem.data.__c.2357
-                0x000000000000080d       0x12 obj/Modem/Modem/protocol/SimpleSerial.o
- .progmem.data.__c.2355
-                0x000000000000081f       0x11 obj/Modem/Modem/protocol/SimpleSerial.o
+                0x0000000000000be4       0x11 obj/Modem/Modem/protocol/SimpleSerial.o
+ .progmem.data.__c.2366
+                0x0000000000000bf5       0x11 obj/Modem/Modem/protocol/SimpleSerial.o
  .progmem.data.__c.1778
-                0x0000000000000830       0x13 obj/Modem/bertos/mware/formatwr_P.o
+                0x0000000000000c06       0x13 obj/Modem/bertos/mware/formatwr_P.o
  .progmem.data.__c.1780
-                0x0000000000000843       0x18 obj/Modem/bertos/mware/formatwr_P.o
+                0x0000000000000c19       0x18 obj/Modem/bertos/mware/formatwr_P.o
  .progmem.data.__c.1692
-                0x000000000000085b        0x9 obj/Modem/bertos/drv/kdebug_P.o
+                0x0000000000000c31        0x9 obj/Modem/bertos/drv/kdebug_P.o
  .progmem.data.__c.1690
-                0x0000000000000864        0xe obj/Modem/bertos/drv/kdebug_P.o
+                0x0000000000000c3a        0xe obj/Modem/bertos/drv/kdebug_P.o
  .progmem.data.__c.1663
-                0x0000000000000872        0x3 obj/Modem/bertos/drv/kdebug_P.o
+                0x0000000000000c48        0x3 obj/Modem/bertos/drv/kdebug_P.o
  .progmem.data.__c.1670
-                0x0000000000000875       0x13 obj/Modem/bertos/drv/kdebug_P.o
-                0x0000000000000888                . = ALIGN (0x2)
-                0x0000000000000888                __trampolines_start = .
+                0x0000000000000c4b       0x13 obj/Modem/bertos/drv/kdebug_P.o
+                0x0000000000000c5e                . = ALIGN (0x2)
+                0x0000000000000c5e                __trampolines_start = .
  *(.trampolines)
- .trampolines   0x0000000000000888        0x0 linker stubs
+ .trampolines   0x0000000000000c5e        0x0 linker stubs
  *(.trampolines*)
-                0x0000000000000888                __trampolines_end = .
+                0x0000000000000c5e                __trampolines_end = .
  *(.jumptables)
  *(.jumptables*)
  *(.lowtext)
  *(.lowtext*)
-                0x0000000000000888                __ctors_start = .
+                0x0000000000000c5e                __ctors_start = .
  *(.ctors)
-                0x0000000000000888                __ctors_end = .
-                0x0000000000000888                __dtors_start = .
+                0x0000000000000c5e                __ctors_end = .
+                0x0000000000000c5e                __dtors_start = .
  *(.dtors)
-                0x0000000000000888                __dtors_end = .
+                0x0000000000000c5e                __dtors_end = .
  SORT(*)(.ctors)
  SORT(*)(.dtors)
  *(.init0)
- .init0         0x0000000000000888        0x0 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/crtm328p.o
-                0x0000000000000888                __init
+ .init0         0x0000000000000c5e        0x0 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/crtm328p.o
+                0x0000000000000c5e                __init
  *(.init0)
  *(.init1)
  *(.init1)
  *(.init2)
- .init2         0x0000000000000888        0xc /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/crtm328p.o
+ .init2         0x0000000000000c5e        0xc /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/crtm328p.o
  *(.init2)
  *(.init3)
  *(.init3)
  *(.init4)
- .init4         0x0000000000000894       0x16 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_copy_data.o)
-                0x0000000000000894                __do_copy_data
- .init4         0x00000000000008aa       0x10 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_clear_bss.o)
-                0x00000000000008aa                __do_clear_bss
+ .init4         0x0000000000000c6a       0x16 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_copy_data.o)
+                0x0000000000000c6a                __do_copy_data
+ .init4         0x0000000000000c80       0x10 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_clear_bss.o)
+                0x0000000000000c80                __do_clear_bss
  *(.init4)
  *(.init5)
  *(.init5)
@@ -936,342 +1010,336 @@ END GROUP
  *(.init8)
  *(.init8)
  *(.init9)
- .init9         0x00000000000008ba        0x8 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/crtm328p.o
+ .init9         0x0000000000000c90        0x8 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/crtm328p.o
  *(.init9)
  *(.text)
- .text          0x00000000000008c2        0x4 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/crtm328p.o
-                0x00000000000008c2                __vector_22
-                0x00000000000008c2                __vector_1
-                0x00000000000008c2                __vector_24
-                0x00000000000008c2                __vector_12
-                0x00000000000008c2                __bad_interrupt
-                0x00000000000008c2                __vector_6
-                0x00000000000008c2                __vector_3
-                0x00000000000008c2                __vector_23
-                0x00000000000008c2                __vector_25
-                0x00000000000008c2                __vector_11
-                0x00000000000008c2                __vector_13
-                0x00000000000008c2                __vector_7
-                0x00000000000008c2                __vector_5
-                0x00000000000008c2                __vector_4
-                0x00000000000008c2                __vector_9
-                0x00000000000008c2                __vector_2
-                0x00000000000008c2                __vector_15
-                0x00000000000008c2                __vector_8
-                0x00000000000008c2                __vector_10
-                0x00000000000008c2                __vector_16
-                0x00000000000008c2                __vector_20
-                0x00000000000008c6                . = ALIGN (0x2)
+ .text          0x0000000000000c98        0x4 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/crtm328p.o
+                0x0000000000000c98                __vector_22
+                0x0000000000000c98                __vector_1
+                0x0000000000000c98                __vector_24
+                0x0000000000000c98                __vector_12
+                0x0000000000000c98                __bad_interrupt
+                0x0000000000000c98                __vector_6
+                0x0000000000000c98                __vector_3
+                0x0000000000000c98                __vector_23
+                0x0000000000000c98                __vector_25
+                0x0000000000000c98                __vector_11
+                0x0000000000000c98                __vector_13
+                0x0000000000000c98                __vector_7
+                0x0000000000000c98                __vector_5
+                0x0000000000000c98                __vector_4
+                0x0000000000000c98                __vector_9
+                0x0000000000000c98                __vector_2
+                0x0000000000000c98                __vector_15
+                0x0000000000000c98                __vector_8
+                0x0000000000000c98                __vector_10
+                0x0000000000000c98                __vector_16
+                0x0000000000000c98                __vector_20
+                0x0000000000000c9c                . = ALIGN (0x2)
  *(.text.*)
  .text.uart0_init
-                0x00000000000008c6        0xc obj/Modem/bertos/cpu/avr/drv/ser_mega.o
+                0x0000000000000c9c        0xc obj/Modem/bertos/cpu/avr/drv/ser_mega.o
  .text.uart0_cleanup
-                0x00000000000008d2        0x6 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
+                0x0000000000000ca8        0x6 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
  .text.uart0_enabletxirq
-                0x00000000000008d8       0x14 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
- .text.uart0_setparity
-                0x00000000000008ec       0x18 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
- .text.spi_init
-                0x0000000000000904       0x2e obj/Modem/bertos/cpu/avr/drv/ser_mega.o
- .text.spi_cleanup
-                0x0000000000000932       0x10 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
- .text.spi_setbaudrate
-                0x0000000000000942        0x2 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
- .text.spi_setparity
-                0x0000000000000944        0x2 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
- .text.tx_sending
-                0x0000000000000946        0x6 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
- .text.spi_starttx
-                0x000000000000094c       0x54 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
+                0x0000000000000cae       0x14 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
  .text.uart0_setbaudrate
-                0x00000000000009a0       0xd2 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
+                0x0000000000000cc2       0x2a obj/Modem/bertos/cpu/avr/drv/ser_mega.o
+ .text.uart0_setparity
+                0x0000000000000cec       0x18 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
+ .text.spi_init
+                0x0000000000000d04       0x2e obj/Modem/bertos/cpu/avr/drv/ser_mega.o
+ .text.spi_cleanup
+                0x0000000000000d32       0x10 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
+ .text.spi_setbaudrate
+                0x0000000000000d42        0x2 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
+ .text.spi_setparity
+                0x0000000000000d44        0x2 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
+ .text.tx_sending
+                0x0000000000000d46        0x6 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
+ .text.spi_starttx
+                0x0000000000000d4c       0x54 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
  .text.ser_hw_getdesc
-                0x0000000000000a72       0x32 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
-                0x0000000000000a72                ser_hw_getdesc
+                0x0000000000000da0       0x32 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
+                0x0000000000000da0                ser_hw_getdesc
  .text.__vector_19
-                0x0000000000000aa4       0x7c obj/Modem/bertos/cpu/avr/drv/ser_mega.o
-                0x0000000000000aa4                __vector_19
+                0x0000000000000dd2       0x7c obj/Modem/bertos/cpu/avr/drv/ser_mega.o
+                0x0000000000000dd2                __vector_19
  .text.__vector_18
-                0x0000000000000b20       0xba obj/Modem/bertos/cpu/avr/drv/ser_mega.o
-                0x0000000000000b20                __vector_18
+                0x0000000000000e4e       0xba obj/Modem/bertos/cpu/avr/drv/ser_mega.o
+                0x0000000000000e4e                __vector_18
  .text.__vector_17
-                0x0000000000000bda       0xe0 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
-                0x0000000000000bda                __vector_17
+                0x0000000000000f08       0xe0 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
+                0x0000000000000f08                __vector_17
  .text.timer_hw_init
-                0x0000000000000cba       0x30 obj/Modem/bertos/cpu/avr/drv/timer_mega.o
-                0x0000000000000cba                timer_hw_init
+                0x0000000000000fe8       0x30 obj/Modem/bertos/cpu/avr/drv/timer_mega.o
+                0x0000000000000fe8                timer_hw_init
  .text.ser_putchar
-                0x0000000000000cea       0x98 obj/Modem/bertos/drv/ser.o
+                0x0000000000001018       0x98 obj/Modem/bertos/drv/ser.o
  .text.ser_getchar
-                0x0000000000000d82       0x6c obj/Modem/bertos/drv/ser.o
+                0x00000000000010b0       0x6c obj/Modem/bertos/drv/ser.o
  .text.ser_read
-                0x0000000000000dee       0x78 obj/Modem/bertos/drv/ser.o
+                0x000000000000111c       0x78 obj/Modem/bertos/drv/ser.o
  .text.ser_write
-                0x0000000000000e66       0x7a obj/Modem/bertos/drv/ser.o
+                0x0000000000001194       0x7a obj/Modem/bertos/drv/ser.o
  .text.ser_error
-                0x0000000000000ee0       0x32 obj/Modem/bertos/drv/ser.o
+                0x000000000000120e       0x32 obj/Modem/bertos/drv/ser.o
  .text.ser_clearerr
-                0x0000000000000f12       0x30 obj/Modem/bertos/drv/ser.o
+                0x0000000000001240       0x30 obj/Modem/bertos/drv/ser.o
  .text.ser_flush
-                0x0000000000000f42       0x58 obj/Modem/bertos/drv/ser.o
- .text.ser_open
-                0x0000000000000f9a      0x134 obj/Modem/bertos/drv/ser.o
+                0x0000000000001270       0x58 obj/Modem/bertos/drv/ser.o
  .text.ser_getchar_nowait
-                0x00000000000010ce       0x48 obj/Modem/bertos/drv/ser.o
-                0x00000000000010ce                ser_getchar_nowait
+                0x00000000000012c8       0x48 obj/Modem/bertos/drv/ser.o
+                0x00000000000012c8                ser_getchar_nowait
  .text.ser_available
-                0x0000000000001116       0x1c obj/Modem/bertos/drv/ser.o
-                0x0000000000001116                ser_available
+                0x0000000000001310       0x1c obj/Modem/bertos/drv/ser.o
+                0x0000000000001310                ser_available
  .text.ser_setbaudrate
-                0x0000000000001132       0x18 obj/Modem/bertos/drv/ser.o
-                0x0000000000001132                ser_setbaudrate
+                0x000000000000132c       0x18 obj/Modem/bertos/drv/ser.o
+                0x000000000000132c                ser_setbaudrate
+ .text.ser_open
+                0x0000000000001344      0x142 obj/Modem/bertos/drv/ser.o
  .text.ser_purgeRx
-                0x000000000000114a       0x12 obj/Modem/bertos/drv/ser.o
-                0x000000000000114a                ser_purgeRx
+                0x0000000000001486       0x12 obj/Modem/bertos/drv/ser.o
+                0x0000000000001486                ser_purgeRx
  .text.ser_purgeTx
-                0x000000000000115c       0x12 obj/Modem/bertos/drv/ser.o
-                0x000000000000115c                ser_purgeTx
+                0x0000000000001498       0x12 obj/Modem/bertos/drv/ser.o
+                0x0000000000001498                ser_purgeTx
  .text.ser_purge
-                0x000000000000116e       0x14 obj/Modem/bertos/drv/ser.o
-                0x000000000000116e                ser_purge
+                0x00000000000014aa       0x14 obj/Modem/bertos/drv/ser.o
+                0x00000000000014aa                ser_purge
  .text.ser_close
-                0x0000000000001182       0x6c obj/Modem/bertos/drv/ser.o
+                0x00000000000014be       0x6c obj/Modem/bertos/drv/ser.o
  .text.ser_reopen
-                0x00000000000011ee       0x40 obj/Modem/bertos/drv/ser.o
+                0x000000000000152a       0x40 obj/Modem/bertos/drv/ser.o
  .text.ser_init
-                0x000000000000122e       0x5e obj/Modem/bertos/drv/ser.o
-                0x000000000000122e                ser_init
+                0x000000000000156a       0x5e obj/Modem/bertos/drv/ser.o
+                0x000000000000156a                ser_init
  .text.__vector_14
-                0x000000000000128c      0x102 obj/Modem/bertos/drv/timer.o
-                0x000000000000128c                __vector_14
+                0x00000000000015c8      0x102 obj/Modem/bertos/drv/timer.o
+                0x00000000000015c8                __vector_14
  .text.timer_init
-                0x000000000000138e       0x5c obj/Modem/bertos/drv/timer.o
-                0x000000000000138e                timer_init
+                0x00000000000016ca       0x5c obj/Modem/bertos/drv/timer.o
+                0x00000000000016ca                timer_init
  .text.kfile_putc
-                0x00000000000013ea       0x6c obj/Modem/bertos/io/kfile.o
-                0x00000000000013ea                kfile_putc
+                0x0000000000001726       0x6c obj/Modem/bertos/io/kfile.o
+                0x0000000000001726                kfile_putc
  .text.kfile_getc
-                0x0000000000001456       0x58 obj/Modem/bertos/io/kfile.o
-                0x0000000000001456                kfile_getc
+                0x0000000000001792       0x58 obj/Modem/bertos/io/kfile.o
+                0x0000000000001792                kfile_getc
  .text.kfile_printf
-                0x00000000000014ae       0x24 obj/Modem/bertos/io/kfile.o
-                0x00000000000014ae                kfile_printf
+                0x00000000000017ea       0x24 obj/Modem/bertos/io/kfile.o
+                0x00000000000017ea                kfile_printf
  .text.kfile_print
-                0x00000000000014d2       0x36 obj/Modem/bertos/io/kfile.o
-                0x00000000000014d2                kfile_print
+                0x000000000000180e       0x36 obj/Modem/bertos/io/kfile.o
+                0x000000000000180e                kfile_print
  .text._formatted_write
-                0x0000000000001508      0xf2e obj/Modem/bertos/mware/formatwr.o
-                0x0000000000001508                _formatted_write
+                0x0000000000001844      0xf2e obj/Modem/bertos/mware/formatwr.o
+                0x0000000000001844                _formatted_write
  .text.ax25_putchar
-                0x0000000000002436       0x8a obj/Modem/bertos/net/ax25.o
+                0x0000000000002772       0x8a obj/Modem/bertos/net/ax25.o
  .text.ax25_poll
-                0x00000000000024c0      0x3e0 obj/Modem/bertos/net/ax25.o
-                0x00000000000024c0                ax25_poll
+                0x00000000000027fc      0x3e0 obj/Modem/bertos/net/ax25.o
+                0x00000000000027fc                ax25_poll
  .text.ax25_sendVia
-                0x00000000000028a0      0x232 obj/Modem/bertos/net/ax25.o
-                0x00000000000028a0                ax25_sendVia
+                0x0000000000002bdc      0x232 obj/Modem/bertos/net/ax25.o
+                0x0000000000002bdc                ax25_sendVia
  .text.ax25_init
-                0x0000000000002ad2       0x84 obj/Modem/bertos/net/ax25.o
-                0x0000000000002ad2                ax25_init
+                0x0000000000002e0e       0x84 obj/Modem/bertos/net/ax25.o
+                0x0000000000002e0e                ax25_init
  .text.message_callback
-                0x0000000000002b56        0x8 obj/Modem/Modem/main.o
+                0x0000000000002e92        0x8 obj/Modem/Modem/main.o
  .text.startup.main
-                0x0000000000002b5e      0x132 obj/Modem/Modem/main.o
-                0x0000000000002b5e                main
+                0x0000000000002e9a      0x132 obj/Modem/Modem/main.o
+                0x0000000000002e9a                main
  .text.hw_afsk_adcInit
-                0x0000000000002c90       0x7a obj/Modem/Modem/hardware.o
-                0x0000000000002c90                hw_afsk_adcInit
+                0x0000000000002fcc       0x7a obj/Modem/Modem/hardware.o
+                0x0000000000002fcc                hw_afsk_adcInit
  .text.__vector_21
-                0x0000000000002d0a       0x90 obj/Modem/Modem/hardware.o
-                0x0000000000002d0a                __vector_21
+                0x0000000000003046       0x90 obj/Modem/Modem/hardware.o
+                0x0000000000003046                __vector_21
  .text.afsk_read
-                0x0000000000002d9a      0x10e obj/Modem/Modem/afsk.o
+                0x00000000000030d6      0x10e obj/Modem/Modem/afsk.o
  .text.afsk_write
-                0x0000000000002ea8      0x132 obj/Modem/Modem/afsk.o
+                0x00000000000031e4      0x132 obj/Modem/Modem/afsk.o
  .text.afsk_flush
-                0x0000000000002fda       0x3c obj/Modem/Modem/afsk.o
+                0x0000000000003316       0x3c obj/Modem/Modem/afsk.o
  .text.afsk_error
-                0x0000000000003016       0x3c obj/Modem/Modem/afsk.o
+                0x0000000000003352       0x3c obj/Modem/Modem/afsk.o
  .text.afsk_clearerr
-                0x0000000000003052       0x3c obj/Modem/Modem/afsk.o
+                0x000000000000338e       0x3c obj/Modem/Modem/afsk.o
  .text.afsk_adc_isr
-                0x000000000000308e      0x3a0 obj/Modem/Modem/afsk.o
-                0x000000000000308e                afsk_adc_isr
+                0x00000000000033ca      0x3a0 obj/Modem/Modem/afsk.o
+                0x00000000000033ca                afsk_adc_isr
  .text.afsk_dac_isr
-                0x000000000000342e      0x232 obj/Modem/Modem/afsk.o
-                0x000000000000342e                afsk_dac_isr
+                0x000000000000376a      0x232 obj/Modem/Modem/afsk.o
+                0x000000000000376a                afsk_dac_isr
  .text.afsk_init
-                0x0000000000003660      0x10e obj/Modem/Modem/afsk.o
-                0x0000000000003660                afsk_init
+                0x000000000000399c      0x10e obj/Modem/Modem/afsk.o
+                0x000000000000399c                afsk_init
  .text.ss_clearSettings
-                0x000000000000376e       0x24 obj/Modem/Modem/protocol/SimpleSerial.o
-                0x000000000000376e                ss_clearSettings
+                0x0000000000003aaa       0x44 obj/Modem/Modem/protocol/SimpleSerial.o
+                0x0000000000003aaa                ss_clearSettings
  .text.ss_loadSettings
-                0x0000000000003792      0x14c obj/Modem/Modem/protocol/SimpleSerial.o
-                0x0000000000003792                ss_loadSettings
- .text.ss_init  0x00000000000038de       0x7e obj/Modem/Modem/protocol/SimpleSerial.o
-                0x00000000000038de                ss_init
+                0x0000000000003aee      0x19c obj/Modem/Modem/protocol/SimpleSerial.o
+                0x0000000000003aee                ss_loadSettings
+ .text.ss_init  0x0000000000003c8a       0x8e obj/Modem/Modem/protocol/SimpleSerial.o
+                0x0000000000003c8a                ss_init
  .text.ss_saveSettings
-                0x000000000000395c       0xdc obj/Modem/Modem/protocol/SimpleSerial.o
-                0x000000000000395c                ss_saveSettings
+                0x0000000000003d18      0x108 obj/Modem/Modem/protocol/SimpleSerial.o
+                0x0000000000003d18                ss_saveSettings
  .text.ss_printSettings
-                0x0000000000003a38       0x9e obj/Modem/Modem/protocol/SimpleSerial.o
-                0x0000000000003a38                ss_printSettings
+                0x0000000000003e20       0x9e obj/Modem/Modem/protocol/SimpleSerial.o
+                0x0000000000003e20                ss_printSettings
  .text.ss_messageCallback
-                0x0000000000003ad6      0x1a2 obj/Modem/Modem/protocol/SimpleSerial.o
-                0x0000000000003ad6                ss_messageCallback
+                0x0000000000003ebe      0x1a2 obj/Modem/Modem/protocol/SimpleSerial.o
+                0x0000000000003ebe                ss_messageCallback
  .text.ss_sendMsg
-                0x0000000000003c78       0xcc obj/Modem/Modem/protocol/SimpleSerial.o
-                0x0000000000003c78                ss_sendMsg
+                0x0000000000004060       0xcc obj/Modem/Modem/protocol/SimpleSerial.o
+                0x0000000000004060                ss_sendMsg
+ .text.ss_printHelp
+                0x000000000000412c      0x136 obj/Modem/Modem/protocol/SimpleSerial.o
+                0x000000000000412c                ss_printHelp
  .text.ss_serialCallback
-                0x0000000000003d44      0x442 obj/Modem/Modem/protocol/SimpleSerial.o
-                0x0000000000003d44                ss_serialCallback
+                0x0000000000004262      0x80a obj/Modem/Modem/protocol/SimpleSerial.o
+                0x0000000000004262                ss_serialCallback
  .text._formatted_write_P
-                0x0000000000004186      0xf84 obj/Modem/bertos/mware/formatwr_P.o
-                0x0000000000004186                _formatted_write_P
+                0x0000000000004a6c      0xf84 obj/Modem/bertos/mware/formatwr_P.o
+                0x0000000000004a6c                _formatted_write_P
  .text.__kputchar
-                0x000000000000510a       0x36 obj/Modem/bertos/drv/kdebug_P.o
+                0x00000000000059f0       0x36 obj/Modem/bertos/drv/kdebug_P.o
  .text.kvprintf_P
-                0x0000000000005140       0x38 obj/Modem/bertos/drv/kdebug_P.o
+                0x0000000000005a26       0x38 obj/Modem/bertos/drv/kdebug_P.o
  .text.kputchar
-                0x0000000000005178       0x32 obj/Modem/bertos/drv/kdebug_P.o
-                0x0000000000005178                kputchar
+                0x0000000000005a5e       0x32 obj/Modem/bertos/drv/kdebug_P.o
+                0x0000000000005a5e                kputchar
  .text.kprintf_P
-                0x00000000000051aa       0x1c obj/Modem/bertos/drv/kdebug_P.o
-                0x00000000000051aa                kprintf_P
- .text.kputs_P  0x00000000000051c6       0x4a obj/Modem/bertos/drv/kdebug_P.o
-                0x00000000000051c6                kputs_P
- .text.kputnum  0x0000000000005210       0x7c obj/Modem/bertos/drv/kdebug_P.o
-                0x0000000000005210                kputnum
+                0x0000000000005a90       0x1c obj/Modem/bertos/drv/kdebug_P.o
+                0x0000000000005a90                kprintf_P
+ .text.kputs_P  0x0000000000005aac       0x4a obj/Modem/bertos/drv/kdebug_P.o
+                0x0000000000005aac                kputs_P
+ .text.kputnum  0x0000000000005af6       0x7c obj/Modem/bertos/drv/kdebug_P.o
+                0x0000000000005af6                kputnum
  .text.klocation
-                0x000000000000528c       0x22 obj/Modem/bertos/drv/kdebug_P.o
+                0x0000000000005b72       0x22 obj/Modem/bertos/drv/kdebug_P.o
  .text.__bassert_P
-                0x00000000000052ae       0x2c obj/Modem/bertos/drv/kdebug_P.o
-                0x00000000000052ae                __bassert_P
+                0x0000000000005b94       0x2c obj/Modem/bertos/drv/kdebug_P.o
+                0x0000000000005b94                __bassert_P
  .text.__invalid_ptr_P
-                0x00000000000052da       0x4a obj/Modem/bertos/drv/kdebug_P.o
-                0x00000000000052da                __invalid_ptr_P
+                0x0000000000005bc0       0x4a obj/Modem/bertos/drv/kdebug_P.o
+                0x0000000000005bc0                __invalid_ptr_P
  .text.avr-libc.fplib
-                0x0000000000005324        0xa /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(addsf3.o)
-                0x0000000000005324                __subsf3
-                0x0000000000005326                __addsf3
+                0x0000000000005c0a        0xa /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(addsf3.o)
+                0x0000000000005c0a                __subsf3
+                0x0000000000005c0c                __addsf3
  .text.avr-libc.fplib
-                0x000000000000532e       0xc0 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(addsf3x.o)
-                0x0000000000005348                __addsf3x
+                0x0000000000005c14       0xc0 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(addsf3x.o)
+                0x0000000000005c2e                __addsf3x
  .text.avr-libc.fplib
-                0x00000000000053ee        0x8 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(cmpsf2.o)
-                0x00000000000053ee                __lesf2
-                0x00000000000053ee                __nesf2
-                0x00000000000053ee                __eqsf2
-                0x00000000000053ee                __cmpsf2
-                0x00000000000053ee                __ltsf2
+                0x0000000000005cd4        0x8 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(cmpsf2.o)
+                0x0000000000005cd4                __lesf2
+                0x0000000000005cd4                __nesf2
+                0x0000000000005cd4                __eqsf2
+                0x0000000000005cd4                __cmpsf2
+                0x0000000000005cd4                __ltsf2
  .text.avr-libc.fplib
-                0x00000000000053f6        0x4 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(divsf3.o)
-                0x00000000000053f6                __divsf3
+                0x0000000000005cdc        0x4 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(divsf3.o)
+                0x0000000000005cdc                __divsf3
  .text.avr-libc.fplib
-                0x00000000000053fa       0xcc /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(divsf3x.o)
-                0x0000000000005410                __divsf3x
-                0x0000000000005414                __divsf3_pse
+                0x0000000000005ce0       0xcc /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(divsf3x.o)
+                0x0000000000005cf6                __divsf3x
+                0x0000000000005cfa                __divsf3_pse
  .text.avr-libc.fplib
-                0x00000000000054c6        0xa /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(fixsfsi.o)
-                0x00000000000054c6                __fixsfsi
+                0x0000000000005dac        0xa /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(fixsfsi.o)
+                0x0000000000005dac                __fixsfsi
  .text.avr-libc.fplib
-                0x00000000000054d0       0x58 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(fixunssfsi.o)
-                0x00000000000054d0                __fixunssfsi
+                0x0000000000005db6       0x58 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(fixunssfsi.o)
+                0x0000000000005db6                __fixunssfsi
  .text.avr-libc.fplib
-                0x0000000000005528       0x7a /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(floatsisf.o)
-                0x0000000000005528                __floatunsisf
-                0x000000000000552c                __floatsisf
+                0x0000000000005e0e       0x7a /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(floatsisf.o)
+                0x0000000000005e0e                __floatunsisf
+                0x0000000000005e12                __floatsisf
  .text.avr-libc.fplib
-                0x00000000000055a2       0x48 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(fp_cmp.o)
-                0x00000000000055a2                __fp_cmp
+                0x0000000000005e88       0x48 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(fp_cmp.o)
+                0x0000000000005e88                __fp_cmp
  .text.avr-libc.fplib
-                0x00000000000055ea        0xc /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(fp_inf.o)
-                0x00000000000055ea                __fp_inf
+                0x0000000000005ed0        0xc /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(fp_inf.o)
+                0x0000000000005ed0                __fp_inf
  .text.avr-libc.fplib
-                0x00000000000055f6        0x6 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(fp_nan.o)
-                0x00000000000055f6                __fp_nan
+                0x0000000000005edc        0x6 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(fp_nan.o)
+                0x0000000000005edc                __fp_nan
  .text.avr-libc.fplib
-                0x00000000000055fc        0xe /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(fp_pscA.o)
-                0x00000000000055fc                __fp_pscA
+                0x0000000000005ee2        0xe /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(fp_pscA.o)
+                0x0000000000005ee2                __fp_pscA
  .text.avr-libc.fplib
-                0x000000000000560a        0xe /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(fp_pscB.o)
-                0x000000000000560a                __fp_pscB
+                0x0000000000005ef0        0xe /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(fp_pscB.o)
+                0x0000000000005ef0                __fp_pscB
  .text.avr-libc.fplib
-                0x0000000000005618       0x22 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(fp_round.o)
-                0x0000000000005618                __fp_round
+                0x0000000000005efe       0x22 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(fp_round.o)
+                0x0000000000005efe                __fp_round
  .text.avr-libc.fplib
-                0x000000000000563a       0x44 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(fp_split3.o)
-                0x000000000000563a                __fp_split3
-                0x000000000000564a                __fp_splitA
+                0x0000000000005f20       0x44 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(fp_split3.o)
+                0x0000000000005f20                __fp_split3
+                0x0000000000005f30                __fp_splitA
  .text.avr-libc.fplib
-                0x000000000000567e        0xe /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(fp_zero.o)
-                0x000000000000567e                __fp_zero
-                0x0000000000005680                __fp_szero
+                0x0000000000005f64        0xe /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(fp_zero.o)
+                0x0000000000005f64                __fp_zero
+                0x0000000000005f66                __fp_szero
  .text.avr-libc.fplib
-                0x000000000000568c        0x8 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(gesf2.o)
-                0x000000000000568c                __gtsf2
-                0x000000000000568c                __gesf2
+                0x0000000000005f72        0x8 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(gesf2.o)
+                0x0000000000005f72                __gtsf2
+                0x0000000000005f72                __gesf2
  .text.avr-libc.fplib
-                0x0000000000005694        0x4 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(mulsf3.o)
-                0x0000000000005694                __mulsf3
+                0x0000000000005f7a        0x4 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(mulsf3.o)
+                0x0000000000005f7a                __mulsf3
  .text.avr-libc.fplib
-                0x0000000000005698       0xc2 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(mulsf3x.o)
-                0x00000000000056ac                __mulsf3x
-                0x00000000000056b0                __mulsf3_pse
- .text.libgcc.mul
-                0x000000000000575a       0x20 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_mulsi3.o)
-                0x000000000000575a                __mulsi3
+                0x0000000000005f7e       0xc2 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(mulsf3x.o)
+                0x0000000000005f92                __mulsf3x
+                0x0000000000005f96                __mulsf3_pse
  .text.libgcc.div
-                0x000000000000577a       0x28 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_udivmodhi4.o)
-                0x000000000000577a                __udivmodhi4
+                0x0000000000006040       0x28 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_udivmodhi4.o)
+                0x0000000000006040                __udivmodhi4
  .text.libgcc.div
-                0x00000000000057a2       0x28 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_divmodhi4.o)
-                0x00000000000057a2                __divmodhi4
-                0x00000000000057a2                _div
+                0x0000000000006068       0x28 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_divmodhi4.o)
+                0x0000000000006068                __divmodhi4
+                0x0000000000006068                _div
  .text.libgcc.div
-                0x00000000000057ca       0x44 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_udivmodsi4.o)
-                0x00000000000057ca                __udivmodsi4
- .text.libgcc.mul
-                0x000000000000580e       0x16 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_muluhisi3.o)
-                0x000000000000580e                __muluhisi3
- .text.libgcc.mul
-                0x0000000000005824       0x1e /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_umulhisi3.o)
-                0x0000000000005824                __umulhisi3
+                0x0000000000006090       0x44 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_udivmodsi4.o)
+                0x0000000000006090                __udivmodsi4
  .text.avr-libc
-                0x0000000000005842       0x10 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(isalnum.o)
-                0x0000000000005842                isalnum
+                0x00000000000060d4       0x10 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(isalnum.o)
+                0x00000000000060d4                isalnum
  .text.avr-libc
-                0x0000000000005852        0x6 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(cty_isfalse.o)
-                0x0000000000005852                __ctype_isfalse
-                0x0000000000005856                __ctype_istrue
+                0x00000000000060e4        0x6 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(cty_isfalse.o)
+                0x00000000000060e4                __ctype_isfalse
+                0x00000000000060e8                __ctype_istrue
  .text.avr-libc
-                0x0000000000005858       0x12 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(isalpha.o)
-                0x0000000000005858                isupper
-                0x000000000000585c                isalpha
-                0x000000000000585e                islower
+                0x00000000000060ea       0x12 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(isalpha.o)
+                0x00000000000060ea                isupper
+                0x00000000000060ee                isalpha
+                0x00000000000060f0                islower
  .text.avr-libc
-                0x000000000000586a       0x10 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(toupper.o)
-                0x000000000000586a                toupper
+                0x00000000000060fc       0x10 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(toupper.o)
+                0x00000000000060fc                toupper
  .text.avr-libc
-                0x000000000000587a       0x20 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(eerd_block_atmega328p.o)
-                0x000000000000587a                __eerd_block_m328p
-                0x000000000000587e                __eerd_blraw_m328p
+                0x000000000000610c       0x20 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(eerd_block_atmega328p.o)
+                0x000000000000610c                __eerd_block_m328p
+                0x0000000000006110                __eerd_blraw_m328p
  .text.avr-libc
-                0x000000000000589a       0x10 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(eerd_byte_atmega328p.o)
-                0x000000000000589a                __eerd_byte_m328p
+                0x000000000000612c       0x10 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(eerd_byte_atmega328p.o)
+                0x000000000000612c                __eerd_byte_m328p
  .text.avr-libc
-                0x00000000000058aa       0x20 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(eeupd_block_atmega328p.o)
-                0x00000000000058aa                __eeupd_block_m328p
+                0x000000000000613c       0x20 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(eeupd_block_atmega328p.o)
+                0x000000000000613c                __eeupd_block_m328p
  .text.avr-libc
-                0x00000000000058ca       0x24 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(eeupd_byte_atmega328p.o)
-                0x00000000000058ca                __eeupd_byte_m328p
-                0x00000000000058cc                __eeupd_r18_m328p
-                0x00000000000058ee                . = ALIGN (0x2)
+                0x000000000000615c       0x24 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(eeupd_byte_atmega328p.o)
+                0x000000000000615c                __eeupd_byte_m328p
+                0x000000000000615e                __eeupd_r18_m328p
+                0x0000000000006180                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x00000000000058ee        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_exit.o)
-                0x00000000000058ee                exit
-                0x00000000000058ee                _exit
+ .fini9         0x0000000000006180        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_exit.o)
+                0x0000000000006180                exit
+                0x0000000000006180                _exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -1290,11 +1358,11 @@ END GROUP
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x00000000000058ee        0x4 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_exit.o)
+ .fini0         0x0000000000006180        0x4 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_exit.o)
  *(.fini0)
-                0x00000000000058f2                _etext = .
+                0x0000000000006184                _etext = .
 
-.data           0x0000000000800100      0x100 load address 0x00000000000058f2
+.data           0x0000000000800100      0x12a load address 0x0000000000006184
                 0x0000000000800100                PROVIDE (__data_start, .)
  *(.data)
  .data          0x0000000000800100        0x0 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/crtm328p.o
@@ -1340,7 +1408,6 @@ END GROUP
  .data          0x0000000000800100        0x0 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(gesf2.o)
  .data          0x0000000000800100        0x0 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(mulsf3.o)
  .data          0x0000000000800100        0x0 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(mulsf3x.o)
- .data          0x0000000000800100        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_mulsi3.o)
  .data          0x0000000000800100        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_udivmodhi4.o)
  .data          0x0000000000800100        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_divmodhi4.o)
  .data          0x0000000000800100        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_udivmodsi4.o)
@@ -1348,8 +1415,6 @@ END GROUP
  .data          0x0000000000800100        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_tablejump.o)
  .data          0x0000000000800100        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_copy_data.o)
  .data          0x0000000000800100        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_clear_bss.o)
- .data          0x0000000000800100        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_muluhisi3.o)
- .data          0x0000000000800100        0x0 /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_umulhisi3.o)
  .data          0x0000000000800100        0x6 /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(malloc.o)
                 0x0000000000800100                __malloc_heap_end
                 0x0000000000800102                __malloc_heap_start
@@ -1422,92 +1487,101 @@ END GROUP
  .rodata.str1.1
                 0x000000000080018c       0x19 obj/Modem/bertos/net/ax25.o
  .rodata.str1.1
-                0x00000000008001a5       0x5a obj/Modem/Modem/protocol/SimpleSerial.o
+                0x00000000008001a5       0x85 obj/Modem/Modem/protocol/SimpleSerial.o
  *(.gnu.linkonce.d*)
-                0x0000000000800200                . = ALIGN (0x2)
- *fill*         0x00000000008001ff        0x1 
-                0x0000000000800200                _edata = .
-                0x0000000000800200                PROVIDE (__data_end, .)
+                0x000000000080022a                . = ALIGN (0x2)
+                0x000000000080022a                _edata = .
+                0x000000000080022a                PROVIDE (__data_end, .)
 
-.bss            0x0000000000800200      0x445
-                0x0000000000800200                PROVIDE (__bss_start, .)
+.bss            0x000000000080022a      0x466
+                0x000000000080022a                PROVIDE (__bss_start, .)
  *(.bss)
  *(.bss*)
  .bss.spi_rxbuffer
-                0x0000000000800200        0x0 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
+                0x000000000080022a        0x0 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
  .bss.spi_txbuffer
-                0x0000000000800200        0x0 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
+                0x000000000080022a        0x0 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
  .bss.uart0_rxbuffer
-                0x0000000000800200       0x20 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
+                0x000000000080022a       0x20 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
  .bss.uart0_txbuffer
-                0x0000000000800220       0x20 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
+                0x000000000080024a       0x20 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
  .bss.timers_queue
-                0x0000000000800240        0x8 obj/Modem/bertos/drv/timer.o
- .bss.sertx     0x0000000000800248        0x1 obj/Modem/Modem/main.o
+                0x000000000080026a        0x8 obj/Modem/bertos/drv/timer.o
+ .bss.sertx     0x0000000000800272        0x1 obj/Modem/Modem/main.o
  .bss.serialLen
-                0x0000000000800249        0x2 obj/Modem/Modem/main.o
- .bss.sbyte     0x000000000080024b        0x2 obj/Modem/Modem/main.o
+                0x0000000000800273        0x2 obj/Modem/Modem/main.o
+ .bss.sbyte     0x0000000000800275        0x2 obj/Modem/Modem/main.o
  .bss.serialBuffer
-                0x000000000080024d      0x14b obj/Modem/Modem/main.o
- .bss.ser       0x0000000000800398       0x32 obj/Modem/Modem/main.o
- .bss.ax25      0x00000000008003ca      0x156 obj/Modem/Modem/main.o
- .bss.afsk      0x0000000000800520       0xda obj/Modem/Modem/main.o
- .bss.modem     0x00000000008005fa        0x2 obj/Modem/Modem/hardware.o
- .bss.DST_SSID  0x00000000008005fc        0x2 obj/Modem/Modem/protocol/SimpleSerial.o
-                0x00000000008005fc                DST_SSID
+                0x0000000000800277      0x14b obj/Modem/Modem/main.o
+ .bss.ser       0x00000000008003c2       0x32 obj/Modem/Modem/main.o
+ .bss.ax25      0x00000000008003f4      0x156 obj/Modem/Modem/main.o
+ .bss.afsk      0x000000000080054a       0xda obj/Modem/Modem/main.o
+ .bss.modem     0x0000000000800624        0x2 obj/Modem/Modem/hardware.o
+ .bss.DST_SSID  0x0000000000800626        0x2 obj/Modem/Modem/protocol/SimpleSerial.o
+                0x0000000000800626                DST_SSID
  .bss.CALL_SSID
-                0x00000000008005fe        0x2 obj/Modem/Modem/protocol/SimpleSerial.o
-                0x00000000008005fe                CALL_SSID
+                0x0000000000800628        0x2 obj/Modem/Modem/protocol/SimpleSerial.o
+                0x0000000000800628                CALL_SSID
  .bss.SS_DEFAULT_CONF
-                0x0000000000800600        0x1 obj/Modem/Modem/protocol/SimpleSerial.o
-                0x0000000000800600                SS_DEFAULT_CONF
- .bss.SS_INIT   0x0000000000800601        0x1 obj/Modem/Modem/protocol/SimpleSerial.o
-                0x0000000000800601                SS_INIT
+                0x000000000080062a        0x1 obj/Modem/Modem/protocol/SimpleSerial.o
+                0x000000000080062a                SS_DEFAULT_CONF
+ .bss.SS_INIT   0x000000000080062b        0x1 obj/Modem/Modem/protocol/SimpleSerial.o
+                0x000000000080062b                SS_INIT
+ .bss.SILENT    0x000000000080062c        0x1 obj/Modem/Modem/protocol/SimpleSerial.o
+                0x000000000080062c                SILENT
  *(COMMON)
- COMMON         0x0000000000800602        0x4 obj/Modem/bertos/drv/ser.o
-                0x0000000000800602                ser_handles
- COMMON         0x0000000000800606        0x5 obj/Modem/bertos/drv/timer.o
-                0x0000000000800606                _clock
-                0x000000000080060a                timer_initialized
- COMMON         0x000000000080060b        0x2 obj/Modem/Modem/hardware.o
-                0x000000000080060b                hw_ptt_on
-                0x000000000080060c                hw_afsk_dac_isr
- COMMON         0x000000000080060d       0x38 obj/Modem/Modem/protocol/SimpleSerial.o
-                0x000000000080060d                path
-                0x0000000000800629                dst
-                0x0000000000800630                path1
-                0x0000000000800637                src
-                0x000000000080063e                path2
-                0x0000000000800645                PROVIDE (__bss_end, .)
-                0x00000000000058f2                __data_load_start = LOADADDR (.data)
-                0x00000000000059f2                __data_load_end = (__data_load_start + SIZEOF (.data))
+ COMMON         0x000000000080062d        0x4 obj/Modem/bertos/drv/ser.o
+                0x000000000080062d                ser_handles
+ COMMON         0x0000000000800631        0x5 obj/Modem/bertos/drv/timer.o
+                0x0000000000800631                _clock
+                0x0000000000800635                timer_initialized
+ COMMON         0x0000000000800636        0x2 obj/Modem/Modem/hardware.o
+                0x0000000000800636                hw_ptt_on
+                0x0000000000800637                hw_afsk_dac_isr
+ COMMON         0x0000000000800638       0x58 obj/Modem/Modem/protocol/SimpleSerial.o
+                0x0000000000800638                path
+                0x0000000000800654                message_recip_ssid
+                0x0000000000800656                power
+                0x0000000000800658                dst
+                0x000000000080065f                path1
+                0x0000000000800666                message_recip
+                0x000000000080066c                gain
+                0x000000000080066e                latitude
+                0x0000000000800677                src
+                0x000000000080067e                longtitude
+                0x0000000000800687                path2
+                0x000000000080068e                height
+                0x0000000000800690                PROVIDE (__bss_end, .)
+                0x0000000000006184                __data_load_start = LOADADDR (.data)
+                0x00000000000062ae                __data_load_end = (__data_load_start + SIZEOF (.data))
 
-.noinit         0x0000000000800645        0x0
-                0x0000000000800645                PROVIDE (__noinit_start, .)
+.noinit         0x0000000000800690        0x0
+                0x0000000000800690                PROVIDE (__noinit_start, .)
  *(.noinit*)
-                0x0000000000800645                PROVIDE (__noinit_end, .)
-                0x0000000000800645                _end = .
-                0x0000000000800645                PROVIDE (__heap_start, .)
+                0x0000000000800690                PROVIDE (__noinit_end, .)
+                0x0000000000800690                _end = .
+                0x0000000000800690                PROVIDE (__heap_start, .)
 
-.eeprom         0x0000000000810000       0x23
+.eeprom         0x0000000000810000       0x24
  *(.eeprom*)
- .eeprom        0x0000000000810000       0x23 obj/Modem/Modem/protocol/SimpleSerial.o
-                0x0000000000810000                nvVERBOSE
-                0x0000000000810001                nvPRINT_INFO
-                0x0000000000810002                nvPRINT_DATA
-                0x0000000000810003                nvPRINT_PATH
-                0x0000000000810004                nvPRINT_DST
-                0x0000000000810005                nvPRINT_SRC
-                0x0000000000810006                nvPATH2_SSID
-                0x0000000000810007                nvPATH1_SSID
-                0x0000000000810008                nvDST_SSID
-                0x0000000000810009                nvCALL_SSID
-                0x000000000081000a                nvPATH2
-                0x0000000000810010                nvPATH1
-                0x0000000000810016                nvDST
-                0x000000000081001c                nvCALL
-                0x0000000000810022                nvMagicByte
-                0x0000000000810023                __eeprom_end = .
+ .eeprom        0x0000000000810000       0x24 obj/Modem/Modem/protocol/SimpleSerial.o
+                0x0000000000810000                nvSILENT
+                0x0000000000810001                nvVERBOSE
+                0x0000000000810002                nvPRINT_INFO
+                0x0000000000810003                nvPRINT_DATA
+                0x0000000000810004                nvPRINT_PATH
+                0x0000000000810005                nvPRINT_DST
+                0x0000000000810006                nvPRINT_SRC
+                0x0000000000810007                nvPATH2_SSID
+                0x0000000000810008                nvPATH1_SSID
+                0x0000000000810009                nvDST_SSID
+                0x000000000081000a                nvCALL_SSID
+                0x000000000081000b                nvPATH2
+                0x0000000000810011                nvPATH1
+                0x0000000000810017                nvDST
+                0x000000000081001d                nvCALL
+                0x0000000000810023                nvMagicByte
+                0x0000000000810024                __eeprom_end = .
 
 .fuse
  *(.fuse)
@@ -1646,7 +1720,7 @@ END GROUP
 .debug_sfnames
  *(.debug_sfnames)
 
-.debug_aranges  0x0000000000000000      0x660
+.debug_aranges  0x0000000000000000      0x668
  *(.debug_aranges)
  .debug_aranges
                 0x0000000000000000       0x90 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
@@ -1679,180 +1753,180 @@ END GROUP
  .debug_aranges
                 0x0000000000000418       0x70 obj/Modem/Modem/protocol/mp1.o
  .debug_aranges
-                0x0000000000000488       0x80 obj/Modem/Modem/protocol/SimpleSerial.o
+                0x0000000000000488       0x88 obj/Modem/Modem/protocol/SimpleSerial.o
  .debug_aranges
-                0x0000000000000508       0x50 obj/Modem/Modem/compression/heatshrink_decoder.o
+                0x0000000000000510       0x50 obj/Modem/Modem/compression/heatshrink_decoder.o
  .debug_aranges
-                0x0000000000000558       0x58 obj/Modem/Modem/compression/heatshrink_encoder.o
+                0x0000000000000560       0x58 obj/Modem/Modem/compression/heatshrink_encoder.o
  .debug_aranges
-                0x00000000000005b0       0x20 obj/Modem/bertos/mware/formatwr_P.o
+                0x00000000000005b8       0x20 obj/Modem/bertos/mware/formatwr_P.o
  .debug_aranges
-                0x00000000000005d0       0x90 obj/Modem/bertos/drv/kdebug_P.o
+                0x00000000000005d8       0x90 obj/Modem/bertos/drv/kdebug_P.o
 
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x0000000000000000    0x10027
+.debug_info     0x0000000000000000    0x10309
  *(.debug_info)
- .debug_info    0x0000000000000000      0xd24 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
- .debug_info    0x0000000000000d24      0x19f obj/Modem/bertos/cpu/avr/drv/timer_mega.o
- .debug_info    0x0000000000000ec3     0x17e1 obj/Modem/bertos/drv/ser.o
- .debug_info    0x00000000000026a4      0xc46 obj/Modem/bertos/drv/timer.o
- .debug_info    0x00000000000032ea      0xf56 obj/Modem/bertos/io/kfile.o
- .debug_info    0x0000000000004240      0x4e5 obj/Modem/bertos/mware/event.o
- .debug_info    0x0000000000004725      0x627 obj/Modem/bertos/mware/formatwr.o
- .debug_info    0x0000000000004d4c       0x68 obj/Modem/bertos/mware/hex.o
- .debug_info    0x0000000000004db4      0x57f obj/Modem/bertos/struct/heap.o
- .debug_info    0x0000000000005333     0x1073 obj/Modem/bertos/net/ax25.o
- .debug_info    0x00000000000063a6      0x1b8 obj/Modem/bertos/algo/crc_ccitt.o
- .debug_info    0x000000000000655e      0xc45 obj/Modem/Modem/main.o
- .debug_info    0x00000000000071a3      0x6c4 obj/Modem/Modem/hardware.o
- .debug_info    0x0000000000007867     0x13c2 obj/Modem/Modem/afsk.o
- .debug_info    0x0000000000008c29     0x3588 obj/Modem/Modem/protocol/mp1.o
- .debug_info    0x000000000000c1b1     0x12e0 obj/Modem/Modem/protocol/SimpleSerial.o
- .debug_info    0x000000000000d491      0xae8 obj/Modem/Modem/compression/heatshrink_decoder.o
- .debug_info    0x000000000000df79     0x1074 obj/Modem/Modem/compression/heatshrink_encoder.o
- .debug_info    0x000000000000efed      0x863 obj/Modem/bertos/mware/formatwr_P.o
- .debug_info    0x000000000000f850      0x7d7 obj/Modem/bertos/drv/kdebug_P.o
+ .debug_info    0x0000000000000000      0xce3 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
+ .debug_info    0x0000000000000ce3      0x19f obj/Modem/bertos/cpu/avr/drv/timer_mega.o
+ .debug_info    0x0000000000000e82     0x180c obj/Modem/bertos/drv/ser.o
+ .debug_info    0x000000000000268e      0xc46 obj/Modem/bertos/drv/timer.o
+ .debug_info    0x00000000000032d4      0xf56 obj/Modem/bertos/io/kfile.o
+ .debug_info    0x000000000000422a      0x4e5 obj/Modem/bertos/mware/event.o
+ .debug_info    0x000000000000470f      0x627 obj/Modem/bertos/mware/formatwr.o
+ .debug_info    0x0000000000004d36       0x68 obj/Modem/bertos/mware/hex.o
+ .debug_info    0x0000000000004d9e      0x57f obj/Modem/bertos/struct/heap.o
+ .debug_info    0x000000000000531d     0x1073 obj/Modem/bertos/net/ax25.o
+ .debug_info    0x0000000000006390      0x1b8 obj/Modem/bertos/algo/crc_ccitt.o
+ .debug_info    0x0000000000006548      0xc45 obj/Modem/Modem/main.o
+ .debug_info    0x000000000000718d      0x6c4 obj/Modem/Modem/hardware.o
+ .debug_info    0x0000000000007851     0x13c2 obj/Modem/Modem/afsk.o
+ .debug_info    0x0000000000008c13     0x3588 obj/Modem/Modem/protocol/mp1.o
+ .debug_info    0x000000000000c19b     0x15d8 obj/Modem/Modem/protocol/SimpleSerial.o
+ .debug_info    0x000000000000d773      0xae8 obj/Modem/Modem/compression/heatshrink_decoder.o
+ .debug_info    0x000000000000e25b     0x1074 obj/Modem/Modem/compression/heatshrink_encoder.o
+ .debug_info    0x000000000000f2cf      0x863 obj/Modem/bertos/mware/formatwr_P.o
+ .debug_info    0x000000000000fb32      0x7d7 obj/Modem/bertos/drv/kdebug_P.o
  *(.gnu.linkonce.wi.*)
 
-.debug_abbrev   0x0000000000000000     0x35d7
+.debug_abbrev   0x0000000000000000     0x35a8
  *(.debug_abbrev)
- .debug_abbrev  0x0000000000000000      0x32d obj/Modem/bertos/cpu/avr/drv/ser_mega.o
- .debug_abbrev  0x000000000000032d       0xd2 obj/Modem/bertos/cpu/avr/drv/timer_mega.o
- .debug_abbrev  0x00000000000003ff      0x457 obj/Modem/bertos/drv/ser.o
- .debug_abbrev  0x0000000000000856      0x39b obj/Modem/bertos/drv/timer.o
- .debug_abbrev  0x0000000000000bf1      0x3b1 obj/Modem/bertos/io/kfile.o
- .debug_abbrev  0x0000000000000fa2      0x217 obj/Modem/bertos/mware/event.o
- .debug_abbrev  0x00000000000011b9      0x22c obj/Modem/bertos/mware/formatwr.o
- .debug_abbrev  0x00000000000013e5       0x45 obj/Modem/bertos/mware/hex.o
- .debug_abbrev  0x000000000000142a      0x181 obj/Modem/bertos/struct/heap.o
- .debug_abbrev  0x00000000000015ab      0x3a3 obj/Modem/bertos/net/ax25.o
- .debug_abbrev  0x000000000000194e      0x132 obj/Modem/bertos/algo/crc_ccitt.o
- .debug_abbrev  0x0000000000001a80      0x29f obj/Modem/Modem/main.o
- .debug_abbrev  0x0000000000001d1f      0x1a6 obj/Modem/Modem/hardware.o
- .debug_abbrev  0x0000000000001ec5      0x3dc obj/Modem/Modem/afsk.o
- .debug_abbrev  0x00000000000022a1      0x4ee obj/Modem/Modem/protocol/mp1.o
- .debug_abbrev  0x000000000000278f      0x36b obj/Modem/Modem/protocol/SimpleSerial.o
- .debug_abbrev  0x0000000000002afa      0x2d8 obj/Modem/Modem/compression/heatshrink_decoder.o
- .debug_abbrev  0x0000000000002dd2      0x36c obj/Modem/Modem/compression/heatshrink_encoder.o
- .debug_abbrev  0x000000000000313e      0x233 obj/Modem/bertos/mware/formatwr_P.o
- .debug_abbrev  0x0000000000003371      0x266 obj/Modem/bertos/drv/kdebug_P.o
+ .debug_abbrev  0x0000000000000000      0x2ed obj/Modem/bertos/cpu/avr/drv/ser_mega.o
+ .debug_abbrev  0x00000000000002ed       0xd2 obj/Modem/bertos/cpu/avr/drv/timer_mega.o
+ .debug_abbrev  0x00000000000003bf      0x459 obj/Modem/bertos/drv/ser.o
+ .debug_abbrev  0x0000000000000818      0x39b obj/Modem/bertos/drv/timer.o
+ .debug_abbrev  0x0000000000000bb3      0x3b1 obj/Modem/bertos/io/kfile.o
+ .debug_abbrev  0x0000000000000f64      0x217 obj/Modem/bertos/mware/event.o
+ .debug_abbrev  0x000000000000117b      0x22c obj/Modem/bertos/mware/formatwr.o
+ .debug_abbrev  0x00000000000013a7       0x45 obj/Modem/bertos/mware/hex.o
+ .debug_abbrev  0x00000000000013ec      0x181 obj/Modem/bertos/struct/heap.o
+ .debug_abbrev  0x000000000000156d      0x3a3 obj/Modem/bertos/net/ax25.o
+ .debug_abbrev  0x0000000000001910      0x132 obj/Modem/bertos/algo/crc_ccitt.o
+ .debug_abbrev  0x0000000000001a42      0x29f obj/Modem/Modem/main.o
+ .debug_abbrev  0x0000000000001ce1      0x1a6 obj/Modem/Modem/hardware.o
+ .debug_abbrev  0x0000000000001e87      0x3dc obj/Modem/Modem/afsk.o
+ .debug_abbrev  0x0000000000002263      0x4ee obj/Modem/Modem/protocol/mp1.o
+ .debug_abbrev  0x0000000000002751      0x37a obj/Modem/Modem/protocol/SimpleSerial.o
+ .debug_abbrev  0x0000000000002acb      0x2d8 obj/Modem/Modem/compression/heatshrink_decoder.o
+ .debug_abbrev  0x0000000000002da3      0x36c obj/Modem/Modem/compression/heatshrink_encoder.o
+ .debug_abbrev  0x000000000000310f      0x233 obj/Modem/bertos/mware/formatwr_P.o
+ .debug_abbrev  0x0000000000003342      0x266 obj/Modem/bertos/drv/kdebug_P.o
 
-.debug_line     0x0000000000000000     0x38c6
+.debug_line     0x0000000000000000     0x39df
  *(.debug_line)
  .debug_line    0x0000000000000000        0x0 obj/Modem/bertos/cpu/avr/drv/ser_avr.o
- .debug_line    0x0000000000000000      0x31b obj/Modem/bertos/cpu/avr/drv/ser_mega.o
- .debug_line    0x000000000000031b        0x0 obj/Modem/bertos/cpu/avr/drv/timer_avr.o
- .debug_line    0x000000000000031b       0xd6 obj/Modem/bertos/cpu/avr/drv/timer_mega.o
- .debug_line    0x00000000000003f1      0x4a3 obj/Modem/bertos/drv/ser.o
- .debug_line    0x0000000000000894      0x290 obj/Modem/bertos/drv/timer.o
- .debug_line    0x0000000000000b24      0x2ae obj/Modem/bertos/io/kfile.o
- .debug_line    0x0000000000000dd2      0x186 obj/Modem/bertos/mware/event.o
- .debug_line    0x0000000000000f58      0x2e2 obj/Modem/bertos/mware/formatwr.o
- .debug_line    0x000000000000123a       0x30 obj/Modem/bertos/mware/hex.o
- .debug_line    0x000000000000126a      0x1bc obj/Modem/bertos/struct/heap.o
- .debug_line    0x0000000000001426      0x265 obj/Modem/bertos/net/ax25.o
- .debug_line    0x000000000000168b       0xc6 obj/Modem/bertos/algo/crc_ccitt.o
- .debug_line    0x0000000000001751      0x1e5 obj/Modem/Modem/main.o
- .debug_line    0x0000000000001936      0x15d obj/Modem/Modem/hardware.o
- .debug_line    0x0000000000001a93      0x49a obj/Modem/Modem/afsk.o
- .debug_line    0x0000000000001f2d      0xa6c obj/Modem/Modem/protocol/mp1.o
- .debug_line    0x0000000000002999      0x4b4 obj/Modem/Modem/protocol/SimpleSerial.o
- .debug_line    0x0000000000002e4d        0x0 obj/Modem/Modem/protocol/KISS.o
- .debug_line    0x0000000000002e4d      0x1fc obj/Modem/Modem/compression/heatshrink_decoder.o
- .debug_line    0x0000000000003049      0x309 obj/Modem/Modem/compression/heatshrink_encoder.o
- .debug_line    0x0000000000003352      0x2f0 obj/Modem/bertos/mware/formatwr_P.o
- .debug_line    0x0000000000003642      0x284 obj/Modem/bertos/drv/kdebug_P.o
+ .debug_line    0x0000000000000000      0x316 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
+ .debug_line    0x0000000000000316        0x0 obj/Modem/bertos/cpu/avr/drv/timer_avr.o
+ .debug_line    0x0000000000000316       0xd6 obj/Modem/bertos/cpu/avr/drv/timer_mega.o
+ .debug_line    0x00000000000003ec      0x4a2 obj/Modem/bertos/drv/ser.o
+ .debug_line    0x000000000000088e      0x290 obj/Modem/bertos/drv/timer.o
+ .debug_line    0x0000000000000b1e      0x2ae obj/Modem/bertos/io/kfile.o
+ .debug_line    0x0000000000000dcc      0x186 obj/Modem/bertos/mware/event.o
+ .debug_line    0x0000000000000f52      0x2e2 obj/Modem/bertos/mware/formatwr.o
+ .debug_line    0x0000000000001234       0x30 obj/Modem/bertos/mware/hex.o
+ .debug_line    0x0000000000001264      0x1bc obj/Modem/bertos/struct/heap.o
+ .debug_line    0x0000000000001420      0x265 obj/Modem/bertos/net/ax25.o
+ .debug_line    0x0000000000001685       0xc6 obj/Modem/bertos/algo/crc_ccitt.o
+ .debug_line    0x000000000000174b      0x1e5 obj/Modem/Modem/main.o
+ .debug_line    0x0000000000001930      0x15d obj/Modem/Modem/hardware.o
+ .debug_line    0x0000000000001a8d      0x49a obj/Modem/Modem/afsk.o
+ .debug_line    0x0000000000001f27      0xa6c obj/Modem/Modem/protocol/mp1.o
+ .debug_line    0x0000000000002993      0x5d3 obj/Modem/Modem/protocol/SimpleSerial.o
+ .debug_line    0x0000000000002f66        0x0 obj/Modem/Modem/protocol/KISS.o
+ .debug_line    0x0000000000002f66      0x1fc obj/Modem/Modem/compression/heatshrink_decoder.o
+ .debug_line    0x0000000000003162      0x309 obj/Modem/Modem/compression/heatshrink_encoder.o
+ .debug_line    0x000000000000346b      0x2f0 obj/Modem/bertos/mware/formatwr_P.o
+ .debug_line    0x000000000000375b      0x284 obj/Modem/bertos/drv/kdebug_P.o
 
-.debug_frame    0x0000000000000000     0x1ce4
+.debug_frame    0x0000000000000000     0x1e0c
  *(.debug_frame)
- .debug_frame   0x0000000000000000      0x244 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
- .debug_frame   0x0000000000000244       0x24 obj/Modem/bertos/cpu/avr/drv/timer_mega.o
- .debug_frame   0x0000000000000268      0x2c0 obj/Modem/bertos/drv/ser.o
- .debug_frame   0x0000000000000528      0x1a0 obj/Modem/bertos/drv/timer.o
- .debug_frame   0x00000000000006c8      0x220 obj/Modem/bertos/io/kfile.o
- .debug_frame   0x00000000000008e8       0xd0 obj/Modem/bertos/mware/event.o
- .debug_frame   0x00000000000009b8       0x98 obj/Modem/bertos/mware/formatwr.o
- .debug_frame   0x0000000000000a50      0x108 obj/Modem/bertos/struct/heap.o
- .debug_frame   0x0000000000000b58      0x260 obj/Modem/bertos/net/ax25.o
- .debug_frame   0x0000000000000db8       0x24 obj/Modem/bertos/algo/crc_ccitt.o
- .debug_frame   0x0000000000000ddc       0x34 obj/Modem/Modem/main.o
- .debug_frame   0x0000000000000e10       0x94 obj/Modem/Modem/hardware.o
- .debug_frame   0x0000000000000ea4      0x178 obj/Modem/Modem/afsk.o
- .debug_frame   0x000000000000101c      0x388 obj/Modem/Modem/protocol/mp1.o
- .debug_frame   0x00000000000013a4      0x310 obj/Modem/Modem/protocol/SimpleSerial.o
- .debug_frame   0x00000000000016b4      0x148 obj/Modem/Modem/compression/heatshrink_decoder.o
- .debug_frame   0x00000000000017fc      0x1c0 obj/Modem/Modem/compression/heatshrink_encoder.o
- .debug_frame   0x00000000000019bc       0x98 obj/Modem/bertos/mware/formatwr_P.o
- .debug_frame   0x0000000000001a54      0x290 obj/Modem/bertos/drv/kdebug_P.o
+ .debug_frame   0x0000000000000000      0x1d8 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
+ .debug_frame   0x00000000000001d8       0x24 obj/Modem/bertos/cpu/avr/drv/timer_mega.o
+ .debug_frame   0x00000000000001fc      0x2c0 obj/Modem/bertos/drv/ser.o
+ .debug_frame   0x00000000000004bc      0x1a0 obj/Modem/bertos/drv/timer.o
+ .debug_frame   0x000000000000065c      0x220 obj/Modem/bertos/io/kfile.o
+ .debug_frame   0x000000000000087c       0xd0 obj/Modem/bertos/mware/event.o
+ .debug_frame   0x000000000000094c       0x98 obj/Modem/bertos/mware/formatwr.o
+ .debug_frame   0x00000000000009e4      0x108 obj/Modem/bertos/struct/heap.o
+ .debug_frame   0x0000000000000aec      0x260 obj/Modem/bertos/net/ax25.o
+ .debug_frame   0x0000000000000d4c       0x24 obj/Modem/bertos/algo/crc_ccitt.o
+ .debug_frame   0x0000000000000d70       0x34 obj/Modem/Modem/main.o
+ .debug_frame   0x0000000000000da4       0x94 obj/Modem/Modem/hardware.o
+ .debug_frame   0x0000000000000e38      0x178 obj/Modem/Modem/afsk.o
+ .debug_frame   0x0000000000000fb0      0x388 obj/Modem/Modem/protocol/mp1.o
+ .debug_frame   0x0000000000001338      0x4a4 obj/Modem/Modem/protocol/SimpleSerial.o
+ .debug_frame   0x00000000000017dc      0x148 obj/Modem/Modem/compression/heatshrink_decoder.o
+ .debug_frame   0x0000000000001924      0x1c0 obj/Modem/Modem/compression/heatshrink_encoder.o
+ .debug_frame   0x0000000000001ae4       0x98 obj/Modem/bertos/mware/formatwr_P.o
+ .debug_frame   0x0000000000001b7c      0x290 obj/Modem/bertos/drv/kdebug_P.o
 
-.debug_str      0x0000000000000000     0x206f
+.debug_str      0x0000000000000000     0x20b9
  *(.debug_str)
  .debug_str     0x0000000000000000        0x0 obj/Modem/bertos/cpu/avr/drv/ser_avr.o
- .debug_str     0x0000000000000000      0x4c6 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
-                                        0x5ac (size before relaxing)
- .debug_str     0x00000000000004c6        0x0 obj/Modem/bertos/cpu/avr/drv/timer_avr.o
- .debug_str     0x00000000000004c6       0x2e obj/Modem/bertos/cpu/avr/drv/timer_mega.o
+ .debug_str     0x0000000000000000      0x4a4 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
+                                        0x58a (size before relaxing)
+ .debug_str     0x00000000000004a4        0x0 obj/Modem/bertos/cpu/avr/drv/timer_avr.o
+ .debug_str     0x00000000000004a4       0x2e obj/Modem/bertos/cpu/avr/drv/timer_mega.o
                                         0x1e3 (size before relaxing)
- .debug_str     0x00000000000004f4      0x1f7 obj/Modem/bertos/drv/ser.o
+ .debug_str     0x00000000000004d2      0x1f7 obj/Modem/bertos/drv/ser.o
                                         0x629 (size before relaxing)
- .debug_str     0x00000000000006eb      0x1c0 obj/Modem/bertos/drv/timer.o
+ .debug_str     0x00000000000006c9      0x1c0 obj/Modem/bertos/drv/timer.o
                                         0x3fe (size before relaxing)
- .debug_str     0x00000000000008ab      0x1a3 obj/Modem/bertos/io/kfile.o
+ .debug_str     0x0000000000000889      0x1a3 obj/Modem/bertos/io/kfile.o
                                         0x4ab (size before relaxing)
- .debug_str     0x0000000000000a4e       0x74 obj/Modem/bertos/mware/event.o
+ .debug_str     0x0000000000000a2c       0x74 obj/Modem/bertos/mware/event.o
                                         0x286 (size before relaxing)
- .debug_str     0x0000000000000ac2      0x20d obj/Modem/bertos/mware/formatwr.o
+ .debug_str     0x0000000000000aa0      0x20d obj/Modem/bertos/mware/formatwr.o
                                         0x3a7 (size before relaxing)
- .debug_str     0x0000000000000ccf       0x13 obj/Modem/bertos/mware/hex.o
+ .debug_str     0x0000000000000cad       0x13 obj/Modem/bertos/mware/hex.o
                                          0xcc (size before relaxing)
- .debug_str     0x0000000000000ce2       0xaa obj/Modem/bertos/struct/heap.o
+ .debug_str     0x0000000000000cc0       0xaa obj/Modem/bertos/struct/heap.o
                                         0x207 (size before relaxing)
- .debug_str     0x0000000000000d8c      0x1d6 obj/Modem/bertos/net/ax25.o
+ .debug_str     0x0000000000000d6a      0x1db obj/Modem/bertos/net/ax25.o
                                         0x4b5 (size before relaxing)
- .debug_str     0x0000000000000f62       0x18 obj/Modem/bertos/algo/crc_ccitt.o
+ .debug_str     0x0000000000000f45       0x18 obj/Modem/bertos/algo/crc_ccitt.o
                                         0x19f (size before relaxing)
- .debug_str     0x0000000000000f7a      0x187 obj/Modem/Modem/main.o
+ .debug_str     0x0000000000000f5d      0x187 obj/Modem/Modem/main.o
                                         0x605 (size before relaxing)
- .debug_str     0x0000000000001101       0x5b obj/Modem/Modem/hardware.o
+ .debug_str     0x00000000000010e4       0x5b obj/Modem/Modem/hardware.o
                                         0x474 (size before relaxing)
- .debug_str     0x000000000000115c       0xca obj/Modem/Modem/afsk.o
+ .debug_str     0x000000000000113f       0xca obj/Modem/Modem/afsk.o
                                         0x63a (size before relaxing)
- .debug_str     0x0000000000001226      0x5a4 obj/Modem/Modem/protocol/mp1.o
+ .debug_str     0x0000000000001209      0x5a4 obj/Modem/Modem/protocol/mp1.o
                                         0x9b6 (size before relaxing)
- .debug_str     0x00000000000017ca      0x242 obj/Modem/Modem/protocol/SimpleSerial.o
-                                        0x6cf (size before relaxing)
- .debug_str     0x0000000000001a0c        0x0 obj/Modem/Modem/protocol/KISS.o
- .debug_str     0x0000000000001a0c      0x220 obj/Modem/Modem/compression/heatshrink_decoder.o
+ .debug_str     0x00000000000017ad      0x2a9 obj/Modem/Modem/protocol/SimpleSerial.o
+                                        0x73d (size before relaxing)
+ .debug_str     0x0000000000001a56        0x0 obj/Modem/Modem/protocol/KISS.o
+ .debug_str     0x0000000000001a56      0x220 obj/Modem/Modem/compression/heatshrink_decoder.o
                                         0x59b (size before relaxing)
- .debug_str     0x0000000000001c2c      0x34d obj/Modem/Modem/compression/heatshrink_encoder.o
+ .debug_str     0x0000000000001c76      0x34d obj/Modem/Modem/compression/heatshrink_encoder.o
                                         0x764 (size before relaxing)
- .debug_str     0x0000000000001f79       0x13 obj/Modem/bertos/mware/formatwr_P.o
+ .debug_str     0x0000000000001fc3       0x13 obj/Modem/bertos/mware/formatwr_P.o
                                         0x3a9 (size before relaxing)
- .debug_str     0x0000000000001f8c       0xe3 obj/Modem/bertos/drv/kdebug_P.o
+ .debug_str     0x0000000000001fd6       0xe3 obj/Modem/bertos/drv/kdebug_P.o
                                         0x2be (size before relaxing)
 
-.debug_loc      0x0000000000000000     0xc777
+.debug_loc      0x0000000000000000     0xc824
  *(.debug_loc)
- .debug_loc     0x0000000000000000      0x3c9 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
- .debug_loc     0x00000000000003c9      0xe66 obj/Modem/bertos/drv/ser.o
- .debug_loc     0x000000000000122f      0x487 obj/Modem/bertos/drv/timer.o
- .debug_loc     0x00000000000016b6      0x75b obj/Modem/bertos/io/kfile.o
- .debug_loc     0x0000000000001e11      0x1b6 obj/Modem/bertos/mware/event.o
- .debug_loc     0x0000000000001fc7     0x1754 obj/Modem/bertos/mware/formatwr.o
- .debug_loc     0x000000000000371b      0x51a obj/Modem/bertos/struct/heap.o
- .debug_loc     0x0000000000003c35      0x970 obj/Modem/bertos/net/ax25.o
- .debug_loc     0x00000000000045a5      0x163 obj/Modem/bertos/algo/crc_ccitt.o
- .debug_loc     0x0000000000004708       0xb4 obj/Modem/Modem/main.o
- .debug_loc     0x00000000000047bc       0x6b obj/Modem/Modem/hardware.o
- .debug_loc     0x0000000000004827      0xd9f obj/Modem/Modem/afsk.o
- .debug_loc     0x00000000000055c6     0x313a obj/Modem/Modem/protocol/mp1.o
- .debug_loc     0x0000000000008700      0xa65 obj/Modem/Modem/protocol/SimpleSerial.o
- .debug_loc     0x0000000000009165      0x904 obj/Modem/Modem/compression/heatshrink_decoder.o
- .debug_loc     0x0000000000009a69      0xcb8 obj/Modem/Modem/compression/heatshrink_encoder.o
- .debug_loc     0x000000000000a721     0x1b36 obj/Modem/bertos/mware/formatwr_P.o
- .debug_loc     0x000000000000c257      0x520 obj/Modem/bertos/drv/kdebug_P.o
+ .debug_loc     0x0000000000000000      0x294 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
+ .debug_loc     0x0000000000000294      0xe66 obj/Modem/bertos/drv/ser.o
+ .debug_loc     0x00000000000010fa      0x487 obj/Modem/bertos/drv/timer.o
+ .debug_loc     0x0000000000001581      0x75b obj/Modem/bertos/io/kfile.o
+ .debug_loc     0x0000000000001cdc      0x1b6 obj/Modem/bertos/mware/event.o
+ .debug_loc     0x0000000000001e92     0x1754 obj/Modem/bertos/mware/formatwr.o
+ .debug_loc     0x00000000000035e6      0x51a obj/Modem/bertos/struct/heap.o
+ .debug_loc     0x0000000000003b00      0x970 obj/Modem/bertos/net/ax25.o
+ .debug_loc     0x0000000000004470      0x163 obj/Modem/bertos/algo/crc_ccitt.o
+ .debug_loc     0x00000000000045d3       0xb4 obj/Modem/Modem/main.o
+ .debug_loc     0x0000000000004687       0x6b obj/Modem/Modem/hardware.o
+ .debug_loc     0x00000000000046f2      0xd9f obj/Modem/Modem/afsk.o
+ .debug_loc     0x0000000000005491     0x313a obj/Modem/Modem/protocol/mp1.o
+ .debug_loc     0x00000000000085cb      0xc47 obj/Modem/Modem/protocol/SimpleSerial.o
+ .debug_loc     0x0000000000009212      0x904 obj/Modem/Modem/compression/heatshrink_decoder.o
+ .debug_loc     0x0000000000009b16      0xcb8 obj/Modem/Modem/compression/heatshrink_encoder.o
+ .debug_loc     0x000000000000a7ce     0x1b36 obj/Modem/bertos/mware/formatwr_P.o
+ .debug_loc     0x000000000000c304      0x520 obj/Modem/bertos/drv/kdebug_P.o
 
 .debug_macinfo
  *(.debug_macinfo)
@@ -1860,7 +1934,7 @@ END GROUP
 .debug_pubtypes
  *(.debug_pubtypes)
 
-.debug_ranges   0x0000000000000000      0x888
+.debug_ranges   0x0000000000000000      0x890
  *(.debug_ranges)
  .debug_ranges  0x0000000000000000       0x80 obj/Modem/bertos/cpu/avr/drv/ser_mega.o
  .debug_ranges  0x0000000000000080       0x10 obj/Modem/bertos/cpu/avr/drv/timer_mega.o
@@ -1876,11 +1950,11 @@ END GROUP
  .debug_ranges  0x00000000000003d0       0x18 obj/Modem/Modem/hardware.o
  .debug_ranges  0x00000000000003e8       0xf0 obj/Modem/Modem/afsk.o
  .debug_ranges  0x00000000000004d8       0xd8 obj/Modem/Modem/protocol/mp1.o
- .debug_ranges  0x00000000000005b0       0x70 obj/Modem/Modem/protocol/SimpleSerial.o
- .debug_ranges  0x0000000000000620       0x88 obj/Modem/Modem/compression/heatshrink_decoder.o
- .debug_ranges  0x00000000000006a8      0x120 obj/Modem/Modem/compression/heatshrink_encoder.o
- .debug_ranges  0x00000000000007c8       0x40 obj/Modem/bertos/mware/formatwr_P.o
- .debug_ranges  0x0000000000000808       0x80 obj/Modem/bertos/drv/kdebug_P.o
+ .debug_ranges  0x00000000000005b0       0x78 obj/Modem/Modem/protocol/SimpleSerial.o
+ .debug_ranges  0x0000000000000628       0x88 obj/Modem/Modem/compression/heatshrink_decoder.o
+ .debug_ranges  0x00000000000006b0      0x120 obj/Modem/Modem/compression/heatshrink_encoder.o
+ .debug_ranges  0x00000000000007d0       0x40 obj/Modem/bertos/mware/formatwr_P.o
+ .debug_ranges  0x0000000000000810       0x80 obj/Modem/bertos/drv/kdebug_P.o
 
 .debug_macro
  *(.debug_macro)
@@ -1906,6 +1980,7 @@ PRINT_DST                                         obj/Modem/Modem/protocol/Simpl
 PRINT_INFO                                        obj/Modem/Modem/protocol/SimpleSerial.o
 PRINT_PATH                                        obj/Modem/Modem/protocol/SimpleSerial.o
 PRINT_SRC                                         obj/Modem/Modem/protocol/SimpleSerial.o
+SILENT                                            obj/Modem/Modem/protocol/SimpleSerial.o
 SS_DEFAULT_CONF                                   obj/Modem/Modem/protocol/SimpleSerial.o
 SS_INIT                                           obj/Modem/Modem/protocol/SimpleSerial.o
 VERBOSE                                           obj/Modem/Modem/protocol/SimpleSerial.o
@@ -2050,10 +2125,6 @@ __mulsf3                                          /usr/lib/gcc/avr/4.8.2/../../.
 __mulsf3_pse                                      /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(mulsf3x.o)
 __mulsf3x                                         /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(mulsf3x.o)
                                                   /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(mulsf3.o)
-__mulsi3                                          /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_mulsi3.o)
-                                                  obj/Modem/bertos/cpu/avr/drv/ser_mega.o
-__muluhisi3                                       /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_muluhisi3.o)
-                                                  /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_mulsi3.o)
 __nesf2                                           /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libm.a(cmpsf2.o)
                                                   obj/Modem/bertos/mware/formatwr_P.o
                                                   obj/Modem/bertos/mware/formatwr.o
@@ -2074,8 +2145,6 @@ __udivmodsi4                                      /usr/lib/gcc/avr/4.8.2/avr5/li
                                                   obj/Modem/bertos/mware/formatwr_P.o
                                                   obj/Modem/bertos/mware/formatwr.o
                                                   obj/Modem/bertos/cpu/avr/drv/ser_mega.o
-__umulhisi3                                       /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_umulhisi3.o)
-                                                  /usr/lib/gcc/avr/4.8.2/avr5/libgcc.a(_muluhisi3.o)
 __vector_1                                        /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/crtm328p.o
 __vector_10                                       /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/crtm328p.o
 __vector_11                                       /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/crtm328p.o
@@ -2149,6 +2218,7 @@ exit                                              /usr/lib/gcc/avr/4.8.2/avr5/li
 free                                              /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(malloc.o)
                                                   obj/Modem/Modem/compression/heatshrink_encoder.o
                                                   obj/Modem/Modem/compression/heatshrink_decoder.o
+gain                                              obj/Modem/Modem/protocol/SimpleSerial.o
 heap_allocmem                                     obj/Modem/bertos/struct/heap.o
 heap_calloc                                       obj/Modem/bertos/struct/heap.o
 heap_free                                         obj/Modem/bertos/struct/heap.o
@@ -2178,6 +2248,7 @@ heatshrink_encoder_poll                           obj/Modem/Modem/compression/he
 heatshrink_encoder_reset                          obj/Modem/Modem/compression/heatshrink_encoder.o
 heatshrink_encoder_sink                           obj/Modem/Modem/compression/heatshrink_encoder.o
                                                   obj/Modem/Modem/protocol/mp1.o
+height                                            obj/Modem/Modem/protocol/SimpleSerial.o
 hex_tab                                           obj/Modem/bertos/mware/hex.o
                                                   obj/Modem/bertos/mware/formatwr_P.o
                                                   obj/Modem/bertos/mware/formatwr.o
@@ -2215,10 +2286,11 @@ kfile_resync                                      obj/Modem/bertos/io/kfile.o
 kprintf_P                                         obj/Modem/bertos/drv/kdebug_P.o
                                                   obj/Modem/Modem/protocol/SimpleSerial.o
                                                   obj/Modem/bertos/net/ax25.o
-                                                  obj/Modem/bertos/cpu/avr/drv/ser_mega.o
 kputchar                                          obj/Modem/bertos/drv/kdebug_P.o
 kputnum                                           obj/Modem/bertos/drv/kdebug_P.o
 kputs_P                                           obj/Modem/bertos/drv/kdebug_P.o
+latitude                                          obj/Modem/Modem/protocol/SimpleSerial.o
+longtitude                                        obj/Modem/Modem/protocol/SimpleSerial.o
 main                                              obj/Modem/Modem/main.o
                                                   /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/crtm328p.o
 malloc                                            /usr/lib/gcc/avr/4.8.2/../../../avr/lib/avr5/libc.a(malloc.o)
@@ -2235,6 +2307,8 @@ memset                                            /usr/lib/gcc/avr/4.8.2/../../.
                                                   obj/Modem/Modem/compression/heatshrink_encoder.o
                                                   obj/Modem/Modem/compression/heatshrink_decoder.o
                                                   obj/Modem/bertos/struct/heap.o
+message_recip                                     obj/Modem/Modem/protocol/SimpleSerial.o
+message_recip_ssid                                obj/Modem/Modem/protocol/SimpleSerial.o
 mp1CarrierSense                                   obj/Modem/Modem/protocol/mp1.o
 mp1Deinterleave                                   obj/Modem/Modem/protocol/mp1.o
 mp1Init                                           obj/Modem/Modem/protocol/mp1.o
@@ -2255,10 +2329,12 @@ nvPRINT_DST                                       obj/Modem/Modem/protocol/Simpl
 nvPRINT_INFO                                      obj/Modem/Modem/protocol/SimpleSerial.o
 nvPRINT_PATH                                      obj/Modem/Modem/protocol/SimpleSerial.o
 nvPRINT_SRC                                       obj/Modem/Modem/protocol/SimpleSerial.o
+nvSILENT                                          obj/Modem/Modem/protocol/SimpleSerial.o
 nvVERBOSE                                         obj/Modem/Modem/protocol/SimpleSerial.o
 path                                              obj/Modem/Modem/protocol/SimpleSerial.o
 path1                                             obj/Modem/Modem/protocol/SimpleSerial.o
 path2                                             obj/Modem/Modem/protocol/SimpleSerial.o
+power                                             obj/Modem/Modem/protocol/SimpleSerial.o
 ser_available                                     obj/Modem/bertos/drv/ser.o
                                                   obj/Modem/Modem/main.o
 ser_getchar_nowait                                obj/Modem/bertos/drv/ser.o
@@ -2285,6 +2361,7 @@ ss_messageCallback                                obj/Modem/Modem/protocol/Simpl
                                                   obj/Modem/Modem/main.o
 ss_printData                                      obj/Modem/Modem/protocol/SimpleSerial.o
 ss_printDst                                       obj/Modem/Modem/protocol/SimpleSerial.o
+ss_printHelp                                      obj/Modem/Modem/protocol/SimpleSerial.o
 ss_printInfo                                      obj/Modem/Modem/protocol/SimpleSerial.o
 ss_printPath                                      obj/Modem/Modem/protocol/SimpleSerial.o
 ss_printSettings                                  obj/Modem/Modem/protocol/SimpleSerial.o

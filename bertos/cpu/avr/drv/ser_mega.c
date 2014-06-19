@@ -465,8 +465,7 @@ static uint16_t uart_period(unsigned long bps)
 	#ifdef _DEBUG
 		long skew = bps - (long)(period + 1) * (CPU_FREQ / 16);
 		/* 8N1 is reliable within 3% skew */
-		if ((unsigned long)ABS(skew) > bps / (100 / 3))
-			kprintf("Baudrate off by %ldbps\n", skew);
+		//if ((unsigned long)ABS(skew) > bps / (100 / 3)) kprintf("Baudrate off by %ldbps\n", skew);
 	#endif
 
 	//DB(kprintf("uart_period(bps=%lu): period=%u\n", bps, period);)

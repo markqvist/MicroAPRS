@@ -10,6 +10,8 @@
 
 #include <stdio.h>          // Standard input/output
 #include <string.h>         // String operations
+#define F_CPU 16000000UL
+#include <util/delay.h>
 
 #include <net/ax25.h>
 
