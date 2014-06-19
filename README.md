@@ -93,7 +93,10 @@ __Here's an example of how to send a location update with power, height and gain
 !=5230.70N/01043.70E-PHG2410Arduino MicroAPRS
 ```
 
-### Serial connection
+### EEPROM Settings
+When saving the configuration, it is written to EEPROM, so it will persist between poweroffs. If a configuration has been stored, it will automatically be loaded when the modem powers up. The configuration can be cleared by sending the "clear configuration" command (`C`).
+
+### Serial Connection
 
 To connect to the modem use __9600 baud, 8N1__ serial. By default, the firmware uses time-sensitive input, which means that it will buffer serial data as it comes in, and when it has received no data for a few milliseconds, it will start interpreting whatever it has received. This means you need to set your serial terminal program to not send data for every keystroke, but only on new-line, or pressing send or whatever. If you do not want this behaviour, you can compile the firmware with the DEBUG flag set, which will make the modem wait for a new-line character before interpreting the received data. I would generally advise against this though, since it means that you cannot have newline characters in whatever data you want to send!
 
