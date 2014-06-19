@@ -316,7 +316,7 @@ fuses_$(1):
 	fi
 
 $$(OUTDIR)/$(1).hex: $$(OUTDIR)/$(1).elf
-	$$($(1)_OBJCOPY) -O ihex $$< $$@
+	$$($(1)_OBJCOPY) -R .eeprom -O ihex $$< $$@
 
 $$(OUTDIR)/$(1).s19: $$(OUTDIR)/$(1).elf
 	$$($(1)_OBJCOPY) -O srec $$< $$@

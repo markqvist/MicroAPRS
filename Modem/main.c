@@ -95,6 +95,9 @@ static void init(void)
     // ... and a protocol context with the modem
     ax25_init(&ax25, &afsk.fd, message_callback);
 
+    // Init SimpleSerial
+    ss_init();
+
     // That's all!
 }
 
