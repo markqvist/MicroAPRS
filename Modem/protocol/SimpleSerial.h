@@ -17,7 +17,8 @@ void ss_printPath(bool val);
 void ss_printData(bool val);
 void ss_printInfo(bool val);
 
-void ss_sendMsg(void *_buffer, size_t length, AX25Ctx *ax25);
+void ss_sendPkt(void *_buffer, size_t length, AX25Ctx *ax25);
+void ss_sendLoc(void *_buffer, size_t length, AX25Ctx *ax25);
 
 void ss_clearSettings(void);
 void ss_loadSettings(void);

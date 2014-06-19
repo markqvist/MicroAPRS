@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <string.h>
 #include <avr/eeprom.h>
 #define F_CPU 16000000UL
@@ -47,17 +48,26 @@ bool EEMEM nvPRINT_DATA;
 bool EEMEM nvPRINT_INFO;
 bool EEMEM nvVERBOSE;
 bool EEMEM nvSILENT;
+uint8_t EEMEM nvPOWER;
+uint8_t EEMEM nvHEIGHT;
+uint8_t EEMEM nvGAIN;
+uint8_t EEMEM nvDIRECTIVITY;
+uint8_t EEMEM nvSYMBOL_TABLE;
+uint8_t EEMEM nvSYMBOL;
 
 // Packet assembly fields
 char message_recip[6];
 int message_recip_ssid;
 
-char latitude[9];
+char latitude[8];
 char longtitude[9];
+char symbolTable = '/';
+char symbol = 'n';
 
-int power;
-int height;
-int gain;
+uint8_t power = 10;
+uint8_t height = 10;
+uint8_t gain = 10;
+uint8_t directivity = 10;
 
 /////////////////////////
 
@@ -77,7 +87,7 @@ void ss_init(void) {
 
 void ss_clearSettings(void) {
     eeprom_update_byte((void*)&nvMagicByte, 0xFF);
-    if (VERBOSE) kprintf("Configuration cleared\n");
+    if (VERBOSE) kprintf("Configuration cleared. Restart to load defaults.\n");
     if (!VERBOSE && !SILENT) kprintf("1\n");
 }
 
@@ -101,6 +111,13 @@ void ss_loadSettings(void) {
         PRINT_INFO = eeprom_read_byte((void*)&nvPRINT_INFO);
         VERBOSE = eeprom_read_byte((void*)&nvVERBOSE);
         SILENT = eeprom_read_byte((void*)&nvSILENT);
+
+        power = eeprom_read_byte((void*)&nvPOWER);
+        height = eeprom_read_byte((void*)&nvHEIGHT);
+        gain = eeprom_read_byte((void*)&nvGAIN);
+        directivity = eeprom_read_byte((void*)&nvDIRECTIVITY);
+        symbolTable = eeprom_read_byte((void*)&nvSYMBOL_TABLE);
+        symbol = eeprom_read_byte((void*)&nvSYMBOL);
 
         if (VERBOSE && SS_INIT) kprintf("Configuration loaded\n");
     } else {
@@ -129,18 +146,18 @@ void ss_saveSettings(void) {
     eeprom_update_byte((void*)&nvVERBOSE, VERBOSE);
     eeprom_update_byte((void*)&nvSILENT, SILENT);
 
+    eeprom_update_byte((void*)&nvPOWER, power);
+    eeprom_update_byte((void*)&nvHEIGHT, height);
+    eeprom_update_byte((void*)&nvGAIN, gain);
+    eeprom_update_byte((void*)&nvDIRECTIVITY, directivity);
+    eeprom_update_byte((void*)&nvSYMBOL_TABLE, symbolTable);
+    eeprom_update_byte((void*)&nvSYMBOL, symbol);
+
+
     eeprom_update_byte((void*)&nvMagicByte, NV_MAGIC_BYTE);
 
     if (VERBOSE) kprintf("Configuration saved\n");
     if (!VERBOSE && !SILENT) kprintf("1\n");
-}
-
-void ss_printSettings(void) {
-    kprintf("Configuration:\n");
-    kprintf("Callsign: %.6s-%d\n", CALL, CALL_SSID);
-    kprintf("Destination: %.6s-%d\n", DST, DST_SSID);
-    kprintf("Path1: %.6s-%d\n", PATH1, PATH1_SSID);
-    kprintf("Path2: %.6s-%d\n", PATH2, PATH2_SSID);
 }
 
 void ss_messageCallback(struct AX25Msg *msg, Serial *ser) {
@@ -172,7 +189,10 @@ void ss_serialCallback(void *_buffer, size_t length, Serial *ser, AX25Ctx *ctx) 
         // ! as first char to send packet
         if (buffer[0] == '!' && length > 1) {
             buffer++; length--;
-            ss_sendMsg(buffer, length, ctx);
+            ss_sendPkt(buffer, length, ctx);
+        } else if (buffer[0] == '@') {
+            buffer++; length--;
+            ss_sendLoc(buffer, length, ctx);
         } else if (buffer[0] == 'h') {
             ss_printHelp();
         } else if (buffer[0] == 'H') {
@@ -375,6 +395,53 @@ void ss_serialCallback(void *_buffer, size_t length, Serial *ser, AX25Ctx *ctx) 
                 SILENT = false;
                 kfile_printf(&ser->fd, "Silent mode disabled\n");
             }
+        } else if(buffer[0] == 'l' && length > 2) {
+            buffer++; length--;
+            if (buffer[0] == 'l' && buffer[1] == 'a' && length >= 10) {
+                buffer += 2;
+                memcpy(latitude, (void *)buffer, 8);
+                if (VERBOSE) kprintf("Latitude set to %.8s\n", latitude);
+                if (!VERBOSE && !SILENT) kprintf("1\n");
+            } else if (buffer[0] == 'l' && buffer[1] == 'o' && length >= 11) {
+                buffer += 2;
+                memcpy(longtitude, (void *)buffer, 9);
+                if (VERBOSE) kprintf("Longtitude set to %.9s\n", longtitude);
+                if (!VERBOSE && !SILENT) kprintf("1\n");
+            } else if (buffer[0] == 'p' && length >= 2 && buffer[1] >= 48 && buffer[1] <= 57) {
+                power = buffer[1] - 48;
+                if (VERBOSE) kprintf("Power set to %dw\n", power*power);
+                if (!VERBOSE && !SILENT) kprintf("1\n");
+            } else if (buffer[0] == 'h' && length >= 2 && buffer[1] >= 48 && buffer[1] <= 57) {
+                height = buffer[1] - 48;
+                if (VERBOSE) kprintf("Antenna height set to %ldm AAT\n", (long)(BV(height)*1000L)/328L);
+                if (!VERBOSE && !SILENT) kprintf("1\n");
+            } else if (buffer[0] == 'g' && length >= 2 && buffer[1] >= 48 && buffer[1] <= 57) {
+                gain = buffer[1] - 48;
+                if (VERBOSE) kprintf("Gain set to %ddB\n", gain);
+                if (!VERBOSE && !SILENT) kprintf("1\n");
+            } else if (buffer[0] == 'd' && length >= 2 && buffer[1] >= 48 && buffer[1] <= 57) {
+                directivity = buffer[1] - 48;
+                if (directivity == 9) directivity = 8;
+                if (!VERBOSE && !SILENT) kprintf("1\n");
+                if (VERBOSE) {
+                    if (directivity == 0) kprintf("Directivity set to omni\n");
+                    if (directivity != 0) kprintf("Directivity set to %ddeg\n", directivity*45);
+                }
+            } else if (buffer[0] == 's' && length >= 2) {
+                symbol = buffer[1];
+                if (VERBOSE) kprintf("Symbol set to %c\n", symbol);
+            } else if (buffer[0] == 't' && length >= 2) {
+                if (buffer[1] == 'a') {
+                    symbolTable = '\\';
+                    if (VERBOSE) kprintf("Selected alternate symbol table\n");
+                } else {
+                    symbolTable = '/';
+                    if (VERBOSE) kprintf("Selected standard symbol table\n");
+                }
+                if (!VERBOSE && !SILENT) kprintf("1\n");
+            }
+
+
         } else {
             if (VERBOSE) kprintf("Error: Invalid command\n");
             if (!VERBOSE && !SILENT) kprintf("0\n");
@@ -384,7 +451,7 @@ void ss_serialCallback(void *_buffer, size_t length, Serial *ser, AX25Ctx *ctx) 
 
 }
 
-void ss_sendMsg(void *_buffer, size_t length, AX25Ctx *ax25) {
+void ss_sendPkt(void *_buffer, size_t length, AX25Ctx *ax25) {
 
     uint8_t *buffer = (uint8_t *)_buffer;
 
@@ -408,6 +475,43 @@ void ss_sendMsg(void *_buffer, size_t length, AX25Ctx *ax25) {
     ax25_sendVia(ax25, path, countof(path), buffer, length);
 }
 
+void ss_sendLoc(void *_buffer, size_t length, AX25Ctx *ax25) {
+    size_t payloadLength = 20+length;
+    bool usePHG = false;
+    if (power < 10 && height < 10 && gain < 10 && directivity < 9) {
+        usePHG = true;
+        payloadLength += 7;
+    }
+    uint8_t *packet = malloc(payloadLength);
+    uint8_t *ptr = packet;
+    packet[0] = '=';
+    packet[9] = symbolTable;
+    packet[19] = symbol;
+    ptr++;
+    memcpy(ptr, latitude, 8);
+    ptr += 9;
+    memcpy(ptr, longtitude, 9);
+    ptr += 10;
+    if (usePHG) {
+        packet[20] = 'P';
+        packet[21] = 'H';
+        packet[22] = 'G';
+        packet[23] = power+48;
+        packet[24] = height+48;
+        packet[25] = gain+48;
+        packet[26] = directivity+48;
+        ptr+=7;
+    }
+    if (length > 0) {
+        uint8_t *buffer = (uint8_t *)_buffer;
+        memcpy(ptr, buffer, length);
+    }
+
+    //kprintf("Assembled packet:\n%.*s\n", payloadLength, packet);
+    ss_sendPkt(packet, payloadLength, ax25);
+    free(packet);
+}
+
 void ss_printSrc(bool val) {
     PRINT_SRC = val;
 }
@@ -428,25 +532,54 @@ void ss_printInfo(bool val) {
     PRINT_INFO = val;
 }
 
+void ss_printSettings(void) {
+    kprintf("Configuration:\n");
+    kprintf("Callsign: %.6s-%d\n", CALL, CALL_SSID);
+    kprintf("Destination: %.6s-%d\n", DST, DST_SSID);
+    kprintf("Path1: %.6s-%d\n", PATH1, PATH1_SSID);
+    kprintf("Path2: %.6s-%d\n", PATH2, PATH2_SSID);
+    if (power != 10) kprintf("Power: %d\n", power);
+    if (height != 10) kprintf("Height: %d\n", height);
+    if (gain != 10) kprintf("Gain: %d\n", gain);
+    if (directivity != 10) kprintf("Directivity: %d\n", directivity);
+    if (symbolTable == '\\') kprintf("Symbol table: alternate\n");
+    if (symbolTable == '/') kprintf("Symbol table: standard\n");
+    kprintf("Symbol: %c\n", symbol);
+}
+
 void ss_printHelp(void) {
     kprintf("----------------------------------\n");
     kprintf("Serial commands:\n");
-    kprintf("!<msg>    Send packet\n");
+    kprintf("!<msg>    Send raw packet\n");
+    kprintf("@<cmt>    Send location update (cmt = optional comment)\n\n");
+
     kprintf("c<call>   Set your callsign\n");
     kprintf("d<call>   Set destination callsign\n");
     kprintf("1<call>   Set PATH1 callsign\n");
-    kprintf("2<call>   Set PATH2 callsign\n");
+    kprintf("2<call>   Set PATH2 callsign\n\n");
+
     kprintf("sc<ssid>  Set your SSID\n");
     kprintf("sd<ssid>  Set destination SSID\n");
     kprintf("s1<ssid>  Set PATH1 SSID\n");
-    kprintf("s2<ssid>  Set PATH2 SSID\n");
+    kprintf("s2<ssid>  Set PATH2 SSID\n\n");
+
+    kprintf("lla<LAT>  Set latitude (NMEA-format, eg 4903.50N)\n");
+    kprintf("llo<LON>  Set latitude (NMEA-format, eg 07201.75W)\n");
+    kprintf("lp<0-9>   Set TX power info\n");
+    kprintf("lh<0-9>   Set antenna height info\n");
+    kprintf("lg<0-9>   Set antenna gain info\n");
+    kprintf("ld<0-9>   Set antenna directivity info\n");
+    kprintf("ls<sym>   Select symbol\n");
+    kprintf("lt<s/a>   Select symbol table (standard/alternate)\n");
+
     kprintf("ps<1/0>   Print SRC on/off\n");
     kprintf("pd<1/0>   Print DST on/off\n");
     kprintf("pp<1/0>   Print PATH on/off\n");
     kprintf("pm<1/0>   Print DATA on/off\n");
-    kprintf("pi<1/0>   Print INFO on/off\n");
+    kprintf("pi<1/0>   Print INFO on/off\n\n");
     kprintf("v<1/0>    Verbose mode on/off\n");
-    kprintf("V<1/0>    Silent mode on/off\n");
+    kprintf("V<1/0>    Silent mode on/off\n\n");
+
     kprintf("S         Save configuration\n");
     kprintf("L         Load configuration\n");
     kprintf("C         Clear configuration\n");
