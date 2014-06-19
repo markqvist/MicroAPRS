@@ -7,7 +7,7 @@
 #define DEFAULT_CALLSIGN "NOCALL"
 #define DEFAULT_DESTINATION_CALL "APZMDM"
 
-void ss_init(void);
+void ss_init(AX25Ctx *ax25);
 
 void ss_messageCallback(struct AX25Msg *msg, Serial *ser);
 void ss_serialCallback(void *_buffer, size_t length, Serial *ser, AX25Ctx *ctx);

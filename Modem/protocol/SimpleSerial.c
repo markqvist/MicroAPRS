@@ -30,6 +30,7 @@ char PATH2[6] = "WIDE2";
 int PATH2_SSID = 2;
 
 AX25Call path[4];
+AX25Ctx *ax25ctx;
 
 #define NV_MAGIC_BYTE 0x69
 uint8_t EEMEM nvMagicByte;
@@ -78,7 +79,8 @@ size_t lastMessageLen;
 bool message_autoAck = false;
 /////////////////////////
 
-void ss_init(void) {
+void ss_init(AX25Ctx *ax25) {
+    ax25ctx = ax25;
     ss_loadSettings();
     SS_INIT = true;
     if (VERBOSE) {
@@ -191,8 +193,95 @@ void ss_messageCallback(struct AX25Msg *msg, Serial *ser) {
     }
     kfile_print(&ser->fd, "\r\n");
 
-    if (message_autoAck) {
-        // Inspect and ack message
+    if (message_autoAck && msg->len > 11) {
+        char mseq[6];
+        bool shouldAck = true;
+        int msl = 0;
+        int loc = msg->len - 1;
+        size_t i = 0;
+
+        while (i<7 && i < msg->len) {
+            if (msg->info[loc-i] == '{') {
+                size_t p;
+                for (p = 0; p < i; p++) {
+                    mseq[p] = msg->info[loc-i+p];
+                    msl = i;
+                }
+            }
+            i++;
+        }
+
+        if (msl != 0) {
+            int pos = 1;
+            int ssidPos = 0;
+            while (pos < 7) {
+                if (msg->info[pos] != CALL[pos-1]) {
+                    shouldAck = false;
+                    pos = 7;
+                    //kfile_printf(&ser->fd, "Not acking, wrong call\n");
+                }
+                pos++;
+            }
+            while (pos < 10) {
+                if (msg->info[pos] == '-') ssidPos = pos;
+                pos++;
+            }
+            if (ssidPos != 0) {
+                //kfile_printf(&ser->fd, "SSID info [%c %d !%d!]\n", msg->info[ssidPos+1], CALL_SSID, msg->info[ssidPos+1]-48);
+                if (msg->info[ssidPos+2] == ' ') {
+                    if (msg->info[ssidPos+1]-48 != CALL_SSID) {
+                        shouldAck = false;
+                        //kfile_printf(&ser->fd, "Not acking, wrong SSID\n");
+                    }
+                } else {
+                    int assid = 10+(msg->info[ssidPos+2]-48);
+                    if (assid != CALL_SSID) {
+                        shouldAck = false;
+                        //kfile_printf(&ser->fd, "Not acking, wrong SSID\n");
+                    }
+                }
+            }
+
+            if (msl != 0 && shouldAck) {
+                int ii = 0;
+                char *ack = malloc(14+msl);
+
+                for (ii = 0; ii < 9; ii++) {
+                    ack[1+ii] = ' ';
+                }
+                int calllen = 0;
+                for (ii = 0; ii < 6; ii++) {
+                    if (msg->src.call[ii] != 0) {
+                        ack[1+ii] = msg->src.call[ii];
+                        calllen++;
+                    }
+                }
+
+                if (msg->src.ssid != 0) {
+                    ack[1+calllen] = '-';
+                    if (msg->src.ssid < 10) {
+                        ack[2+calllen] = msg->src.ssid+48;
+                    } else {
+                        ack[2+calllen] = 49;
+                        ack[3+calllen] = msg->src.ssid-10+48;
+                    }
+                }
+
+                ack[0] = ':';
+                ack[10] = ':';
+                ack[11] = 'a';
+                ack[12] = 'c';
+                ack[13] = 'k';
+                
+                for (ii = 0; ii < msl-1; ii++) {
+                    ack[14+ii] = mseq[ii+1];
+                }
+                ss_sendPkt(ack, 14+msl, ax25ctx);
+                //kfile_printf(&ser->fd, "Assembled ACKET %d: (%.*s)\n", msl, 14+msl, ack);
+
+                free(ack);
+            }
+        }
     }
 }
 
