@@ -18,41 +18,41 @@ Here's how to control the APRS modem over a serial connection. The modem accepts
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | &nbsp;
 --- | :---
-__!\<data>__  | Send raw packet
-__@<cmt>__ | Send location update (cmt = optional comment)
-__#<msg>__ | Send APRS message
+__\\<data>__  | Send raw packet
+__@\<cmt>__ | Send location update (cmt = optional comment)
+__#\<msg>__ | Send APRS message
 &nbsp; | &nbsp;
-__c<call>__ |  Set your callsign
-__d<call>__ |  Set destination callsign
-__1<call>__ |  Set PATH1 callsign
-__2<call>__ |  Set PATH2 callsign
+__c\<call>__ |  Set your callsign
+__d\<call>__ |  Set destination callsign
+__1\<call>__ |  Set PATH1 callsign
+__2\<call>__ |  Set PATH2 callsign
 &nbsp; | &nbsp;
-__sc<ssid>__ | Set your SSID
-__sd<ssid>__ | Set destination SSID
-__s1<ssid>__ | Set PATH1 SSID
-__s2<ssid>__ | Set PATH2 SSID
+__sc\<ssid>__ | Set your SSID
+__sd\<ssid>__ | Set destination SSID
+__s1\<ssid>__ | Set PATH1 SSID
+__s2\<ssid>__ | Set PATH2 SSID
 &nbsp; | &nbsp;
-__lla<LAT>__ | Set latitude (NMEA-format, eg 4903.50N)
-__llo<LON>__ | Set latitude (NMEA-format, eg 07201.75W)
-__lp<0-9>__  | Set TX power info
-__lh<0-9>__  | Set antenna height info
-__lg<0-9>__  | Set antenna gain info
-__ld<0-9>__  | Set antenna directivity info
-__ls<sym>__  | Select symbol
-__lt<s/a>__  | Select symbol table (standard/alternate)
+__lla\<LAT>__ | Set latitude (NMEA-format, eg 4903.50N)
+__llo\<LON>__ | Set latitude (NMEA-format, eg 07201.75W)
+__lp\<0-9>__  | Set TX power info
+__lh\<0-9>__  | Set antenna height info
+__lg\<0-9>__  | Set antenna gain info
+__ld\<0-9>__  | Set antenna directivity info
+__ls\<sym>__  | Select symbol
+__lt\<s/a>__  | Select symbol table (standard/alternate)
 &nbsp; | &nbsp;
-__mc<call>__ | Set message recipient callsign
-__ms<ssid>__ | Set message recipient SSID
-__mr<ssid>__ | Retry last message
-__ma<1/0>__  | Automatic message ACK on/off
+__mc\<call>__ | Set message recipient callsign
+__ms\<ssid>__ | Set message recipient SSID
+__mr\<ssid>__ | Retry last message
+__ma\<1/0>__  | Automatic message ACK on/off
 &nbsp; |&nbsp;
-__ps<1/0>__  | Print SRC on/off
-__pd<1/0>__  | Print DST on/off
-__pp<1/0>__  | Print PATH on/off
-__pm<1/0>__  | Print DATA on/off
-__pi<1/0>__  | Print INFO on/off
-__v<1/0>__ | Verbose mode on/off
-__V<1/0>__ | Silent mode on/off
+__ps\<1/0>__  | Print SRC on/off
+__pd\<1/0>__  | Print DST on/off
+__pp\<1/0>__  | Print PATH on/off
+__pm\<1/0>__  | Print DATA on/off
+__pi\<1/0>__  | Print INFO on/off
+__v\<1/0>__ | Verbose mode on/off
+__V\<1/0>__ | Silent mode on/off
 &nbsp; | &nbsp;
 __S__ | Save configuration
 __L__ | Load configuration
