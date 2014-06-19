@@ -12,11 +12,8 @@ Modem_USER_CSRC = \
 	$(Modem_SRC_PATH)/main.c \
 	$(Modem_HW_PATH)/hardware.c \
     $(Modem_HW_PATH)/afsk.c \
-    $(Modem_HW_PATH)/protocol/mp1.c \
     $(Modem_HW_PATH)/protocol/SimpleSerial.c \
     $(Modem_HW_PATH)/protocol/KISS.c \
-    $(Modem_HW_PATH)/compression/heatshrink_decoder.c \
-    $(Modem_HW_PATH)/compression/heatshrink_encoder.c \
 	#
 
 # Files included by the user.
