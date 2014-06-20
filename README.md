@@ -7,7 +7,7 @@ Please read the "Quickstart.pdf" in the Documentation folder for some pointers o
 
 Right now the APRS specific documentation is lacking, so all the docs included in this repository is directly from MicroModem, but it should still offer good pointers on building the modem, and getting started. The only difference is the firmware.
 
-Currently a simple serial control protocol is implemented, while full KISS TNC functionality will be implemented soon.
+Currently a simple serial control protocol is implemented. If there's interest, I could also implement the KISS protocol.
 
 ## Modem control
 
