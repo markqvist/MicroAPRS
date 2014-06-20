@@ -9,6 +9,19 @@ Right now the APRS specific documentation is lacking, so all the docs included i
 
 Currently a simple serial control protocol is implemented. If there's interest, I could also implement the KISS protocol.
 
+## Some features
+
+- Send and receive AX.25 APRS packets
+- Full software modulation and demodulation, minimal extra hardware required
+- Easy configuration of callsign and path settings
+- Flexibility in how received packets are output over serial connection
+- Persistent configuration stored in EEPROM
+- Shorthand functions for sending location updates and messages, so you don't need to manually create the packets
+- Ability to send raw packets
+- Support for settings APRS symbols
+- Support for power/height/gain info in location updates
+- Ability to automatically ACK messages adressed to the modem
+
 ## Modem control
 
 Here's how to control the APRS modem over a serial connection. The modem accepts a variety of commands for setting options and sending packets. Generally a command starts with one or more characters defining the command, and then whatever data is needed to set the options for that command. Here's a list of the currently available commands:
