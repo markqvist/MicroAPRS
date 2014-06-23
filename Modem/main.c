@@ -52,7 +52,7 @@ static size_t serialLen = 0;                    // Counter for counting length o
 static bool sertx = false;                      // Flag signifying whether it's time to send data
                                                 // received on the serial port.
 
-#define SER_BUFFER_FULL (serialLen < MP1_MAX_DATA_SIZE-1)
+#define SER_BUFFER_FULL (serialLen < CONFIG_AX25_FRAME_BUF_LEN-1)
 
 
 
@@ -132,7 +132,7 @@ int main(void)
                 // If we have not yet surpassed the maximum frame length
                 // and the byte is not a "transmit" (newline) character,
                 // we should store it for transmission.
-                if ((serialLen < MP1_MAX_DATA_SIZE) && (sbyte != 10)) {
+                if ((serialLen < CONFIG_AX25_FRAME_BUF_LEN) && (sbyte != 10)) {
                     // Put the read byte into the buffer;
                     serialBuffer[serialLen] = sbyte;
                     // Increment the read length counter
