@@ -1,3 +1,5 @@
+#define ENABLE_HELP false
+
 #include <stdlib.h>
 #include <string.h>
 #include <avr/eeprom.h>
@@ -782,47 +784,49 @@ void ss_printSettings(void) {
 }
 
 void ss_printHelp(void) {
-    kprintf("----------------------------------\n");
-    kprintf("Serial commands:\n");
-    kprintf("!<data>   Send raw packet\n");
-    kprintf("@<cmt>    Send location update (cmt = optional comment)\n");
-    kprintf("#<msg>    Send APRS message\n\n");
+    #if ENABLE_HELP
+        kprintf("----------------------------------\n");
+        kprintf("Serial commands:\n");
+        kprintf("!<data>   Send raw packet\n");
+        kprintf("@<cmt>    Send location update (cmt = optional comment)\n");
+        kprintf("#<msg>    Send APRS message\n\n");
 
-    kprintf("c<call>   Set your callsign\n");
-    kprintf("d<call>   Set destination callsign\n");
-    kprintf("1<call>   Set PATH1 callsign\n");
-    kprintf("2<call>   Set PATH2 callsign\n\n");
+        kprintf("c<call>   Set your callsign\n");
+        kprintf("d<call>   Set destination callsign\n");
+        kprintf("1<call>   Set PATH1 callsign\n");
+        kprintf("2<call>   Set PATH2 callsign\n\n");
 
-    kprintf("sc<ssid>  Set your SSID\n");
-    kprintf("sd<ssid>  Set destination SSID\n");
-    kprintf("s1<ssid>  Set PATH1 SSID\n");
-    kprintf("s2<ssid>  Set PATH2 SSID\n\n");
+        kprintf("sc<ssid>  Set your SSID\n");
+        kprintf("sd<ssid>  Set destination SSID\n");
+        kprintf("s1<ssid>  Set PATH1 SSID\n");
+        kprintf("s2<ssid>  Set PATH2 SSID\n\n");
 
-    kprintf("lla<LAT>  Set latitude (NMEA-format, eg 4903.50N)\n");
-    kprintf("llo<LON>  Set latitude (NMEA-format, eg 07201.75W)\n");
-    kprintf("lp<0-9>   Set TX power info\n");
-    kprintf("lh<0-9>   Set antenna height info\n");
-    kprintf("lg<0-9>   Set antenna gain info\n");
-    kprintf("ld<0-9>   Set antenna directivity info\n");
-    kprintf("ls<sym>   Select symbol\n");
-    kprintf("lt<s/a>   Select symbol table (standard/alternate)\n\n");
+        kprintf("lla<LAT>  Set latitude (NMEA-format, eg 4903.50N)\n");
+        kprintf("llo<LON>  Set latitude (NMEA-format, eg 07201.75W)\n");
+        kprintf("lp<0-9>   Set TX power info\n");
+        kprintf("lh<0-9>   Set antenna height info\n");
+        kprintf("lg<0-9>   Set antenna gain info\n");
+        kprintf("ld<0-9>   Set antenna directivity info\n");
+        kprintf("ls<sym>   Select symbol\n");
+        kprintf("lt<s/a>   Select symbol table (standard/alternate)\n\n");
 
-    kprintf("mc<call>  Set message recipient callsign\n");
-    kprintf("ms<ssid>  Set message recipient SSID\n");
-    kprintf("mr<ssid>  Retry last message\n");
-    kprintf("ma<1/0>   Automatic message ACK on/off\n\n");
+        kprintf("mc<call>  Set message recipient callsign\n");
+        kprintf("ms<ssid>  Set message recipient SSID\n");
+        kprintf("mr<ssid>  Retry last message\n");
+        kprintf("ma<1/0>   Automatic message ACK on/off\n\n");
 
-    kprintf("ps<1/0>   Print SRC on/off\n");
-    kprintf("pd<1/0>   Print DST on/off\n");
-    kprintf("pp<1/0>   Print PATH on/off\n");
-    kprintf("pm<1/0>   Print DATA on/off\n");
-    kprintf("pi<1/0>   Print INFO on/off\n\n");
-    kprintf("v<1/0>    Verbose mode on/off\n");
-    kprintf("V<1/0>    Silent mode on/off\n\n");
+        kprintf("ps<1/0>   Print SRC on/off\n");
+        kprintf("pd<1/0>   Print DST on/off\n");
+        kprintf("pp<1/0>   Print PATH on/off\n");
+        kprintf("pm<1/0>   Print DATA on/off\n");
+        kprintf("pi<1/0>   Print INFO on/off\n\n");
+        kprintf("v<1/0>    Verbose mode on/off\n");
+        kprintf("V<1/0>    Silent mode on/off\n\n");
 
-    kprintf("S         Save configuration\n");
-    kprintf("L         Load configuration\n");
-    kprintf("C         Clear configuration\n");
-    kprintf("H         Print configuration\n");
-    kprintf("----------------------------------\n");
+        kprintf("S         Save configuration\n");
+        kprintf("L         Load configuration\n");
+        kprintf("C         Clear configuration\n");
+        kprintf("H         Print configuration\n");
+        kprintf("----------------------------------\n");
+    #endif
 }
