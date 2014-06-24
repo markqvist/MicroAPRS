@@ -398,7 +398,7 @@ void ss_serialCallback(void *_buffer, size_t length, Serial *ser, AX25Ctx *ctx) 
         } else if (buffer[0] == 's' && length > 2) {
             buffer++; length--;
             if (buffer[0] == 'c') {
-                if (length > 2) {
+                if (length > 2 && buffer[2] > 48 && buffer[2] < 58) {
                     CALL_SSID = 10+buffer[2]-48;
                 } else {
                     CALL_SSID = buffer[1]-48;
@@ -407,7 +407,7 @@ void ss_serialCallback(void *_buffer, size_t length, Serial *ser, AX25Ctx *ctx) 
                 if (!VERBOSE && !SILENT) kprintf("1\n");
             }
             if (buffer[0] == 'd') {
-                if (length > 2) {
+                if (length > 2 && buffer[2] > 48 && buffer[2] < 58) {
                     DST_SSID = 10+buffer[2]-48;
                 } else {
                     DST_SSID = buffer[1]-48;
@@ -415,7 +415,7 @@ void ss_serialCallback(void *_buffer, size_t length, Serial *ser, AX25Ctx *ctx) 
                 if (VERBOSE) kprintf("Destination: %.6s-%d\n", DST, DST_SSID);
                 if (!VERBOSE && !SILENT) kprintf("1\n");
             }
-            if (buffer[0] == '1') {
+            if (buffer[0] == '1' && buffer[2] > 48 && buffer[2] < 58) {
                 if (length > 2) {
                     PATH1_SSID = 10+buffer[2]-48;
                 } else {
@@ -424,7 +424,7 @@ void ss_serialCallback(void *_buffer, size_t length, Serial *ser, AX25Ctx *ctx) 
                 if (VERBOSE) kprintf("Path1: %.6s-%d\n", PATH1, PATH1_SSID);
                 if (!VERBOSE && !SILENT) kprintf("1\n");
             }
-            if (buffer[0] == '2') {
+            if (buffer[0] == '2' && buffer[2] > 48 && buffer[2] < 58) {
                 if (length > 2) {
                     PATH2_SSID = 10+buffer[2]-48;
                 } else {
