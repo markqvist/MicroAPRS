@@ -204,7 +204,7 @@ void ss_messageCallback(struct AX25Msg *msg, Serial *ser) {
         while (i<7 && i < msg->len) {
             if (msg->info[loc-i] == '{') {
                 size_t p;
-                for (p = 0; p < i; p++) {
+                for (p = 0; p <= i; p++) {
                     mseq[p] = msg->info[loc-i+p];
                     msl = i;
                 }
@@ -270,9 +270,11 @@ void ss_messageCallback(struct AX25Msg *msg, Serial *ser) {
                 ack[12] = 'c';
                 ack[13] = 'k';
                 
-                for (ii = 0; ii < msl-1; ii++) {
+                for (ii = 0; ii < msl; ii++) {
                     ack[14+ii] = mseq[ii+1];
                 }
+
+                _delay_ms(1750);
                 ss_sendPkt(ack, 14+msl, ax25ctx);
 
                 free(ack);
