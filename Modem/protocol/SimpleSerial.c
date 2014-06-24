@@ -166,7 +166,6 @@ void ss_saveSettings(void) {
     eeprom_update_byte((void*)&nvSYMBOL, symbol);
     eeprom_update_byte((void*)&nvAUTOACK, message_autoAck);
 
-
     eeprom_update_byte((void*)&nvMagicByte, NV_MAGIC_BYTE);
 
     if (VERBOSE) kprintf("Configuration saved\n");
@@ -220,7 +219,6 @@ void ss_messageCallback(struct AX25Msg *msg, Serial *ser) {
                 if (msg->info[pos] != CALL[pos-1]) {
                     shouldAck = false;
                     pos = 7;
-                    //kfile_printf(&ser->fd, "Not acking, wrong call\n");
                 }
                 pos++;
             }
@@ -229,17 +227,14 @@ void ss_messageCallback(struct AX25Msg *msg, Serial *ser) {
                 pos++;
             }
             if (ssidPos != 0) {
-                //kfile_printf(&ser->fd, "SSID info [%c %d !%d!]\n", msg->info[ssidPos+1], CALL_SSID, msg->info[ssidPos+1]-48);
                 if (msg->info[ssidPos+2] == ' ') {
                     if (msg->info[ssidPos+1]-48 != CALL_SSID) {
                         shouldAck = false;
-                        //kfile_printf(&ser->fd, "Not acking, wrong SSID\n");
                     }
                 } else {
                     int assid = 10+(msg->info[ssidPos+2]-48);
                     if (assid != CALL_SSID) {
                         shouldAck = false;
-                        //kfile_printf(&ser->fd, "Not acking, wrong SSID\n");
                     }
                 }
             }
@@ -279,7 +274,6 @@ void ss_messageCallback(struct AX25Msg *msg, Serial *ser) {
                     ack[14+ii] = mseq[ii+1];
                 }
                 ss_sendPkt(ack, 14+msl, ax25ctx);
-                //kfile_printf(&ser->fd, "Assembled ACKET %d: (%.*s)\n", msl, 14+msl, ack);
 
                 free(ack);
             }
@@ -306,9 +300,13 @@ void ss_serialCallback(void *_buffer, size_t length, Serial *ser, AX25Ctx *ctx) 
             ss_sendMsg(buffer, length, ctx);
             if (VERBOSE) kprintf("Message sent\n");
             if (!VERBOSE && !SILENT) kprintf("1\n");
-        } else if (buffer[0] == 'h') {
+        }
+        #if ENABLE_HELP
+        else if (buffer[0] == 'h') {
             ss_printHelp();
-        } else if (buffer[0] == 'H') {
+        }
+        #endif
+        else if (buffer[0] == 'H') {
             ss_printSettings();
         } else if (buffer[0] == 'S') {
             ss_saveSettings();
@@ -743,26 +741,6 @@ void ss_msgRetry(AX25Ctx *ax25) {
     ss_sendMsg(lastMessage, lastMessageLen, ax25);
 }
 
-void ss_printSrc(bool val) {
-    PRINT_SRC = val;
-}
-
-void ss_printDst(bool val) {
-    PRINT_DST = val;
-}
-
-void ss_printPath(bool val) {
-    PRINT_PATH = val;
-}
-
-void ss_printData(bool val) {
-    PRINT_DATA = val;
-}
-
-void ss_printInfo(bool val) {
-    PRINT_INFO = val;
-}
-
 void ss_printSettings(void) {
     kprintf("Configuration:\n");
     kprintf("Callsign: %.6s-%d\n", CALL, CALL_SSID);
@@ -783,50 +761,50 @@ void ss_printSettings(void) {
     kprintf("Symbol: %c\n", symbol);
 }
 
-void ss_printHelp(void) {
-    #if ENABLE_HELP
-        kprintf("----------------------------------\n");
-        kprintf("Serial commands:\n");
-        kprintf("!<data>   Send raw packet\n");
-        kprintf("@<cmt>    Send location update (cmt = optional comment)\n");
-        kprintf("#<msg>    Send APRS message\n\n");
+#if ENABLE_HELP
+    void ss_printHelp(void) {
+            kprintf("----------------------------------\n");
+            kprintf("Serial commands:\n");
+            kprintf("!<data>   Send raw packet\n");
+            kprintf("@<cmt>    Send location update (cmt = optional comment)\n");
+            kprintf("#<msg>    Send APRS message\n\n");
 
-        kprintf("c<call>   Set your callsign\n");
-        kprintf("d<call>   Set destination callsign\n");
-        kprintf("1<call>   Set PATH1 callsign\n");
-        kprintf("2<call>   Set PATH2 callsign\n\n");
+            kprintf("c<call>   Set your callsign\n");
+            kprintf("d<call>   Set destination callsign\n");
+            kprintf("1<call>   Set PATH1 callsign\n");
+            kprintf("2<call>   Set PATH2 callsign\n\n");
 
-        kprintf("sc<ssid>  Set your SSID\n");
-        kprintf("sd<ssid>  Set destination SSID\n");
-        kprintf("s1<ssid>  Set PATH1 SSID\n");
-        kprintf("s2<ssid>  Set PATH2 SSID\n\n");
+            kprintf("sc<ssid>  Set your SSID\n");
+            kprintf("sd<ssid>  Set destination SSID\n");
+            kprintf("s1<ssid>  Set PATH1 SSID\n");
+            kprintf("s2<ssid>  Set PATH2 SSID\n\n");
 
-        kprintf("lla<LAT>  Set latitude (NMEA-format, eg 4903.50N)\n");
-        kprintf("llo<LON>  Set latitude (NMEA-format, eg 07201.75W)\n");
-        kprintf("lp<0-9>   Set TX power info\n");
-        kprintf("lh<0-9>   Set antenna height info\n");
-        kprintf("lg<0-9>   Set antenna gain info\n");
-        kprintf("ld<0-9>   Set antenna directivity info\n");
-        kprintf("ls<sym>   Select symbol\n");
-        kprintf("lt<s/a>   Select symbol table (standard/alternate)\n\n");
+            kprintf("lla<LAT>  Set latitude (NMEA-format, eg 4903.50N)\n");
+            kprintf("llo<LON>  Set latitude (NMEA-format, eg 07201.75W)\n");
+            kprintf("lp<0-9>   Set TX power info\n");
+            kprintf("lh<0-9>   Set antenna height info\n");
+            kprintf("lg<0-9>   Set antenna gain info\n");
+            kprintf("ld<0-9>   Set antenna directivity info\n");
+            kprintf("ls<sym>   Select symbol\n");
+            kprintf("lt<s/a>   Select symbol table (standard/alternate)\n\n");
 
-        kprintf("mc<call>  Set message recipient callsign\n");
-        kprintf("ms<ssid>  Set message recipient SSID\n");
-        kprintf("mr<ssid>  Retry last message\n");
-        kprintf("ma<1/0>   Automatic message ACK on/off\n\n");
+            kprintf("mc<call>  Set message recipient callsign\n");
+            kprintf("ms<ssid>  Set message recipient SSID\n");
+            kprintf("mr<ssid>  Retry last message\n");
+            kprintf("ma<1/0>   Automatic message ACK on/off\n\n");
 
-        kprintf("ps<1/0>   Print SRC on/off\n");
-        kprintf("pd<1/0>   Print DST on/off\n");
-        kprintf("pp<1/0>   Print PATH on/off\n");
-        kprintf("pm<1/0>   Print DATA on/off\n");
-        kprintf("pi<1/0>   Print INFO on/off\n\n");
-        kprintf("v<1/0>    Verbose mode on/off\n");
-        kprintf("V<1/0>    Silent mode on/off\n\n");
+            kprintf("ps<1/0>   Print SRC on/off\n");
+            kprintf("pd<1/0>   Print DST on/off\n");
+            kprintf("pp<1/0>   Print PATH on/off\n");
+            kprintf("pm<1/0>   Print DATA on/off\n");
+            kprintf("pi<1/0>   Print INFO on/off\n\n");
+            kprintf("v<1/0>    Verbose mode on/off\n");
+            kprintf("V<1/0>    Silent mode on/off\n\n");
 
-        kprintf("S         Save configuration\n");
-        kprintf("L         Load configuration\n");
-        kprintf("C         Clear configuration\n");
-        kprintf("H         Print configuration\n");
-        kprintf("----------------------------------\n");
-    #endif
-}
+            kprintf("S         Save configuration\n");
+            kprintf("L         Load configuration\n");
+            kprintf("C         Clear configuration\n");
+            kprintf("H         Print configuration\n");
+            kprintf("----------------------------------\n");
+    }
+#endif

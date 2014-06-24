@@ -39,13 +39,6 @@ static Serial ser;          // Declare a serial interface struct
                             // for the ADC (this is A0 on arduino)
 
 
-/* Removed for now, use serial to send packets instead
-static AX25Call path[] = AX25_PATH(AX25_CALL(TO_CALL, 0), AX25_CALL(YOUR_CALLSIGN, 0), AX25_CALL("wide1", 1), AX25_CALL("wide2", 2));
-#define SEND_TEST_PACKETS false
-#define TEST_INTERVAL 15000L
-#define APRS_MSG    "Test APRS packet"
-*/
-
 static uint8_t serialBuffer[CONFIG_AX25_FRAME_BUF_LEN+1]; // Buffer for holding incoming serial data
 static int sbyte;                               // For holding byte read from serial port
 static size_t serialLen = 0;                    // Counter for counting length of data from serial
@@ -177,16 +170,6 @@ int main(void)
             sertx = false;
             serialLen = 0;
         }
-
-        // Removing this for now
-        /*
-        // Use AX.25 to send test data
-        if (SEND_TEST_PACKETS && timer_clock() - start > ms_to_ticks(TEST_INTERVAL))
-        {
-            start = timer_clock();
-            ax25_sendVia(&ax25, path, countof(path), APRS_MSG, sizeof(APRS_MSG));
-        }
-        */
 
     }
     return 0;

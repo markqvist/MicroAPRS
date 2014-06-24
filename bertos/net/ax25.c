@@ -79,7 +79,6 @@ static void ax25_decode(AX25Ctx *ctx)
 	DECODE_CALL(buf, msg.src.call);
 	msg.src.ssid = (*buf >> 1) & 0x0F;
 
-	LOG_INFO("SRC[%.6s-%d], DST[%.6s-%d]\n", msg.src.call, msg.src.ssid, msg.dst.call, msg.dst.ssid);
 
 	/* Repeater addresses */
 	#if CONFIG_AX25_RPT_LST
@@ -88,11 +87,6 @@ static void ax25_decode(AX25Ctx *ctx)
 			DECODE_CALL(buf, msg.rpt_lst[msg.rpt_cnt].call);
 			msg.rpt_lst[msg.rpt_cnt].ssid = (*buf >> 1) & 0x0F;
 			AX25_SET_REPEATED(&msg, msg.rpt_cnt, (*buf & 0x80));
-
-			LOG_INFO("RPT%d[%.6s-%d]%c\n", msg.rpt_cnt, 
-				msg.rpt_lst[msg.rpt_cnt].call, 
-				msg.rpt_lst[msg.rpt_cnt].ssid,
-				(AX25_REPEATED(&msg, msg.rpt_cnt) ? '*' : ' '));
 		}
 	#else
 		while (!(*buf++ & 0x01))
@@ -101,27 +95,23 @@ static void ax25_decode(AX25Ctx *ctx)
 			uint8_t ssid;
 			DECODE_CALL(buf, rpt);
 			ssid = (*buf >> 1) & 0x0F;
-			LOG_INFO("RPT[%.6s-%d]\n", rpt, ssid);
 		}
 	#endif
 
 	msg.ctrl = *buf++;
 	if (msg.ctrl != AX25_CTRL_UI)
 	{
-		LOG_WARN("Only UI frames are handled, got [%02X]\n", msg.ctrl);
 		return;
 	}
 
 	msg.pid = *buf++;
 	if (msg.pid != AX25_PID_NOLAYER3)
 	{
-		LOG_WARN("Only frames without layer3 protocol are handled, got [%02X]\n", msg.pid);
 		return;
 	}
 
 	msg.len = ctx->frm_len - 2 - (buf - ctx->buf);
 	msg.info = buf;
-	LOG_INFO("DATA: %.*s\n", msg.len, msg.info);
 
 	if (ctx->hook)
 		ctx->hook(&msg);
@@ -150,12 +140,7 @@ void ax25_poll(AX25Ctx *ctx)
 			{
 				if (ctx->crc_in == AX25_CRC_CORRECT)
 				{
-					LOG_INFO("Frame found!\n");
 					ax25_decode(ctx);
-				}
-				else
-				{
-					LOG_INFO("CRC error, computed [%04X]\n", ctx->crc_in);
 				}
 			}
 			ctx->sync = true;
@@ -166,7 +151,6 @@ void ax25_poll(AX25Ctx *ctx)
 
 		if (!ctx->escape && c == HDLC_RESET)
 		{
-			LOG_INFO("HDLC reset\n");
 			ctx->sync = false;
 			continue;
 		}
@@ -186,7 +170,6 @@ void ax25_poll(AX25Ctx *ctx)
 			}
 			else
 			{
-				LOG_INFO("Buffer overrun");
 				ctx->sync = false;
 			}
 		}
@@ -195,7 +178,6 @@ void ax25_poll(AX25Ctx *ctx)
 
 	if (kfile_error(ctx->ch))
 	{
-		LOG_ERR("Channel error [%04x]\n", kfile_error(ctx->ch));
 		kfile_clearerr(ctx->ch);
 	}
 }
@@ -275,40 +257,6 @@ void ax25_sendVia(AX25Ctx *ctx, const AX25Call *path, size_t path_len, const voi
 
 	kfile_putc(HDLC_FLAG, ctx->ch);
 }
-
-static void print_call(KFile *ch, const AX25Call *call)
-{
-	kfile_printf(ch, "%.6s", call->call);
-	if (call->ssid)
-		kfile_printf(ch, "-%d", call->ssid);
-}
-
-/**
- * Print a AX25 message in TNC-2 packet monitor format.
- * \param ch a kfile channel where the message will be printed.
- * \param msg the message to be printed.
- */
-void ax25_print(KFile *ch, const AX25Msg *msg)
-{
-	print_call(ch, &msg->src);
-	kfile_putc('>', ch);
-	print_call(ch, &msg->dst);
-
-	#if CONFIG_AX25_RPT_LST
-	for (int i = 0; i < msg->rpt_cnt; i++)
-	{
-		kfile_putc(',', ch);
-		print_call(ch, &msg->rpt_lst[i]);
-		/* Print a '*' if packet has already been transmitted 
-		 * by this repeater */
-		if (AX25_REPEATED(msg, i))
-			kfile_putc('*', ch);
-	}
-	#endif
-
-	kfile_printf(ch, ":%.*s\n", msg->len, msg->info);
-}
-
 
 /**
  * Init the AX25 protocol decoder.
