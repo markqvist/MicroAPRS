@@ -14,7 +14,7 @@ Please read the Mcicro APRS documentation prior to continuing here.
 - Support for use of DS18B20 temperature sensors
 - ADC channel with a divider for reading the battery voltage level
 
-![MicroAPRSNavspark](https://raw.github.com/IRNAS/MicroAPRS/master/DesignMicroAPRSNavspark/images/navspark-microaprs-1.jpg)
+![MicroAPRSNavspark](https://raw.githubusercontent.com/IRNAS/MicroAPRS/master/DesignMicroAPRSNavspark/photos/navspark-microaprs-1.jpg)
 
 ## Instructions
 
@@ -33,6 +33,6 @@ Create a 3D printed enclosure that clips to a radio and powers the circuit from 
 Optimize the Navspark Arduino applicaton for power consumption.
 
 
-![MicroAPRSNavspark](https://raw.github.com/IRNAS/MicroAPRS/master/DesignMicroAPRSNavspark/images/navspark-microaprs-2.jpg)
-![MicroAPRSNavspark](https://raw.github.com/IRNAS/MicroAPRS/master/DesignMicroAPRSNavspark/images/navspark-microaprs-3.jpg)
-![MicroAPRSNavspark](https://raw.github.com/IRNAS/MicroAPRS/master/DesignMicroAPRSNavspark/images/navspark-microaprs-4.jpg)
+![MicroAPRSNavspark](https://raw.githubusercontent.com/IRNAS/MicroAPRS/master/DesignMicroAPRSNavspark/photos/navspark-microaprs-2.jpg)
+![MicroAPRSNavspark](https://raw.githubusercontent.com/IRNAS/MicroAPRS/master/DesignMicroAPRSNavspark/photos/navspark-microaprs-3.jpg)
+![MicroAPRSNavspark](https://raw.githubusercontent.com/IRNAS/MicroAPRS/master/DesignMicroAPRSNavspark/photos/navspark-microaprs-4.jpg)
