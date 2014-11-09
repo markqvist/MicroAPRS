@@ -70,51 +70,56 @@
 
 static void ax25_decode(AX25Ctx *ctx)
 {
-	AX25Msg msg;
-	uint8_t *buf = ctx->buf;
 
-	DECODE_CALL(buf, msg.dst.call);
-	msg.dst.ssid = (*buf++ >> 1) & 0x0F;
-
-	DECODE_CALL(buf, msg.src.call);
-	msg.src.ssid = (*buf >> 1) & 0x0F;
-
-
-	/* Repeater addresses */
-	#if CONFIG_AX25_RPT_LST
-		for (msg.rpt_cnt = 0; !(*buf++ & 0x01) && (msg.rpt_cnt < countof(msg.rpt_lst)); msg.rpt_cnt++)
-		{
-			DECODE_CALL(buf, msg.rpt_lst[msg.rpt_cnt].call);
-			msg.rpt_lst[msg.rpt_cnt].ssid = (*buf >> 1) & 0x0F;
-			AX25_SET_REPEATED(&msg, msg.rpt_cnt, (*buf & 0x80));
-		}
+	#if SERIAL_PROTOCOL == PROTOCOL_KISS
+		if (ctx->hook)
+			ctx->hook(ctx);
 	#else
-		while (!(*buf++ & 0x01))
+		AX25Msg msg;
+		uint8_t *buf = ctx->buf;
+		DECODE_CALL(buf, msg.dst.call);
+		msg.dst.ssid = (*buf++ >> 1) & 0x0F;
+
+		DECODE_CALL(buf, msg.src.call);
+		msg.src.ssid = (*buf >> 1) & 0x0F;
+
+
+		/* Repeater addresses */
+		#if CONFIG_AX25_RPT_LST
+			for (msg.rpt_cnt = 0; !(*buf++ & 0x01) && (msg.rpt_cnt < countof(msg.rpt_lst)); msg.rpt_cnt++)
+			{
+				DECODE_CALL(buf, msg.rpt_lst[msg.rpt_cnt].call);
+				msg.rpt_lst[msg.rpt_cnt].ssid = (*buf >> 1) & 0x0F;
+				AX25_SET_REPEATED(&msg, msg.rpt_cnt, (*buf & 0x80));
+			}
+		#else
+			while (!(*buf++ & 0x01))
+			{
+				char rpt[6];
+				uint8_t ssid;
+				DECODE_CALL(buf, rpt);
+				ssid = (*buf >> 1) & 0x0F;
+			}
+		#endif
+
+		msg.ctrl = *buf++;
+		if (msg.ctrl != AX25_CTRL_UI)
 		{
-			char rpt[6];
-			uint8_t ssid;
-			DECODE_CALL(buf, rpt);
-			ssid = (*buf >> 1) & 0x0F;
+			return;
 		}
+
+		msg.pid = *buf++;
+		if (msg.pid != AX25_PID_NOLAYER3)
+		{
+			return;
+		}
+
+		msg.len = ctx->frm_len - 2 - (buf - ctx->buf);
+		msg.info = buf;
+
+		if (ctx->hook)
+			ctx->hook(&msg);
 	#endif
-
-	msg.ctrl = *buf++;
-	if (msg.ctrl != AX25_CTRL_UI)
-	{
-		return;
-	}
-
-	msg.pid = *buf++;
-	if (msg.pid != AX25_PID_NOLAYER3)
-	{
-		return;
-	}
-
-	msg.len = ctx->frm_len - 2 - (buf - ctx->buf);
-	msg.info = buf;
-
-	if (ctx->hook)
-		ctx->hook(&msg);
 }
 
 
@@ -254,6 +259,20 @@ void ax25_sendVia(AX25Ctx *ctx, const AX25Call *path, size_t path_len, const voi
 	ax25_putchar(ctx, crch);
 
 	ASSERT(ctx->crc_out == AX25_CRC_CORRECT);
+
+	kfile_putc(HDLC_FLAG, ctx->ch);
+}
+
+void ax25_sendRaw(AX25Ctx *ctx, void *_buf, size_t len) {
+	ctx->crc_out = CRC_CCITT_INIT_VAL;
+	kfile_putc(HDLC_FLAG, ctx->ch);
+	const uint8_t *buf = (const uint8_t *)_buf;
+	while (len--) ax25_putchar(ctx, *buf++);
+
+	uint8_t crcl = (ctx->crc_out & 0xff) ^ 0xff;
+	uint8_t crch = (ctx->crc_out >> 8) ^ 0xff;
+	ax25_putchar(ctx, crcl);
+	ax25_putchar(ctx, crch);
 
 	kfile_putc(HDLC_FLAG, ctx->ch);
 }

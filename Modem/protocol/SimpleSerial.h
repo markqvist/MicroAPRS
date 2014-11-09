@@ -1,8 +1,7 @@
-#ifndef PROTOCOL_SIMPLE_SERIAL
+#ifndef _PROTOCOL_SIMPLE_SERIAL
+#define _PROTOCOL_SIMPLE_SERIAL 0x01
 #include <net/ax25.h>
 #include <drv/ser.h>
-
-#define PROTOCOL_SIMPLE_SERIAL 0x01
 
 #define DEFAULT_CALLSIGN "NOCALL"
 #define DEFAULT_DESTINATION_CALL "APZMDM"

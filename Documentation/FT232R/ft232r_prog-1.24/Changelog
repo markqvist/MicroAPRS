@@ -1,0 +1,18 @@
+Version 1.24: (courtesy of Nils Eilers)
+	-- fixed exit code on success to be 0 instead of EINVAL
+	-- added --self-powered flag
+Version 1.23:
+	-- added GPLv2 licensing.
+Version 1.22:
+	-- try again to preserve USB version from eeprom.
+Version 1.21:
+	-- preserve USB version from eeprom; libusb no longer does this correctly (sigh).
+Version 1.10:
+	-- now able to invert _all_ the serial and handshake lines (not just DTR).
+	   (courtesy of Jonas Meyer, thanks!)
+Version 1.09:
+Version 1.08:
+	-- fix compiler warning from newer gcc
+	-- Makefile fixes for latest Ubuntu & binutils
+Version 1.06:
+	-- fix libftdi-0.19 API breakage by not using "BM_type_chip" from libftdi0-0.18.

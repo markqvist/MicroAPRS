@@ -45,6 +45,7 @@
 #ifndef NET_AX25_H
 #define NET_AX25_H
 
+#include "config.h"             // Various configuration values
 #include "cfg/cfg_ax25.h"
 
 #include <cfg/compiler.h>
@@ -62,11 +63,18 @@
 #define AX25_CRC_CORRECT 0xF0B8
 
 struct AX25Msg; // fwd declaration
+struct AX25Ctx; // fwd declaration
 
 /**
  * Type for AX25 messages callback.
  */
-typedef void (*ax25_callback_t)(struct AX25Msg *msg);
+#if SERIAL_PROTOCOL == PROTOCOL_SIMPLE_SERIAL
+	typedef void (*ax25_callback_t)(struct AX25Msg *msg);
+#endif
+
+#if SERIAL_PROTOCOL == PROTOCOL_KISS
+	typedef void (*ax25_callback_t)(struct AX25Ctx *ctx);
+#endif
 
 
 /**
@@ -170,6 +178,7 @@ typedef struct AX25Msg
 
 void ax25_poll(AX25Ctx *ctx);
 void ax25_sendVia(AX25Ctx *ctx, const AX25Call *path, size_t path_len, const void *_buf, size_t len);
+void ax25_sendRaw(AX25Ctx *ctx, void *_buf, size_t len);
 
 /**
  * Send an AX25 frame on the channel.

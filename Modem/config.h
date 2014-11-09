@@ -2,9 +2,16 @@
 #ifndef FSK_CFG
 #define FSK_CFG
 
+// Serial options
+#define PROTOCOL_SIMPLE_SERIAL 0x01
+#define PROTOCOL_KISS 0x02
+
+#define SERIAL_PROTOCOL PROTOCOL_SIMPLE_SERIAL
+//#define SERIAL_PROTOCOL PROTOCOL_KISS
+
 // Debug & test options
 #define SERIAL_DEBUG false
-#define PASSALL false
+#define PASSALL true
 #define AUTOREPLY false
 
 // Modem options
