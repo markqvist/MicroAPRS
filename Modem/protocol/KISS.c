@@ -13,8 +13,8 @@ size_t frame_len;
 bool IN_FRAME;
 bool ESCAPE;
 uint8_t command = CMD_UNKNOWN;
-unsigned long kiss_preamble = CONFIG_AFSK_PREAMBLE_LEN;
-unsigned long kiss_tail = CONFIG_AFSK_TRAILER_LEN;
+unsigned long custom_preamble = CONFIG_AFSK_PREAMBLE_LEN;
+unsigned long custom_tail = CONFIG_AFSK_TRAILER_LEN;
 
 void kiss_init(AX25Ctx *ax25, Serial *ser) {
     ax25ctx = ax25;
@@ -72,9 +72,9 @@ void kiss_serialCallback(uint8_t sbyte) {
                 serialBuffer[frame_len++] = sbyte;
             }
         } else if (command == CMD_TXDELAY) {
-            kiss_preamble = sbyte * 10UL;
+            custom_preamble = sbyte * 10UL;
         } else if (command == CMD_TXTAIL) {
-            kiss_tail = sbyte * 10;
+            custom_tail = sbyte * 10;
         } 
         
     }

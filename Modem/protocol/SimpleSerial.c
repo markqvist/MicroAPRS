@@ -58,6 +58,8 @@ uint8_t EEMEM nvDIRECTIVITY;
 uint8_t EEMEM nvSYMBOL_TABLE;
 uint8_t EEMEM nvSYMBOL;
 uint8_t EEMEM nvAUTOACK;
+int EEMEM nvPREAMBLE;
+int EEMEM nvTAIL;
 
 // Location packet assembly fields
 char latitude[8];
@@ -80,6 +82,9 @@ char lastMessage[67];
 size_t lastMessageLen;
 bool message_autoAck = false;
 /////////////////////////
+
+extern unsigned long custom_preamble;
+extern unsigned long custom_tail;
 
 void ss_init(AX25Ctx *ax25) {
     ax25ctx = ax25;
@@ -130,6 +135,9 @@ void ss_loadSettings(void) {
         symbolTable = eeprom_read_byte((void*)&nvSYMBOL_TABLE);
         symbol = eeprom_read_byte((void*)&nvSYMBOL);
         message_autoAck = eeprom_read_byte((void*)&nvAUTOACK);
+        
+        custom_preamble = eeprom_read_word((void*)&nvPREAMBLE);
+        custom_tail = eeprom_read_word((void*)&nvTAIL);
 
         if (VERBOSE && SS_INIT) kprintf("Configuration loaded\n");
     } else {
@@ -165,6 +173,9 @@ void ss_saveSettings(void) {
     eeprom_update_byte((void*)&nvSYMBOL_TABLE, symbolTable);
     eeprom_update_byte((void*)&nvSYMBOL, symbol);
     eeprom_update_byte((void*)&nvAUTOACK, message_autoAck);
+
+    eeprom_update_word((void*)&nvPREAMBLE, custom_preamble);
+    eeprom_update_word((void*)&nvTAIL, custom_tail);
 
     eeprom_update_byte((void*)&nvMagicByte, NV_MAGIC_BYTE);
 
@@ -554,7 +565,6 @@ void ss_serialCallback(void *_buffer, size_t length, Serial *ser, AX25Ctx *ctx) 
                 if (!VERBOSE && !SILENT) kprintf("1\n");
             }
 
-
         } else if (buffer[0] == 'm' && length > 1) {
             buffer++; length--;
             if (buffer[0] == 'c' && length > 1) {
@@ -614,7 +624,27 @@ void ss_serialCallback(void *_buffer, size_t length, Serial *ser, AX25Ctx *ctx) 
                 }
             }
 
-        } else {
+        } else if (buffer[0] == 'w' && length >= 2) {
+            char str[4]; buffer++;
+            memcpy(str, buffer, length-1);
+            int preamble = atoi(str);
+            if (preamble >= 0 && preamble <= 9999) {
+                custom_preamble = preamble;
+                kprintf("Preamble set to %dms\n", custom_preamble);
+            } else  {
+                kprintf("Error: Invalid value for preamble\n");
+            }
+        } else if (buffer[0] == 'W' && length >= 2) {
+            char str[4]; buffer++;
+            memcpy(str, buffer, length-1);
+            int tail = atoi(str);
+            if (tail >= 0 && tail <= 9999) {
+                custom_tail = tail;
+                kprintf("TX Tail set to %dms\n", custom_tail);
+            } else  {
+                kprintf("Error: Invalid value for TX tail\n");
+            }
+        }  else {
             if (VERBOSE) kprintf("Error: Invalid command\n");
             if (!VERBOSE && !SILENT) kprintf("0\n");
         }
@@ -761,6 +791,8 @@ void ss_printSettings(void) {
     if (symbolTable == '\\') kprintf("Symbol table: alternate\n");
     if (symbolTable == '/') kprintf("Symbol table: standard\n");
     kprintf("Symbol: %c\n", symbol);
+    kprintf("TX Preamble: %d\n", custom_preamble);
+    kprintf("TX Tail: %d\n", custom_tail);
 }
 
 #if ENABLE_HELP

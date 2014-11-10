@@ -13,10 +13,8 @@
 #include <struct/fifobuf.h> // FIFO buffer implementation from BertOS
 #include <string.h>         // String operations, primarily used for memset function
 
-#if SERIAL_PROTOCOL == PROTOCOL_KISS
-    extern unsigned long kiss_preamble;
-    extern unsigned long kiss_tail;
-#endif
+extern unsigned long custom_preamble;
+extern unsigned long custom_tail;
 
 //////////////////////////////////////////////////////
 // Definitions and some useful macros               //
@@ -453,22 +451,18 @@ static void afsk_txStart(Afsk *afsk) {
         LED_TX_ON();
         // We also need to calculate how many HDLC_FLAG
         // bytes we need to send in preamble
-        #if SERIAL_PROTOCOL == PROTOCOL_KISS
-            afsk->preambleLength = DIV_ROUND(kiss_preamble * BITRATE, 8000);
-        #else
-            afsk->preambleLength = DIV_ROUND(CONFIG_AFSK_PREAMBLE_LEN * BITRATE, 8000);
-        #endif
+        afsk->preambleLength = DIV_ROUND(custom_preamble * BITRATE, 8000);
+        //afsk->preambleLength = DIV_ROUND(CONFIG_AFSK_PREAMBLE_LEN * BITRATE, 8000);
+
         AFSK_DAC_IRQ_START();
     }
     // We make the same calculation for the tail length,
     // but this needs to be atomic, since the txStart
     // function could potentially be called while we
     // are already transmitting.
-    #if SERIAL_PROTOCOL == PROTOCOL_KISS
-        ATOMIC(afsk->tailLength = DIV_ROUND(kiss_tail * BITRATE, 8000));
-    #else
-        ATOMIC(afsk->tailLength = DIV_ROUND(CONFIG_AFSK_TRAILER_LEN * BITRATE, 8000));
-    #endif
+
+    ATOMIC(afsk->tailLength = DIV_ROUND(custom_tail * BITRATE, 8000));
+    //ATOMIC(afsk->tailLength = DIV_ROUND(CONFIG_AFSK_TRAILER_LEN * BITRATE, 8000));
 }
 
 // This is the DAC ISR, called at sampling rate whenever the DAC IRQ is on.
