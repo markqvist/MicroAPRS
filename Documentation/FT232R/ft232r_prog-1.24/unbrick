@@ -1,0 +1,1 @@
+sudo ./ft232r_prog –old-pid 0x000 –new-pid 0x6001
