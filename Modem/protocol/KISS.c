@@ -8,6 +8,7 @@
 
 static uint8_t serialBuffer[CONFIG_AX25_FRAME_BUF_LEN+1]; // Buffer for holding incoming serial data
 AX25Ctx *ax25ctx;
+Afsk *channel;
 Serial *serial;
 size_t frame_len;
 bool IN_FRAME;
@@ -16,9 +17,13 @@ uint8_t command = CMD_UNKNOWN;
 unsigned long custom_preamble = CONFIG_AFSK_PREAMBLE_LEN;
 unsigned long custom_tail = CONFIG_AFSK_TRAILER_LEN;
 
-void kiss_init(AX25Ctx *ax25, Serial *ser) {
+unsigned long slotTime = 200;
+uint8_t p = 63;
+
+void kiss_init(AX25Ctx *ax25, Afsk *afsk, Serial *ser) {
     ax25ctx = ax25;
     serial = ser;
+    channel = afsk;
 }
 
 void kiss_messageCallback(AX25Ctx *ctx) {
@@ -44,11 +49,39 @@ void fon(void) {
     while (ts--) PORTB |= BV(2);
 }
 
+void kiss_csma(AX25Ctx *ctx, uint8_t *buf, size_t len) {
+    bool sent = false;
+    while (!sent) {
+        if(!channel->hdlc.receiving) {
+            uint8_t tp = rand() & 0xFF;
+            if (tp < p) {
+                ax25_sendRaw(ctx, buf, len);
+                sent = true;
+            } else {
+                ticks_t start = timer_clock();
+                while (timer_clock() - start < ms_to_ticks(slotTime)) {
+                    cpu_relax();
+                }
+            }
+        } else {
+            while (channel->hdlc.receiving) {
+                cpu_relax();
+            }
+        }
+
+    }
+    
+}
+
 
 void kiss_serialCallback(uint8_t sbyte) {
     if (IN_FRAME && sbyte == FEND && command == CMD_DATA) {
         IN_FRAME = false;
-        ax25_sendRaw(ax25ctx, serialBuffer, frame_len);
+        #if CSMA_ENABLE
+            kiss_csma(ax25ctx, serialBuffer, frame_len);
+        #else
+            ax25_sendRaw(ax25ctx, serialBuffer, frame_len);
+        #endif
     } else if (sbyte == FEND) {
         IN_FRAME = true;
         command = CMD_UNKNOWN;
@@ -75,6 +108,10 @@ void kiss_serialCallback(uint8_t sbyte) {
             custom_preamble = sbyte * 10UL;
         } else if (command == CMD_TXTAIL) {
             custom_tail = sbyte * 10;
+        } else if (command == CMD_SLOTTIME) {
+            slotTime = sbyte * 10;
+        } else if (command == CMD_P) {
+            p = sbyte;
         } 
         
     }

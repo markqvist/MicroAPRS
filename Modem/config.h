@@ -6,8 +6,12 @@
 #define PROTOCOL_SIMPLE_SERIAL 0x01
 #define PROTOCOL_KISS 0x02
 
+// Which serial protocol we want the modem to use
 #define SERIAL_PROTOCOL PROTOCOL_SIMPLE_SERIAL
 //#define SERIAL_PROTOCOL PROTOCOL_KISS
+
+// Enable P-persistent CSMA
+#define CSMA_ENABLE true
 
 // Debug & test options
 #define SERIAL_DEBUG false

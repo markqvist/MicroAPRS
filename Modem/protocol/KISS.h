@@ -18,9 +18,10 @@
 
 #include <net/ax25.h>
 #include <drv/ser.h>
+#include "afsk.h"
 
-void kiss_init(AX25Ctx *ax25, Serial *ser);
-
+void kiss_init(AX25Ctx *ax25, Afsk *afsk, Serial *ser);
+void kiss_csma(AX25Ctx *ctx, uint8_t *buf, size_t len);
 void kiss_messageCallback(AX25Ctx *ctx);
 void kiss_serialCallback(uint8_t sbyte);
 void fon(void);

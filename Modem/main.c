@@ -103,7 +103,7 @@ static void init(void)
     
     #if SERIAL_PROTOCOL == PROTOCOL_KISS
         // Init KISS
-        kiss_init(&ax25, &ser);
+        kiss_init(&ax25, &afsk, &ser);
     #endif
     
     // That's all!
