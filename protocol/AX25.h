@@ -5,7 +5,7 @@
 #include <stdbool.h>
 
 #define AX25_MIN_FRAME_LEN 18
-#define AX25_MAX_FRAME_LEN 850
+#define AX25_MAX_FRAME_LEN 620
 
 #define AX25_CRC_CORRECT  0xF0B8
 
