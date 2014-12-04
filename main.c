@@ -22,6 +22,7 @@ static void ax25_callback(struct AX25Ctx *ctx) {
 }
 
 void init(void) {
+    sei();
     AFSK_init(&modem);
     serial_init(&serial);
     ax25_init(&AX25, &modem.fd, ax25_callback);
@@ -40,8 +41,7 @@ int main (void) {
         if (serial_available(0)) {
             char sbyte = uart0_getchar_nowait();
             kiss_serialCallback(sbyte);
-        }
-    
+        }  
     }
 
     return(0);

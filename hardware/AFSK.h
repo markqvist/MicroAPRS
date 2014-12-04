@@ -114,20 +114,20 @@ typedef struct Afsk
 
 #define AFSK_DAC_IRQ_START()   do { extern bool hw_afsk_dac_isr; hw_afsk_dac_isr = true; } while (0)
 #define AFSK_DAC_IRQ_STOP()    do { extern bool hw_afsk_dac_isr; hw_afsk_dac_isr = false; } while (0)
-#define AFSK_DAC_INIT()        do { DAC_DDR |= 0xF0; } while (0)
+#define AFSK_DAC_INIT()        do { DAC_DDR |= 0xF8; } while (0)
 
 // Here's some macros for controlling the RX/TX LEDs
 // THE _INIT() functions writes to the DDRB register
 // to configure the pins as output pins, and the _ON()
 // and _OFF() functions writes to the PORT registers
 // to turn the pins on or off.
-#define LED_TX_INIT() do { DAC_DDR |= _BV(1); } while (0)
-#define LED_TX_ON()   do { DAC_PORT |= _BV(1); } while (0)
-#define LED_TX_OFF()  do { DAC_PORT &= ~_BV(1); } while (0)
+#define LED_TX_INIT() do { LED_DDR |= _BV(1); } while (0)
+#define LED_TX_ON()   do { LED_PORT |= _BV(1); } while (0)
+#define LED_TX_OFF()  do { LED_PORT &= ~_BV(1); } while (0)
 
-#define LED_RX_INIT() do { DAC_DDR |= _BV(2); } while (0)
-#define LED_RX_ON()   do { DAC_PORT |= _BV(2); } while (0)
-#define LED_RX_OFF()  do { DAC_PORT &= ~_BV(2); } while (0)
+#define LED_RX_INIT() do { LED_DDR |= _BV(2); } while (0)
+#define LED_RX_ON()   do { LED_PORT |= _BV(2); } while (0)
+#define LED_RX_OFF()  do { LED_PORT &= ~_BV(2); } while (0)
 
 void AFSK_init(Afsk *afsk);
 void AFSK_transmit(char *buffer, size_t size);

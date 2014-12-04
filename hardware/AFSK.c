@@ -14,9 +14,6 @@ int afsk_getchar(void);
 void afsk_putchar(char c);
 
 void AFSK_hw_init(void) {
-    // Disable interrupts while we set up everything
-    cli();
-
     // Set up ADC
     TCCR1A = 0;                                    
     TCCR1B = _BV(CS10) | _BV(WGM13) | _BV(WGM12);
@@ -36,8 +33,6 @@ void AFSK_hw_init(void) {
                 _BV(ADIE) |
                 _BV(ADPS2);
 
-    // Enable interrupts - starts DAC/ADC
-    sei();
     AFSK_DAC_INIT();
     LED_TX_INIT();
     LED_RX_INIT();
@@ -54,11 +49,16 @@ void AFSK_init(Afsk *afsk) {
     fifo_init(&afsk->rxFifo, afsk->rxBuf, sizeof(afsk->rxBuf));
     fifo_init(&afsk->txFifo, afsk->txBuf, sizeof(afsk->txBuf));
 
+    // Fill delay FIFO with zeroes
+    for (int i = 0; i<SAMPLESPERBIT / 2; i++) {
+        fifo_push(&afsk->delayFifo, 0);
+    }
+
+    AFSK_hw_init();
+
     // Set up streams
     FILE afsk_fd = FDEV_SETUP_STREAM(afsk_putchar, afsk_getchar, _FDEV_SETUP_RW);
     afsk->fd = afsk_fd;
-
-    AFSK_hw_init();
 }
 
 static void AFSK_txStart(Afsk *afsk) {
@@ -187,9 +187,9 @@ static bool hdlcParse(Hdlc *hdlc, bool bit, FIFOBuffer *fifo) {
             LED_RX_ON();
         } else {
             // If the buffer is full, we have a problem
-            // and abort by setting the return value to     msg.len = ctx->frm_len - 2 - (buf - ctx->buf);
-
+            // and abort by setting the return value to     
             // false and stopping the here.
+            
             ret = false;
             hdlc->receiving = false;
             LED_RX_OFF();
@@ -440,12 +440,12 @@ void AFSK_adc_isr(Afsk *afsk, int8_t currentSample) {
 
 
 ISR(ADC_vect) {
-    ++_clock;
     TIFR1 = _BV(ICF1);
     AFSK_adc_isr(AFSK_modem, ((int16_t)((ADC) >> 2) - 128));
     if (hw_afsk_dac_isr) {
-        DAC_PORT = (AFSK_dac_isr(AFSK_modem) & 0xF0) | (DAC_PORT & 0x0F); 
+        DAC_PORT = (AFSK_dac_isr(AFSK_modem) & 0xF0) | _BV(3); 
     } else {
-            DAC_PORT = 128 | (DAC_PORT & 0x0F);
+        DAC_PORT = 128;
     }
+    ++_clock;
 }
