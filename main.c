@@ -39,14 +39,14 @@ AX25Ctx AX25;
 
 void init(void) {
     sei();
-    serial_init(&serial);
-    stdout = &serial.uart0;
-    stdin  = &serial.uart0;
-
 
     AFSK_init(&modem);
     ax25_init(&AX25, &modem.fd, ax25_callback);
-    
+
+    serial_init(&serial);    
+    stdout = &serial.uart0;
+    stdin  = &serial.uart0;
+
     #if SERIAL_PROTOCOL == PROTOCOL_KISS
         kiss_init(&AX25, &modem, &serial);
     #endif

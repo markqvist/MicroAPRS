@@ -98,7 +98,6 @@ void ss_init(AX25Ctx *ax25) {
     ss_loadSettings();
     SS_INIT = true;
     if (VERBOSE) {
-        delay_ms(300);
         printf_P(PSTR("---------------\n"));
         printf_P(PSTR("MicroAPRS v1.0b\n"));
         printf_P(PSTR("unsigned.io/microaprs\n"));
