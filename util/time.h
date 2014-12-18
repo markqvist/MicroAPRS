@@ -1,6 +1,7 @@
 #ifndef UTIL_TIME_H
 #define UTIL_TIME_H
 
+#include <util/atomic.h>
 #include "device.h"
 
 #define DIV_ROUND(dividend, divisor)  (((dividend) + (divisor) / 2) / (divisor))
@@ -28,6 +29,14 @@ inline ticks_t ms_to_ticks(mtime_t ms) {
 
 inline void cpu_relax(void) {
     // Do nothing!
+}
+
+inline void delay_ms(unsigned long ms) {
+    ticks_t start = timer_clock();
+    unsigned long n_ticks = ms_to_ticks(ms);
+    while (timer_clock() - start < n_ticks) {
+        cpu_relax();
+    }
 }
 
 
