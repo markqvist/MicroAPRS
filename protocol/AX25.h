@@ -17,7 +17,7 @@
 #define AX25_CTRL_UI      0x03
 #define AX25_PID_NOLAYER3 0xF0
 
-struct AX25Ctx;     // Forward declaration
+struct AX25Ctx;     // Forward declarations
 struct AX25Msg;
 
 #if SERIAL_PROTOCOL == PROTOCOL_KISS

@@ -201,7 +201,9 @@ static bool hdlcParse(Hdlc *hdlc, bool bit, FIFOBuffer *fifo) {
             // on the RX LED.
             fifo_push(fifo, HDLC_FLAG);
             hdlc->receiving = true;
-            LED_RX_ON();
+            #if OPEN_SQUELCH == false
+                LED_RX_ON();
+            #endif
         } else {
             // If the buffer is full, we have a problem
             // and abort by setting the return value to     

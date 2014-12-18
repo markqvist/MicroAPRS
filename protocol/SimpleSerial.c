@@ -206,8 +206,10 @@ void ss_messageCallback(struct AX25Msg *msg) {
     }
     
     if (PRINT_DATA) {
-        if (PRINT_INFO) printf_P(PSTR("DATA: "));
-        printf_P(PSTR("%.*s"), msg->len, msg->info);
+        if (PRINT_INFO) printf_P(PSTR("DATA: "), msg->len);
+        for (int i = 0; i < msg->len; i++) {
+            putchar(msg->info[i]);
+        }
     }
     printf_P(PSTR("\r\n"));
 
