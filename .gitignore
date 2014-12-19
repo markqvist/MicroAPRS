@@ -1,7 +1,0 @@
-obj
-*.project
-*.workspace
-resources
-images/*.bin
-images/*.s19
-images/*.map
