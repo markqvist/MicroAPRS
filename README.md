@@ -1,4 +1,4 @@
-MicroAPRS
+MicroAPRS - THIS VERSION IS DEPRECATED
 ==========
 
 MicroAPRS is the APRS fork of [MicroModem](https://github.com/markqvist/MicroModem). It can be built very easily with an Arduino board based on the Atmega 328p, and around 15 common electronics components.
