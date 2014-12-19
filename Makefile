@@ -12,7 +12,7 @@
 MCU = atmega328p
 
 # Target file name (without extension).
-TARGET = images/OpenAPRS
+TARGET = images/MicroAPRS
 
 # Programming hardware: type avrdude -c ?
 # to get a full listing.
