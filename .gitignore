@@ -1,0 +1,9 @@
+obj
+*.project
+*.workspace
+*.o
+*.d
+resources
+images/*.bin
+images/*.s19
+images/*.map

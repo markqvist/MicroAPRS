@@ -17,6 +17,7 @@ You can buy a complete modem from [my shop](http://unsigned.io/shop), or you can
 - Support for settings APRS symbols
 - Support for power/height/gain info in location updates
 - Ability to automatically ACK messages adressed to the modem
+- Can run with open squelch
 - Supports KISS mode for use with programs on a host computer
 
 ## KISS mode
@@ -106,7 +107,7 @@ __To send an APRS message to ZZ5ABC-1 with the content "Hi there!", using a raw 
 ```
 __Here's an example of how to send a location update with power, height and gain information, using a raw packet:__
 ```
-!=5230.70N/01043.70E-PHG2410Arduino MicroAPRS
+!=5230.70N/01043.70E-PHG2410MicroAPRS
 ```
 
 ### EEPROM Settings
@@ -118,10 +119,6 @@ To connect to the modem use __9600 baud, 8N1__ serial. By default, the firmware 
 
 ![MicroModem](https://raw.githubusercontent.com/markqvist/MicroModem/master/Design/Images/1.jpg)
 
-The repository contains schematics and Eagle PCB files for a Microduino module. There is also fritzing sketches for both an Arduino shield and a Microduino module, with notes so they are easier to understand. I have had the eagle PCB fabricated, and it is working great, so you can use that if want to make your own board.
-
-![MicroModem](https://raw.githubusercontent.com/markqvist/MicroModem/master/Design/Images/PCB-lo.png)
-
-While this project is based on Arduino hardware, it does not use the Arduino IDE. The project has been implemented in your normal C with makefile style, and uses libraries from the open source BertOS.
+The project has been implemented in your normal C with makefile style, and uses AVR Libc. The firmware is compatible with Arduino-based products, although it was not written in the Arduino IDE.
 
 Visit [my site](http://unsigned.io) for questions, comments and other details.
