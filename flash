@@ -1,2 +1,2 @@
 #!/bin/bash
-avrdude -p $2 -c arduino -P /dev/tty$1 -b 115200 -F -U flash:w:images/OpenAPRS.hex
+avrdude -p $2 -c arduino -P /dev/tty$1 -b 115200 -F -U flash:w:images/MicroAPRS.hex

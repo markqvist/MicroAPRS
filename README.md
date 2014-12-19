@@ -1,7 +1,7 @@
 MicroAPRS
 ==========
 
-MicroAPRS is an APRS firmware for MicroModem. It supports both normal KISS mode, and a simple serial protocol for easy communication with an Arduino, or other MCU.
+MicroAPRS is an APRS firmware for [MicroModem](http://unsigned.io/micromodem). It supports both normal KISS mode, and a simple serial protocol for easy communication with an Arduino, or other MCU.
 
 You can buy a complete modem from [my shop](http://unsigned.io/shop), or you can build one yourself pretty easily. Take a look at the documentation in the [MicroModem](https://github.com/markqvist/MicroModem) repository for information and getting started guides!
 
