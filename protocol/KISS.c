@@ -28,7 +28,7 @@ void kiss_init(AX25Ctx *ax25, Afsk *afsk, Serial *ser) {
 void kiss_messageCallback(AX25Ctx *ctx) {
     fputc(FEND, &serial->uart0);
     fputc(0x00, &serial->uart0);
-    for (unsigned i = 0; i < ctx->frame_len; i++) {
+    for (unsigned i = 0; i < ctx->frame_len-2; i++) {
         uint8_t b = ctx->buf[i];
         if (b == FEND) {
             fputc(FESC, &serial->uart0);
