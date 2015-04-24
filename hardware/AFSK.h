@@ -45,16 +45,32 @@ inline static uint8_t sinSample(uint16_t i) {
 #define CONFIG_AFSK_PREAMBLE_LEN 150UL
 #define CONFIG_AFSK_TRAILER_LEN 50UL
 #define SAMPLERATE 9600
-#define BITRATE    1200
+#define BITRATE    1600
+
+#if BITRATE == 960
+    #define FILTER_CUTOFF 600
+    #define MARK_FREQ  1300
+    #define SPACE_FREQ 2100
+    #define PHASE_BITS   8                          // How much to increment phase counter each sample
+#if BITRATE == 1200
+    #define FILTER_CUTOFF 600
+    #define MARK_FREQ  1200
+    #define SPACE_FREQ 2200
+    #define PHASE_BITS   8
+#elif BITRATE == 1600
+    #define FILTER_CUTOFF 800
+    #define MARK_FREQ  1600
+    #define SPACE_FREQ 2800
+    #define PHASE_BITS   6
+#else
+    #error Unsupported bitrate!
+#endif
+
 #define SAMPLESPERBIT (SAMPLERATE / BITRATE)
 #define BIT_STUFF_LEN 5
-#define MARK_FREQ  1200
-#define SPACE_FREQ 2200
-#define PHASE_BITS   8                              // How much to increment phase counter each sample
 #define PHASE_INC    1                              // Nudge by an eigth of a sample each adjustment
 #define PHASE_MAX    (SAMPLESPERBIT * PHASE_BITS)   // Resolution of our phase counter = 64
 #define PHASE_THRESHOLD  (PHASE_MAX / 2)            // Target transition point of our phase window
-
 
 typedef struct Hdlc
 {

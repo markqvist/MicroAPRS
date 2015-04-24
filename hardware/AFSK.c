@@ -331,11 +331,32 @@ void AFSK_adc_isr(Afsk *afsk, int8_t currentSample) {
     // to "smooth out" the variations in the samples.
 
     afsk->iirX[0] = afsk->iirX[1];
-    afsk->iirX[1] = ((int8_t)fifo_pop(&afsk->delayFifo) * currentSample) >> 2;
+
+    #if FILTER_CUTOFF == 600
+        afsk->iirX[1] = ((int8_t)fifo_pop(&afsk->delayFifo) * currentSample) >> 2;
+        // The above is a simplification of:
+        // afsk->iirX[1] = ((int8_t)fifo_pop(&afsk->delayFifo) * currentSample) / 3.558147322;
+    #elif FILTER_CUTOFF == 800
+        afsk->iirX[1] = ((int8_t)fifo_pop(&afsk->delayFifo) * currentSample) >> 2;
+        // The above is a simplification of:
+        // afsk->iirX[1] = ((int8_t)fifo_pop(&afsk->delayFifo) * currentSample) / 2.899043379;
+    #else
+        #error Unsupported bitrate!
+    #endif
 
     afsk->iirY[0] = afsk->iirY[1];
     
-    afsk->iirY[1] = afsk->iirX[0] + afsk->iirX[1] + (afsk->iirY[0] >> 1); // Chebyshev filter
+    #if FILTER_CUTOFF == 600
+        afsk->iirY[1] = afsk->iirX[0] + afsk->iirX[1] + (afsk->iirY[0] >> 1);
+        // The above is a simplification of a first-order 600Hz chebyshev filter:
+        // afsk->iirY[1] = afsk->iirX[0] + afsk->iirX[1] + (afsk->iirY[0] * 0.4379097269);
+    #elif FILTER_CUTOFF == 800
+        afsk->iirY[1] = afsk->iirX[0] + afsk->iirX[1] + (afsk->iirY[0] / 3);
+        // The above is a simplification of a first-order 800Hz chebyshev filter:
+        // afsk->iirY[1] = afsk->iirX[0] + afsk->iirX[1] + (afsk->iirY[0] * 0.3101172565);
+    #else
+        #error Unsupported bitrate!
+    #endif
 
 
     // We put the sampled bit in a delay-line:
