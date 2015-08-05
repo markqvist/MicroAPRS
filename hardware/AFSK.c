@@ -379,7 +379,7 @@ void AFSK_adc_isr(Afsk *afsk, int8_t currentSample) {
     // First we bitshift everything 1 left
     afsk->sampledBits <<= 1;
     // And then add the sampled bit to our delay line
-    afsk->sampledBits |= (afsk->iirY[1] > 0) ? 1 : 0;
+    afsk->sampledBits |= (afsk->iirY[1] > 0) ? 0 : 1;
 
     // Put the current raw sample in the delay FIFO
     fifo_push(&afsk->delayFifo, currentSample);
@@ -464,7 +464,7 @@ void AFSK_adc_isr(Afsk *afsk, int8_t currentSample) {
         /////////////////////////////////////////////////
 
         // Now we can pass the actual bit to the HDLC parser.
-        // We are using NRZ coding, so if 2 consecutive bits
+        // We are using NRZ-S coding, so if 2 consecutive bits
         // have the same value, we have a 1, otherwise a 0.
         // We use the TRANSITION_FOUND function to determine this.
         //
@@ -476,7 +476,7 @@ void AFSK_adc_isr(Afsk *afsk, int8_t currentSample) {
         // not be able to synchronize our phase to the transmitter
         // and would start experiencing "bit slip".
         //
-        // By combining bit-stuffing with NRZ coding, we ensure
+        // By combining bit-stuffing with NRZ-S coding, we ensure
         // that the signal will regularly make transitions
         // that we can use to synchronize our phase.
         //
