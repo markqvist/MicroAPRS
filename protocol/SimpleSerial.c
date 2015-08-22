@@ -141,7 +141,7 @@ void ss_loadSettings(void) {
         symbolTable = eeprom_read_byte((void*)&nvSYMBOL_TABLE);
         symbol = eeprom_read_byte((void*)&nvSYMBOL);
         message_autoAck = eeprom_read_byte((void*)&nvAUTOACK);
-        
+
         custom_preamble = eeprom_read_word((void*)&nvPREAMBLE);
         custom_tail = eeprom_read_word((void*)&nvTAIL);
 
@@ -204,7 +204,7 @@ void ss_messageCallback(struct AX25Msg *msg) {
         for (int i = 0; i < msg->rpt_count; i++)
             printf_P(PSTR("[%.6s-%d] "), msg->rpt_list[i].call, msg->rpt_list[i].ssid);
     }
-    
+
     if (PRINT_DATA) {
         if (PRINT_INFO) printf_P(PSTR("DATA: "), msg->len);
         for (int i = 0; i < msg->len; i++) {
@@ -288,7 +288,7 @@ void ss_messageCallback(struct AX25Msg *msg) {
                 ack[11] = 'a';
                 ack[12] = 'c';
                 ack[13] = 'k';
-                
+
                 for (ii = 0; ii < msl; ii++) {
                     ack[14+ii] = mseq[ii+1];
                 }
@@ -417,42 +417,46 @@ void ss_serialCallback(void *_buffer, size_t length, AX25Ctx *ctx) {
         } else if (buffer[0] == 's' && length > 2) {
             buffer++; length--;
             if (buffer[0] == 'c') {
-                if (length > 2 && buffer[2] > 48 && buffer[2] < 58) {
+                if (length > 2 && buffer[2] > 48 && buffer[2] < 58 && buffer[1] > 48) {
                     CALL_SSID = 10+buffer[2]-48;
-                } else {
-                    CALL_SSID = buffer[1]-48;
-                }
+                } else
+                    if ( buffer[1] > 48 && buffer[1] < 58) {
+                        CALL_SSID = buffer[1]-48;
+                    }
                 if (VERBOSE) printf_P(PSTR("Callsign: %.6s-%d\n"), CALL, CALL_SSID);
                 if (!VERBOSE && !SILENT) printf_P(PSTR("1\n"));
             }
             if (buffer[0] == 'd') {
-                if (length > 2 && buffer[2] > 48 && buffer[2] < 58) {
+                if (length > 2 && buffer[2] > 48 && buffer[2] < 58 && buffer[1] > 48) {
                     DST_SSID = 10+buffer[2]-48;
-                } else {
-                    DST_SSID = buffer[1]-48;
-                }
+                } else
+                    if ( buffer[1] > 48 && buffer[1] < 58) {
+                        DST_SSID = buffer[1]-48;
+                    }
                 if (VERBOSE) printf_P(PSTR("Destination: %.6s-%d\n"), DST, DST_SSID);
                 if (!VERBOSE && !SILENT) printf_P(PSTR("1\n"));
             }
-            if (buffer[0] == '1' && buffer[2] > 48 && buffer[2] < 58) {
-                if (length > 2) {
+            if (buffer[0] == '1' ) {
+                if (length > 2 && buffer[2] > 48 && buffer[2] < 58 && buffer[1] > 48) {
                     PATH1_SSID = 10+buffer[2]-48;
-                } else {
-                    PATH1_SSID = buffer[1]-48;
-                }
+                } else
+                    if ( buffer[1] > 48 && buffer[1] < 58) {
+                        PATH1_SSID = buffer[1]-48;
+                    }
                 if (VERBOSE) printf_P(PSTR("Path1: %.6s-%d\n"), PATH1, PATH1_SSID);
                 if (!VERBOSE && !SILENT) printf_P(PSTR("1\n"));
             }
-            if (buffer[0] == '2' && buffer[2] > 48 && buffer[2] < 58) {
-                if (length > 2) {
+            if (buffer[0] == '2' ) {
+                if (length > 2 && buffer[2] > 48 && buffer[2] < 58 && buffer[1] > 48) {
                     PATH2_SSID = 10+buffer[2]-48;
-                } else {
+                } else
+                    if (buffer[2] > 48 && buffer[2] < 58) {
                     PATH2_SSID = buffer[1]-48;
-                }
+                    }
                 if (VERBOSE) printf_P(PSTR("Path2: %.6s-%d\n"), PATH2, PATH2_SSID);
                 if (!VERBOSE && !SILENT) printf_P(PSTR("1\n"));
             }
-            
+
         } else if (buffer[0] == 'p' && length > 2) {
             buffer++; length--;
             if (buffer[0] == 's') {
@@ -593,7 +597,7 @@ void ss_serialCallback(void *_buffer, size_t length, AX25Ctx *ctx) {
                 }
                 if (VERBOSE) {
                     printf_P(PSTR("Message recipient: %.6s"), message_recip);
-                    if (message_recip_ssid != -1) { 
+                    if (message_recip_ssid != -1) {
                         printf_P(PSTR("-%d\n"), message_recip_ssid);
                     } else {
                         printf_P(PSTR("\n"));
@@ -609,7 +613,7 @@ void ss_serialCallback(void *_buffer, size_t length, AX25Ctx *ctx) {
                 if (message_recip_ssid < 0 || message_recip_ssid > 15) message_recip_ssid = -1;
                 if (VERBOSE) {
                     printf_P(PSTR("Message recipient: %.6s"), message_recip);
-                    if (message_recip_ssid != -1) { 
+                    if (message_recip_ssid != -1) {
                         printf_P(PSTR("-%d\n"), message_recip_ssid);
                     } else {
                         printf_P(PSTR("\n"));
@@ -769,7 +773,7 @@ void ss_sendMsg(void *_buffer, size_t length, AX25Ctx *ax25) {
     packet[12+length] = h+48;
     packet[13+length] = d+48;
     packet[14+length] = n+48;
-    
+
     //printf_P(PSTR("Assembled packet:\n%.*s\n", payloadLength, packet);
     ss_sendPkt(packet, payloadLength, ax25);
 
