@@ -605,7 +605,7 @@ void ss_serialCallback(void *_buffer, size_t length, AX25Ctx *ctx) {
                 }
                 if (!VERBOSE && !SILENT) printf_P(PSTR("1\n"));
             } else if (buffer[0] == 's' && length > 1) {
-                if (length > 2) {
+                if (length > 3) {
                     message_recip_ssid = 10+buffer[2]-48;
                 } else {
                     message_recip_ssid = buffer[1]-48;
