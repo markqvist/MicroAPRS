@@ -12,7 +12,7 @@ typedef int32_t mtime_t;
 
 volatile ticks_t _clock;
 
-inline ticks_t timer_clock(void) {
+static inline ticks_t timer_clock(void) {
     ticks_t result;
 
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
@@ -31,7 +31,7 @@ inline void cpu_relax(void) {
     // Do nothing!
 }
 
-inline void delay_ms(unsigned long ms) {
+static inline void delay_ms(unsigned long ms) {
     ticks_t start = timer_clock();
     unsigned long n_ticks = ms_to_ticks(ms);
     while (timer_clock() - start < n_ticks) {
