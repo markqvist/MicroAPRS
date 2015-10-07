@@ -142,20 +142,27 @@ typedef struct Afsk
 
 #define AFSK_DAC_IRQ_START()   do { extern bool hw_afsk_dac_isr; hw_afsk_dac_isr = true; } while (0)
 #define AFSK_DAC_IRQ_STOP()    do { extern bool hw_afsk_dac_isr; hw_afsk_dac_isr = false; } while (0)
-#define AFSK_DAC_INIT()        do { DAC_DDR |= 0xF8; } while (0)
+// DAC_PINS equals b11111000 which on port D on Arduino sets D3, D4, D5, D6, D7
+// to be outputs.
+#define AFSK_DAC_INIT()        do { DAC_DDR |= DAC_PINS; } while (0)
 
 // Here's some macros for controlling the RX/TX LEDs
 // THE _INIT() functions writes to the DDRB register
 // to configure the pins as output pins, and the _ON()
 // and _OFF() functions writes to the PORT registers
 // to turn the pins on or off.
-#define LED_TX_INIT() do { LED_DDR |= _BV(1); } while (0)
-#define LED_TX_ON()   do { LED_PORT |= _BV(1); } while (0)
-#define LED_TX_OFF()  do { LED_PORT &= ~_BV(1); } while (0)
+#define LED_TX_INIT() do { LED_DDR |= _BV(LED_TX); } while (0)
+#define LED_TX_ON()   do { LED_PORT |= _BV(LED_TX); } while (0)
+#define LED_TX_OFF()  do { LED_PORT &= ~_BV(LED_TX); } while (0)
 
-#define LED_RX_INIT() do { LED_DDR |= _BV(2); } while (0)
-#define LED_RX_ON()   do { LED_PORT |= _BV(2); } while (0)
-#define LED_RX_OFF()  do { LED_PORT &= ~_BV(2); } while (0)
+#define LED_RX_INIT() do { LED_DDR |= _BV(LED_RX); } while (0)
+#define LED_RX_ON()   do { LED_PORT |= _BV(LED_RX); } while (0)
+#define LED_RX_OFF()  do { LED_PORT &= ~_BV(LED_RX); } while (0)
+
+// Along the same lines, these initialize and control the PTT signal
+#define PTT_INIT()    do { PTT_DDR |= _BV(PTT_TX); } while (0)
+#define PTT_TX_ON()   do { PTT_PORT |= _BV(PTT_TX); } while (0)
+#define PTT_TX_OFF()  do { PTT_PORT &= ~_BV(PTT_TX); } while (0)
 
 void AFSK_init(Afsk *afsk);
 void AFSK_transmit(char *buffer, size_t size);

@@ -38,9 +38,9 @@ void AFSK_hw_init(void) {
         ADMUX = 0;
     }
 
-    ADC_DDR  &= ~_BV(0);
-    ADC_PORT &= ~_BV(0);
-    DIDR0 |= _BV(0);
+    ADC_DDR  &= ~_BV(ADC_NO);
+    ADC_PORT &= ~_BV(ADC_NO);
+    DIDR0 |= _BV(ADC_NO);
     ADCSRB =    _BV(ADTS2) |
                 _BV(ADTS1) |
                 _BV(ADTS0);  
@@ -51,6 +51,7 @@ void AFSK_hw_init(void) {
                 _BV(ADPS2);
 
     AFSK_DAC_INIT();
+    PTT_INIT();
     LED_TX_INIT();
     LED_RX_INIT();
 }
@@ -84,6 +85,7 @@ static void AFSK_txStart(Afsk *afsk) {
         afsk->phaseAcc = 0;
         afsk->bitstuffCount = 0;
         afsk->sending = true;
+        PTT_TX_ON();
         LED_TX_ON();
         afsk->preambleLength = DIV_ROUND(custom_preamble * BITRATE, 8000);
         AFSK_DAC_IRQ_START();
@@ -121,6 +123,7 @@ uint8_t AFSK_dac_isr(Afsk *afsk) {
             if (fifo_isempty(&afsk->txFifo) && afsk->tailLength == 0) {
                 AFSK_DAC_IRQ_STOP();
                 afsk->sending = false;
+                PTT_TX_OFF();
                 LED_TX_OFF();
                 return 0;
             } else {
@@ -141,6 +144,7 @@ uint8_t AFSK_dac_isr(Afsk *afsk) {
                     if (fifo_isempty(&afsk->txFifo)) {
                         AFSK_DAC_IRQ_STOP();
                         afsk->sending = false;
+                        PTT_TX_OFF();
                         LED_TX_OFF();
                         return 0;
                     } else {
@@ -499,9 +503,12 @@ ISR(ADC_vect) {
     TIFR1 = _BV(ICF1);
     AFSK_adc_isr(AFSK_modem, ((int16_t)((ADC) >> 2) - 128));
     if (hw_afsk_dac_isr) {
-        DAC_PORT = (AFSK_dac_isr(AFSK_modem) & 0xF0) | _BV(3); 
+        // Set DAC pin(s) according to position in SIN wave.
+        DAC_PORT |= (AFSK_dac_isr(AFSK_modem) & DAC_PINS);
     } else {
-        DAC_PORT = 128;
+        // Set DAC pin(s) to the zero point in the SIN wave.
+        // This is represented by setting only the high-bit.
+        DAC_PORT = (DAC_PORT & (~DAC_PINS)) | DAC_HIGH;
     }
     ++_clock;
 }
