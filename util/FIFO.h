@@ -43,7 +43,7 @@ inline void fifo_flush(FIFOBuffer *f) {
   f->head = f->tail;
 }
 
-inline bool fifo_isempty_locked(const FIFOBuffer *f) {
+static inline bool fifo_isempty_locked(const FIFOBuffer *f) {
   bool result;
   ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
     result = fifo_isempty(f);
@@ -51,7 +51,7 @@ inline bool fifo_isempty_locked(const FIFOBuffer *f) {
   return result;
 }
 
-inline bool fifo_isfull_locked(const FIFOBuffer *f) {
+static inline bool fifo_isfull_locked(const FIFOBuffer *f) {
   bool result;
   ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
     result = fifo_isfull(f);
@@ -59,13 +59,13 @@ inline bool fifo_isfull_locked(const FIFOBuffer *f) {
   return result;
 }
 
-inline void fifo_push_locked(FIFOBuffer *f, unsigned char c) {
+static inline void fifo_push_locked(FIFOBuffer *f, unsigned char c) {
   ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
     fifo_push(f, c);
   }
 }
 
-inline unsigned char fifo_pop_locked(FIFOBuffer *f) {
+static inline unsigned char fifo_pop_locked(FIFOBuffer *f) {
   unsigned char c;
   ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
     c = fifo_pop(f);
