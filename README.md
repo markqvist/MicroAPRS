@@ -28,7 +28,7 @@ When the modem is running in KISS mode, there's really not much more to it than 
 
 If you want to use the SimpleSerial protocol, here's how to control the APRS modem over a serial connection. The modem accepts a variety of commands for setting options and sending packets. Generally a command starts with one or more characters defining the command, and then whatever data is needed to set the options for that command. Here's a list of the currently available commands:
 
-##Serial commands
+## Serial commands
 
 Command | Description
 --- | :---
@@ -91,7 +91,7 @@ __To send an APRS message to ZZ5ABC-1 with the content "Hi there!", send these c
 ```
 mcZZ5ABC
 ms1
-#Hi there!
+# Hi there!
 ```
 
 __To send a location update, with the comment "MicroAPRS", you can do something like this:__
