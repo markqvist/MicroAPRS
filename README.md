@@ -28,7 +28,7 @@ When the modem is running in KISS mode, there's really not much more to it than 
 
 If you want to use the SimpleSerial protocol, here's how to control the APRS modem over a serial connection. The modem accepts a variety of commands for setting options and sending packets. Generally a command starts with one or more characters defining the command, and then whatever data is needed to set the options for that command. Here's a list of the currently available commands:
 
-##Serial commands
+## Serial commands
 
 Command | Description
 --- | :---
@@ -91,7 +91,7 @@ __To send an APRS message to ZZ5ABC-1 with the content "Hi there!", send these c
 ```
 mcZZ5ABC
 ms1
-#Hi there!
+# Hi there!
 ```
 
 __To send a location update, with the comment "MicroAPRS", you can do something like this:__
@@ -117,7 +117,7 @@ When saving the configuration, it is written to EEPROM, so it will persist betwe
 
 To connect to the modem use __9600 baud, 8N1__ serial. By default, the firmware uses time-sensitive input, which means that it will buffer serial data as it comes in, and when it has received no data for a few milliseconds, it will start interpreting whatever it has received. This means you need to set your serial terminal program to not send data for every keystroke, but only on new-line, or pressing send or whatever. If you do not want this behaviour, you can compile the firmware with the DEBUG flag set, which will make the modem wait for a new-line character before interpreting the received data. I would generally advise against this though, since it means that you cannot have newline characters in whatever data you want to send!
 
-![MicroModem](https://raw.githubusercontent.com/markqvist/MicroModem/master/Design/Images/1.jpg)
+![MicroModem](https://unsigned.io/wp-content/uploads/2014/11/A1-1024x731.jpg)
 
 The project has been implemented in your normal C with makefile style, and uses AVR Libc. The firmware is compatible with Arduino-based products, although it was not written in the Arduino IDE.
 
