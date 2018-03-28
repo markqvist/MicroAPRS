@@ -24,6 +24,10 @@ You can buy a complete modem from [my shop](http://unsigned.io/shop), or you can
 
 When the modem is running in KISS mode, there's really not much more to it than connecting the modem to a computer, opening whatever program you want to use with it, and off you go.
 
+When in KISS mode, the preamble time, tail time, persistence and slot time parameters can be configured by the default KISS commands for these. See KISS.h and KISS.c for more info on the configuration command syntax. 
+
+It's important to note that some programs (Xastir, for example) will reset the modem when connecting to it, and then immediately send configuration commands. This has the unfortunate effect that the configuration commands are sent to the bootloader, instead of the booted firmware. If your program does not allow you to disable resetting or to set a delay for sending the configuration commands, you can manually disable the reset functionality by connecting a resistor of around 100 ohms between the VCC and DTR pins. This will ensure that the modem is not reset, even if the host program sends a reset command.
+
 ## Modem control - SimpleSerial
 
 If you want to use the SimpleSerial protocol, here's how to control the APRS modem over a serial connection. The modem accepts a variety of commands for setting options and sending packets. Generally a command starts with one or more characters defining the command, and then whatever data is needed to set the options for that command. Here's a list of the currently available commands:
