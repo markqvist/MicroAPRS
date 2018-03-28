@@ -440,7 +440,7 @@ void AFSK_adc_isr(Afsk *afsk, int8_t currentSample) {
         afsk->actualBits <<= 1;
 
         // We determine the actual bit value by reading
-        // the last 3 sampled bits. If there is three or
+        // the last 3 sampled bits. If there is two or
         // more 1's, we will assume that the transmitter
         // sent us a one, otherwise we assume a zero
         uint8_t bits = afsk->sampledBits & 0x07;
