@@ -51,17 +51,12 @@ inline static uint8_t sinSample(uint16_t i) {
 
 #define SAMPLESPERBIT (SAMPLERATE / BITRATE)
 #define PHASE_INC    1                              // Nudge by an eigth of a sample each adjustment
-
-#if BITRATE == 300
-    #define FILTER_CUTOFF 600
-    #define MARK_FREQ  1600
-    #define SPACE_FREQ 1800
-    #define PHASE_BITS   10                         // How much to increment phase counter each sample
-#elif BITRATE == 960
+                       
+#if BITRATE == 960
     #define FILTER_CUTOFF 600
     #define MARK_FREQ  960
     #define SPACE_FREQ 1600
-    #define PHASE_BITS   10
+    #define PHASE_BITS   10                         // How much to increment phase counter each sample
 #elif BITRATE == 1200
     #define FILTER_CUTOFF 600
     #define MARK_FREQ  1200
@@ -72,11 +67,6 @@ inline static uint8_t sinSample(uint16_t i) {
     #define MARK_FREQ  1600
     #define SPACE_FREQ 2600
     #define PHASE_BITS   8
-#elif BITRATE == 2400
-    #define FILTER_CUTOFF 1600
-    #define MARK_FREQ  2400
-    #define SPACE_FREQ 4200
-    #define PHASE_BITS   4
 #else
     #error Unsupported bitrate!
 #endif
