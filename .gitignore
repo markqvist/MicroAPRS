@@ -13,3 +13,6 @@ images/*.map
 images/*.elf
 images/*.sym
 images/*.hex
+testkit
+flashdefault
+flashtestkit
