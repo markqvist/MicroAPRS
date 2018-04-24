@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include "device.h"
+#include "hardware/AFSK.h"
 
 #define AX25_MIN_FRAME_LEN 18
 #ifndef CUSTOM_FRAME_SIZE
@@ -30,6 +31,7 @@ struct AX25Msg;
 
 typedef struct AX25Ctx {
     uint8_t buf[AX25_MAX_FRAME_LEN];
+    Afsk *modem;
     FILE *ch;
     size_t frame_len;
     uint16_t crc_in;
@@ -37,6 +39,7 @@ typedef struct AX25Ctx {
     ax25_callback_t hook;
     bool sync;
     bool escape;
+    bool ready_for_data;
 } AX25Ctx;
 
 #if SERIAL_PROTOCOL == PROTOCOL_SIMPLE_SERIAL
@@ -68,6 +71,6 @@ typedef struct AX25Ctx {
 
 void ax25_poll(AX25Ctx *ctx);
 void ax25_sendRaw(AX25Ctx *ctx, void *_buf, size_t len);
-void ax25_init(AX25Ctx *ctx, FILE *channel, ax25_callback_t hook);
+void ax25_init(AX25Ctx *ctx, Afsk *modem, FILE *channel, ax25_callback_t hook);
 
 #endif

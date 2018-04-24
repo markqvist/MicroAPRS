@@ -41,7 +41,7 @@ void init(void) {
     sei();
 
     AFSK_init(&modem);
-    ax25_init(&AX25, &modem.fd, ax25_callback);
+    ax25_init(&AX25, &modem, &modem.fd, ax25_callback);
 
     serial_init(&serial);    
     stdout = &serial.uart0;

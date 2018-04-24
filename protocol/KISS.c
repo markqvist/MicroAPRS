@@ -80,8 +80,7 @@ void kiss_csma(AX25Ctx *ctx, uint8_t *buf, size_t len) {
     }
 
     if (FLOWCONTROL) {
-        while (channel->sending_data) { /* Wait */ }
-
+        while (!ctx->ready_for_data) { /* Wait */ }
         fputc(FEND, &serial->uart0);
         fputc(CMD_READY, &serial->uart0);
         fputc(0x01, &serial->uart0);

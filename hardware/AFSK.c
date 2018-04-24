@@ -61,6 +61,8 @@ void AFSK_init(Afsk *afsk) {
     AFSK_modem = afsk;
     // Set phase increment
     afsk->phaseInc = MARK_INC;
+    afsk->silentSamples = 0;
+
     // Initialise FIFO buffers
     fifo_init(&afsk->delayFifo, (uint8_t *)afsk->delayBuf, sizeof(afsk->delayBuf));
     fifo_init(&afsk->rxFifo, afsk->rxBuf, sizeof(afsk->rxBuf));
@@ -263,8 +265,12 @@ static bool hdlcParse(Hdlc *hdlc, bool bit, FIFOBuffer *fifo) {
     // If we have not yet seen a HDLC_FLAG indicating that
     // a transmission is actually taking place, don't bother
     // with anything.
-    if (!hdlc->receiving)
+    if (!hdlc->receiving) {
+        hdlc->dcd = false;
+        hdlc->dcd_count = 0;
+
         return ret;
+    }
 
     // First check if what we are seeing is a stuffed bit.
     // Since the different HDLC control characters like
@@ -312,6 +318,8 @@ static bool hdlcParse(Hdlc *hdlc, bool bit, FIFOBuffer *fifo) {
             } else {
                 // If it is, abort and return false
                 hdlc->receiving = false;
+                hdlc->dcd = false;
+                hdlc->dcd_count = 0;
                 LED_RX_OFF();
                 ret = false;
             }
@@ -324,6 +332,8 @@ static bool hdlcParse(Hdlc *hdlc, bool bit, FIFOBuffer *fifo) {
         } else {
             // If it is, well, you know by now!
             hdlc->receiving = false;
+            hdlc->dcd = false;
+            hdlc->dcd_count = 0;
             LED_RX_OFF();
             ret = false;
         }
@@ -338,7 +348,6 @@ static bool hdlcParse(Hdlc *hdlc, bool bit, FIFOBuffer *fifo) {
         hdlc->currentByte >>= 1;
     }
 
-    //digitalWrite(13, LOW);
     return ret;
 }
 
@@ -444,6 +453,9 @@ void AFSK_adc_isr(Afsk *afsk, int8_t currentSample) {
         } else {
             afsk->currentPhase -= PHASE_INC;
         }
+        afsk->silentSamples = 0;
+    } else {
+        afsk->silentSamples++;
     }
 
     // We increment our phase counter
@@ -511,6 +523,12 @@ void AFSK_adc_isr(Afsk *afsk, int8_t currentSample) {
                 afsk->status = 0;
             }
         }
+    }
+
+    if (afsk->silentSamples > DCD_TIMEOUT_SAMPLES) {
+        afsk->silentSamples = 0;
+        afsk->hdlc.dcd = false;
+        LED_RX_OFF();
     }
 
 }

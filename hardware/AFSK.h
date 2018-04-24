@@ -53,6 +53,7 @@ inline static uint8_t sinSample(uint16_t i) {
 #define PHASE_INC    1                              // Nudge by an eigth of a sample each adjustment
 
 #define DCD_MIN_COUNT 6
+#define DCD_TIMEOUT_SAMPLES 96
                        
 #if BITRATE == 960
     #define FILTER_CUTOFF 600
@@ -106,6 +107,8 @@ typedef struct Afsk
 
     uint16_t phaseAcc;                      // Phase accumulator
     uint16_t phaseInc;                      // Phase increment per sample
+
+    uint8_t silentSamples;                 // How many samples were completely silent
 
     FIFOBuffer txFifo;                      // FIFO for transmit data
     uint8_t txBuf[CONFIG_AFSK_TX_BUFLEN];   // Actual data storage for said FIFO
