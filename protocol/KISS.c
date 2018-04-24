@@ -49,7 +49,7 @@ void kiss_csma(AX25Ctx *ctx, uint8_t *buf, size_t len) {
     bool sent = false;
     while (!sent) {
         //puts("Waiting in CSMA");
-        if(!channel->hdlc.receiving) {
+        if(!channel->hdlc.dcd) {
             uint8_t tp = rand() & 0xFF;
             if (tp < p) {
                 ax25_sendRaw(ctx, buf, len);

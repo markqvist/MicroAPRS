@@ -51,6 +51,8 @@ inline static uint8_t sinSample(uint16_t i) {
 
 #define SAMPLESPERBIT (SAMPLERATE / BITRATE)
 #define PHASE_INC    1                              // Nudge by an eigth of a sample each adjustment
+
+#define DCD_MIN_COUNT 6
                        
 #if BITRATE == 960
     #define FILTER_CUTOFF 600
@@ -80,6 +82,8 @@ typedef struct Hdlc
     uint8_t bitIndex;
     uint8_t currentByte;
     bool receiving;
+    bool dcd;
+    uint8_t dcd_count;
 } Hdlc;
 
 typedef struct Afsk

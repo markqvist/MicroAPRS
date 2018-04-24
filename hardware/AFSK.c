@@ -205,6 +205,14 @@ static bool hdlcParse(Hdlc *hdlc, bool bit, FIFOBuffer *fifo) {
             // on the RX LED.
             fifo_push(fifo, HDLC_FLAG);
             hdlc->receiving = true;
+
+            if (hdlc->dcd_count < DCD_MIN_COUNT) {
+                hdlc->dcd = false;
+                hdlc->dcd_count++;
+            } else {
+                hdlc->dcd = true;
+            }
+
             #if OPEN_SQUELCH == false
                 LED_RX_ON();
             #endif
@@ -215,7 +223,8 @@ static bool hdlcParse(Hdlc *hdlc, bool bit, FIFOBuffer *fifo) {
             
             ret = false;
             hdlc->receiving = false;
-            LED_RX_OFF();
+            hdlc->dcd = false;
+            hdlc->dcd_count = 0;
         }
 
         // Everytime we receive a HDLC_FLAG, we reset the
@@ -239,8 +248,16 @@ static bool hdlcParse(Hdlc *hdlc, bool bit, FIFOBuffer *fifo) {
         // If we have, something probably went wrong at the
         // transmitting end, and we abort the reception.
         hdlc->receiving = false;
-        LED_RX_OFF();
+        hdlc->dcd = false;
+        hdlc->dcd_count = 0;
         return ret;
+    }
+
+    // Check the DCD status and set RX LED appropriately
+    if (hdlc->dcd) {
+        LED_RX_ON();
+    } else {
+        LED_RX_OFF();
     }
 
     // If we have not yet seen a HDLC_FLAG indicating that

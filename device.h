@@ -9,7 +9,7 @@
 #define FREQUENCY_CORRECTION 0
 
 // ADC settings
-#define OPEN_SQUELCH false
+#define OPEN_SQUELCH true
 #define ADC_REFERENCE REF_3V3
 // OR
 //#define ADC_REFERENCE REF_5V
