@@ -13,8 +13,8 @@ typedef struct Serial {
 
 void serial_init(Serial *serial);
 bool serial_available(uint8_t index);
-void uart0_putchar(char c);
-char uart0_getchar(void);
+int uart0_putchar(char c, FILE *stream);
+int uart0_getchar(FILE *stream);
 char uart0_getchar_nowait(void);
 
 #endif

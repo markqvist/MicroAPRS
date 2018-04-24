@@ -19,6 +19,7 @@ void serial_init(Serial *serial) {
     UCSR0B = _BV(RXEN0) | _BV(TXEN0);
 
     FILE uart0_fd = FDEV_SETUP_STREAM(uart0_putchar, uart0_getchar, _FDEV_SETUP_RW);
+    //FILE uart0_fd = FDEV_SETUP_STREAM(uart0_putchar, NULL, _FDEV_SETUP_WRITE);
 
     serial->uart0 = uart0_fd;
 }
@@ -31,12 +32,13 @@ bool serial_available(uint8_t index) {
 }
 
 
-void uart0_putchar(char c) {
+int uart0_putchar(char c, FILE *stream) {
     loop_until_bit_is_set(UCSR0A, UDRE0);
     UDR0 = c;
+    return 1;
 }
 
-char uart0_getchar(void) {
+int uart0_getchar(FILE *stream) {
     loop_until_bit_is_set(UCSR0A, RXC0);
     return UDR0;
 }

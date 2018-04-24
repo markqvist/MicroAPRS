@@ -11,8 +11,8 @@ bool hw_5v_ref = false;
 Afsk *AFSK_modem;
 
 // Forward declerations
-int afsk_getchar(void);
-void afsk_putchar(char c);
+int afsk_getchar(FILE *strem);
+int afsk_putchar(char c, FILE *stream);
 
 void AFSK_hw_refDetect(void) {
     // This is manual for now
@@ -94,13 +94,14 @@ static void AFSK_txStart(Afsk *afsk) {
     }
 }
 
-void afsk_putchar(char c) {
+int afsk_putchar(char c, FILE *stream) {
     AFSK_txStart(AFSK_modem);
     while(fifo_isfull_locked(&AFSK_modem->txFifo)) { /* Wait */ }
     fifo_push_locked(&AFSK_modem->txFifo, c);
+    return 1;
 }
 
-int afsk_getchar(void) {
+int afsk_getchar(FILE *stream) {
     if (fifo_isempty_locked(&AFSK_modem->rxFifo)) {
         return EOF;
     } else {
@@ -112,7 +113,7 @@ void AFSK_transmit(char *buffer, size_t size) {
     fifo_flush(&AFSK_modem->txFifo);
     int i = 0;
     while (size--) {
-        afsk_putchar(buffer[i++]);
+        afsk_putchar(buffer[i++], NULL);
     }
 }
 
