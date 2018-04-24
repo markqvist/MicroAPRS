@@ -84,6 +84,7 @@ static void AFSK_txStart(Afsk *afsk) {
         afsk->phaseAcc = 0;
         afsk->bitstuffCount = 0;
         afsk->sending = true;
+        afsk->sending_data = true;
         LED_TX_ON();
         afsk->preambleLength = DIV_ROUND(custom_preamble * BITRATE, 8000);
         AFSK_DAC_IRQ_START();
@@ -121,6 +122,7 @@ uint8_t AFSK_dac_isr(Afsk *afsk) {
             if (fifo_isempty(&afsk->txFifo) && afsk->tailLength == 0) {
                 AFSK_DAC_IRQ_STOP();
                 afsk->sending = false;
+                afsk->sending_data = false;
                 LED_TX_OFF();
                 return 0;
             } else {
@@ -128,6 +130,7 @@ uint8_t AFSK_dac_isr(Afsk *afsk) {
                 afsk->bitStuff = true;
                 if (afsk->preambleLength == 0) {
                     if (fifo_isempty(&afsk->txFifo)) {
+                        afsk->sending_data = false;
                         afsk->tailLength--;
                         afsk->currentOutputByte = HDLC_FLAG;
                     } else {

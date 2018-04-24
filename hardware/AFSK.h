@@ -104,9 +104,10 @@ typedef struct Afsk
     uint16_t phaseInc;                      // Phase increment per sample
 
     FIFOBuffer txFifo;                      // FIFO for transmit data
-    uint8_t txBuf[CONFIG_AFSK_TX_BUFLEN];   // Actial data storage for said FIFO
+    uint8_t txBuf[CONFIG_AFSK_TX_BUFLEN];   // Actual data storage for said FIFO
 
     volatile bool sending;                  // Set when modem is sending
+    volatile bool sending_data;             // Set when modem is sending data
 
     // Demodulation values
     FIFOBuffer delayFifo;                   // Delayed FIFO for frequency discrimination

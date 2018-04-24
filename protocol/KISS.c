@@ -11,6 +11,7 @@ Serial *serial;
 size_t frame_len;
 bool IN_FRAME;
 bool ESCAPE;
+bool FLOWCONTROL;
 
 uint8_t command = CMD_UNKNOWN;
 unsigned long custom_preamble = CONFIG_AFSK_PREAMBLE_LEN;
@@ -23,6 +24,7 @@ void kiss_init(AX25Ctx *ax25, Afsk *afsk, Serial *ser) {
     ax25ctx = ax25;
     serial = ser;
     channel = afsk;
+    FLOWCONTROL = false;
 }
 
 void kiss_messageCallback(AX25Ctx *ctx) {
@@ -75,9 +77,16 @@ void kiss_csma(AX25Ctx *ctx, uint8_t *buf, size_t len) {
                 }
             }
         }
-
     }
-    
+
+    if (FLOWCONTROL) {
+        while (channel->sending_data) { /* Wait */ }
+
+        fputc(FEND, &serial->uart0);
+        fputc(CMD_READY, &serial->uart0);
+        fputc(0x01, &serial->uart0);
+        fputc(FEND, &serial->uart0);
+    }
 }
 
 void kiss_serialCallback(uint8_t sbyte) {
@@ -114,7 +123,13 @@ void kiss_serialCallback(uint8_t sbyte) {
             slotTime = sbyte * 10;
         } else if (command == CMD_P) {
             p = sbyte;
-        } 
+        } else if (command == CMD_READY) {
+            if (sbyte == 0x00) {
+                FLOWCONTROL = false;
+            } else {
+                FLOWCONTROL = true;
+            }
+        }
         
     }
 }

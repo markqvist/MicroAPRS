@@ -114,6 +114,7 @@ void ax25_sendRaw(AX25Ctx *ctx, void *_buf, size_t len) {
     ax25_putchar(ctx, crch);
 
     fputc(HDLC_FLAG, ctx->ch);
+
 }
 
 #if SERIAL_PROTOCOL == PROTOCOL_SIMPLE_SERIAL
