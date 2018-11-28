@@ -242,7 +242,7 @@ static bool hdlcParse(Hdlc *hdlc, bool bit, FIFOBuffer *fifo) {
     // Check if we have received a RESET flag (01111111)
     // In this comparison we also detect when no transmission
     // (or silence) is taking place, and the demodulator
-    // returns an endless stream of zeroes. Due to the NRZ
+    // returns an endless stream of zeroes. Due to the NRZ-S
     // coding, the actual bits send to this function will
     // be an endless stream of ones, which this AND operation
     // will also detect.
@@ -435,7 +435,7 @@ void AFSK_adc_isr(Afsk *afsk, int8_t currentSample) {
     //                     Window
     //
     // Every time we detect a signal transition, we adjust
-    // where this window is positioned little. How much we
+    // where this window is positioned a little. How much we
     // adjust it is defined by PHASE_INC. If our current phase
     // phase counter value is less than half of PHASE_MAX (ie, 
     // the window size) when a signal transition is detected,

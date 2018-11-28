@@ -16,3 +16,4 @@ images/*.hex
 testkit
 flashdefault
 flashtestkit
+flashcurrent
