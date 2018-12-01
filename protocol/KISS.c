@@ -47,6 +47,13 @@ void kiss_messageCallback(AX25Ctx *ctx) {
 
 void kiss_csma(AX25Ctx *ctx, uint8_t *buf, size_t len) {
     bool sent = false;
+    if (CONFIG_AFSK_TXWAIT > 0) {
+        ticks_t wait_start = timer_clock();
+        long wait_ticks = ms_to_ticks(CONFIG_AFSK_TXWAIT);
+        while (timer_clock() - wait_start < wait_ticks) {
+            cpu_relax();
+        }
+    }
     while (!sent) {
         //puts("Waiting in CSMA");
         if(!channel->hdlc.dcd) {
