@@ -1,3 +1,9 @@
+// Copyright Mark Qvist / unsigned.io
+// https://unsigned.io/microaprs
+//
+// Licensed under GPL-3.0. For full info,
+// read the LICENSE file.
+
 #include "CRC-CCIT.h"
 
 const uint16_t crc_ccit_table[256] PROGMEM = {

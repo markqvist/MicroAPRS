@@ -1,3 +1,9 @@
+// Copyright Mark Qvist / unsigned.io
+// https://unsigned.io/microaprs
+//
+// Licensed under GPL-3.0. For full info,
+// read the LICENSE file.
+
 #ifndef _PROTOCOL_SIMPLE_SERIAL
 #define _PROTOCOL_SIMPLE_SERIAL 0x01
 #include "AX25.h"

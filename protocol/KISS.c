@@ -1,3 +1,9 @@
+// Copyright Mark Qvist / unsigned.io
+// https://unsigned.io/microaprs
+//
+// Licensed under GPL-3.0. For full info,
+// read the LICENSE file.
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -27,7 +33,11 @@ void kiss_init(AX25Ctx *ax25, Afsk *afsk, Serial *ser) {
     FLOWCONTROL = false;
 }
 
+//size_t decodes = 0;
 void kiss_messageCallback(AX25Ctx *ctx) {
+    // decodes++;
+    // printf("%d\r\n", decodes);
+
     fputc(FEND, &serial->uart0);
     fputc(0x00, &serial->uart0);
     for (unsigned i = 0; i < ctx->frame_len-2; i++) {
