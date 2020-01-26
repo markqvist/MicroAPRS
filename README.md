@@ -1,6 +1,8 @@
 MicroAPRS
 ==========
 
+__Important!__ _For new projects, please consider using [OpenModem](https://github.com/markqvist/OpenModem) as a platform instead. It is much more powerful, and has none of the limitations of this implementation. For simple projects, MicroAPRS is absolutely still usable, and it is incredibly stable and well-tested in thousands of hours of real-life usage, but have a look at OpenModem as well, since that is what I will be maintaining from now on. No new features or updates will be added to MicroAPRS from here on. I consider it stable and feature-complete for what the hardware is capable of._
+
 MicroAPRS is an APRS firmware for [MicroModem](http://unsigned.io/micromodem). It supports both normal KISS mode, and a simple serial protocol for easy communication with an Arduino, or other MCU.
 
 You can buy a complete modem from [my shop](http://unsigned.io/shop), or you can build one yourself pretty easily. Take a look at the documentation in the [MicroModem](https://github.com/markqvist/MicroModem) repository for information and getting started guides!
