@@ -128,3 +128,10 @@ To connect to the modem use __9600 baud, 8N1__ serial. By default, the firmware 
 The project has been implemented in your normal C with makefile style, and uses AVR Libc. The firmware is compatible with Arduino-based products, although it was not written in the Arduino IDE.
 
 Visit [my site](http://unsigned.io) for questions, comments and other details.
+
+## Support Me
+If you have benefited from this project, you can help support the continued development of open, free and private communications systems by donating via one of the following channels:
+
+- Ethereum: 0x81F7B979fEa6134bA9FD5c701b3501A2e61E897a
+- Bitcoin: 3CPmacGm34qYvR6XWLVEJmi2aNe3PZqUuq
+- Ko-Fi: https://ko-fi.com/markqvist
